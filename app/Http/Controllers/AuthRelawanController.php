@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengguna;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
+use App\Services\AuthService;
 
 class AuthRelawanController extends Controller
 {
-    public function register(Request $request)
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
+    public function register(Request $request): JsonResponse
     {
         $request->validate([
             'nama_lengkap_pengguna'     => 'required|string|max:255',
@@ -17,44 +23,58 @@ class AuthRelawanController extends Controller
             'password_akun_pengguna'    => 'required|string|min:6',
         ]);
 
-        $user = Pengguna::create([
-            'nama_lengkap_pengguna'     => $request->nama_lengkap_pengguna,
-            'username_akun_pengguna'    => $request->username_akun_pengguna,
-            'password_akun_pengguna'    => Hash::make($request->password_akun_pengguna),
-        ]);
+        // Map web app field names to API format
+        $userData = [
+            'name' => $request->nama_lengkap_pengguna,
+            'email' => $request->username_akun_pengguna, // Use username as email
+            'password' => $request->password_akun_pengguna,
+            'password_confirmation' => $request->password_akun_pengguna,
+            'role' => 'volunteer' // Default role for web registrations
+        ];
 
-        return response()->json(['message' => 'User registered successfully!']);
+        $result = $this->authService->register($userData);
+
+        if ($result['success']) {
+            return response()->json(['message' => 'User registered successfully!']);
+        } else {
+            return response()->json(['message' => $result['message']], 422);
+        }
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'username_akun_pengguna'    => 'required',
             'password_akun_pengguna'    => 'required',
         ]);
 
+        // Map web app field names to API format
         $credentials = [
-            'username_akun_pengguna' => $request->username_akun_pengguna,
+            'email' => $request->username_akun_pengguna,
             'password' => $request->password_akun_pengguna,
         ];
 
-        if (!Auth::guard('pengguna')->attempt($credentials)) {
-            return response()->json(['message' => 'Invalid login credentials'], 401);
+        $result = $this->authService->login($credentials);
+
+        if ($result['success']) {
+            return response()->json([
+                'message' => 'Login successful',
+                'token'   => $result['data']['token'],
+                'user'    => $result['data']['user']
+            ]);
+        } else {
+            return response()->json(['message' => $result['message']], 401);
         }
-
-        $user = Pengguna::where('username_akun_pengguna', $request->username_akun_pengguna)->first();
-        $token = $user->createToken('mobile-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'token'   => $token,
-        ]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $result = $this->authService->logout();
 
-        return response()->json(['message' => 'Logged out']);
+        if ($result['success']) {
+            return response()->json(['message' => 'Logged out']);
+        } else {
+            return response()->json(['message' => $result['message']], 500);
+        }
     }
 }

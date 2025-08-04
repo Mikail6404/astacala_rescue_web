@@ -20,14 +20,14 @@
 
                 <div class="mb-6">
                     <label class="block text-sm mb-2 font-semibold">Username</label>
-                    <input type="text" name="username_akun_admin" placeholder="Masukkan Username Anda"
+                    <input type="text" name="username" placeholder="Masukkan Username Anda"
                         class="w-full px-4 py-3 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                         required>
                 </div>
 
                 <div class="mb-8">
                     <label class="block text-sm mb-2 font-semibold">Password</label>
-                    <input type="password" name="password_akun_admin" placeholder="Masukkan Password Anda"
+                    <input type="password" name="password" placeholder="Masukkan Password Anda"
                         class="w-full px-4 py-3 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                         required>
                 </div>

@@ -2,18 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\BeritaBencana;
-use Illuminate\Support\Facades\Storage;
+use App\Services\GibranContentService;
 
 class BeritaBencanaController extends Controller
 {
+    protected $contentService;
+
+    public function __construct(GibranContentService $contentService)
+    {
+        $this->contentService = $contentService;
+    }
+
     // Tampilkan semua data
     public function membacaDataPublikasiBeritaBencana()
     {
-        $data = BeritaBencana::all();
-        return view('data_publikasi', compact('data'));
+        $response = $this->contentService->getAllPublications();
+
+        if ($response['success']) {
+            $data = $response['data'];
+            return view('data_publikasi', compact('data'));
+        } else {
+            return view('data_publikasi', ['data' => []])
+                ->with('error', $response['message']);
+        }
     }
 
     // Tampilkan form tambah data
@@ -35,108 +47,126 @@ class BeritaBencanaController extends Controller
             'dibuat_oleh_admin_id' => 'required|integer',
         ]);
 
+        // Prepare files for upload
+        $files = [];
         if ($request->hasFile('pblk_foto_bencana')) {
-            $path = $request->file('pblk_foto_bencana')->store('foto_bencana', 'public');
-            $validated['pblk_foto_bencana'] = $path;
+            $files['disaster_image'] = $request->file('pblk_foto_bencana');
         }
 
-        BeritaBencana::create($validated);
+        $response = $this->contentService->createPublication($validated, $files);
 
-        return redirect()->route('berita.index')->with('success', 'Data berhasil ditambahkan');
+        if ($response['success']) {
+            return redirect()->route('berita.index')->with('success', 'Data berhasil ditambahkan');
+        } else {
+            return redirect()->route('berita.index')->with('error', $response['message']);
+        }
     }
 
     // Tampilkan form edit
     public function editDataPublikasiBeritaBencana($id)
     {
-        $data = DB::table('beritabencana')->where('id', $id)->first();
-        return view('ubah_data_publikasi', compact('data'));
+        $response = $this->contentService->getPublication($id);
+
+        if ($response['success']) {
+            $data = $response['data'];
+            return view('ubah_data_publikasi', compact('data'));
+        } else {
+            return redirect()->route('berita.index')->with('error', $response['message']);
+        }
     }
 
     // Simpan perubahan data
     public function simpanEditDataPublikasiBeritaBencana(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pblk_judul_bencana' => 'required',
             'pblk_lokasi_bencana' => 'required',
             'pblk_titik_kordinat_bencana' => 'required',
             'pblk_skala_bencana' => 'required',
             'deskripsi_umum' => 'required',
             'pblk_foto_bencana' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'dibuat_oleh_admin_id' => 'required|integer',
         ]);
 
-        $dataUpdate = [
-            'pblk_judul_bencana' => $request->pblk_judul_bencana,
-            'pblk_lokasi_bencana' => $request->pblk_lokasi_bencana,
-            'pblk_titik_kordinat_bencana' => $request->pblk_titik_kordinat_bencana,
-            'pblk_skala_bencana' => $request->pblk_skala_bencana,
-            'deskripsi_umum' => $request->deskripsi_umum,
-            'dibuat_oleh_admin_id' => $request->dibuat_oleh_admin_id,
-            'updated_at' => now(),
-        ];
-
-        // Jika ada file baru
+        // Prepare files for upload
+        $files = [];
         if ($request->hasFile('pblk_foto_bencana')) {
-            $file = $request->file('pblk_foto_bencana');
-            $path = $file->store('foto_bencana', 'public');
-            $dataUpdate['pblk_foto_bencana'] = $path;
+            $files['disaster_image'] = $request->file('pblk_foto_bencana');
         }
 
-        DB::table('beritabencana')->where('id', $id)->update($dataUpdate);
+        $response = $this->contentService->updatePublication($id, $validated, $files);
 
-        return redirect('/publikasi')->with('success', 'Data berhasil diperbarui');
+        if ($response['success']) {
+            return redirect('/publikasi')->with('success', 'Data berhasil diperbarui');
+        } else {
+            return redirect('/publikasi')->with('error', $response['message']);
+        }
     }
 
     public function hapusDataPublikasiBeritaBencana($id)
     {
-        $data = BeritaBencana::findOrFail($id);
+        $response = $this->contentService->deletePublication($id);
 
-        // Hapus file gambar jika ada
-        if ($data->pblk_foto_bencana && file_exists(public_path('storage/' . $data->pblk_foto_bencana))) {
-            unlink(public_path('storage/' . $data->pblk_foto_bencana));
+        if ($response['success']) {
+            return redirect()->route('berita.index')->with('success', 'Data berhasil dihapus.');
+        } else {
+            return redirect()->route('berita.index')->with('error', $response['message']);
         }
-
-        $data->delete();
-
-        return redirect()->route('berita.index')->with('success', 'Data berhasil dihapus.');
     }
 
     public function publishPublikasiBeritaBencana($id)
     {
-        $berita = BeritaBencana::findOrFail($id);
-        $berita->is_published = 1;
-        $berita->save();
-        return redirect()->route('berita.index')->with('success', 'Berita berhasil dipublish!');
+        $response = $this->contentService->publishPublication($id);
+
+        if ($response['success']) {
+            return redirect()->route('berita.index')->with('success', 'Berita berhasil dipublish!');
+        } else {
+            return redirect()->route('berita.index')->with('error', $response['message']);
+        }
     }
+
     public function apiPublishPublikasiBeritaBencana()
     {
-        return BeritaBencana::where('is_published', true)->latest()->get();
+        $response = $this->contentService->getPublishedContent();
+
+        if ($response['success']) {
+            return response()->json($response['data']);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => $response['message']
+            ], 400);
+        }
     }
+
     public function getPublished()
     {
-        $data = BeritaBencana::where('is_published', 1)->get();
-        return response()->json($data);
+        $response = $this->contentService->getPublishedContent();
+
+        if ($response['success']) {
+            return response()->json($response['data']);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => $response['message']
+            ], 400);
+        }
     }
 
     public function show($id)
     {
-        $berita = BeritaBencana::find($id);
+        $response = $this->contentService->getPublication($id);
 
-        if (!$berita) {
+        if ($response['success']) {
+            return response()->json([
+                'success' => true,
+                'data' => $response['data']
+            ]);
+        } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan'
+                'message' => $response['message']
             ], 404);
         }
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'judul' => $berita->pblk_judul_bencana,
-                'lokasi' => $berita->pblk_lokasi_bencana,
-                'koordinat' => $berita->pblk_titik_kordinat_bencana,
-                'skala' => $berita->pblk_skala_bencana,
-                'foto' => asset('storage/' . $berita->pblk_foto_bencana),
-            ]
-        ]);
     }
 }

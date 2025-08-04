@@ -11,8 +11,8 @@
 
 <body class="bg-gray-100">
     @php
-        use App\Models\Pelaporan;
-        $jumlah_notifikasi = Pelaporan::where('status_notifikasi', false)->count();
+        // Get notification count from statistics data passed by controller
+        $jumlah_notifikasi = isset($statistics['pending_notifications']) ? $statistics['pending_notifications'] : 0;
     @endphp
 
     <div class="flex h-screen">

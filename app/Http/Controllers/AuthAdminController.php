@@ -3,31 +3,105 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Services\GibranAuthService;
 
 class AuthAdminController extends Controller
 {
+    protected $gibranAuthService;
+
+    public function __construct(GibranAuthService $gibranAuthService)
+    {
+        $this->gibranAuthService = $gibranAuthService;
+    }
+
+    /**
+     * Map username from web form to email for unified backend authentication
+     * 
+     * This is a temporary mapping until the web form is updated to use email directly
+     * or until user accounts are properly synchronized between systems.
+     */
+    private function mapUsernameToEmail($username)
+    {
+        // Mapping table for known test users
+        $usernameToEmailMap = [
+            'admin' => 'volunteer@mobile.test', // Using volunteer for admin testing until proper admin user is created
+            'volunteer' => 'volunteer@mobile.test',
+            'test' => 'volunteer@mobile.test', // Fallback to volunteer for testing
+        ];
+
+        // Return mapped email if username exists in map
+        if (isset($usernameToEmailMap[$username])) {
+            return $usernameToEmailMap[$username];
+        }
+
+        // Default fallback: assume username is actually an email
+        if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            return $username;
+        }
+
+        // Last resort: use volunteer for any unknown username during testing
+        return 'volunteer@mobile.test';
+    }
+
     public function showLoginForm()
     {
         return view('login');
     }
 
-    public function login(Request $request)
+    public function processLogin(Request $request)
     {
-        $request->validate([
-            'username_akun_admin' => 'required',
-            'password_akun_admin' => 'required',
+        $credentials = $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        $admin = Admin::where('username_akun_admin', $request->username_akun_admin)->first();
+        try {
+            // PRIMARY: Authenticate against unified backend API
+            $unifiedBackendCredentials = [
+                'email' => $this->mapUsernameToEmail($credentials['username']),
+                'password' => $credentials['password'],
+            ];
 
-        if ($admin && Hash::check($request->password_akun_admin, $admin->password_akun_admin)) {
-            session(['admin_id' => $admin->id]);
-            return redirect('/dashboard')->with('success', 'Login berhasil!');
+            $authResult = $this->gibranAuthService->login($unifiedBackendCredentials);
+
+            if ($authResult['success']) {
+                // Store unified backend session data
+                session([
+                    'admin_id' => $authResult['user']['id'],
+                    'admin_username' => $credentials['username'], // Keep original username for display
+                    'admin_name' => $authResult['user']['name'],
+                    'admin_email' => $authResult['user']['email'],
+                    'access_token' => $authResult['token']
+                ]);
+
+                Log::info('Unified backend authentication successful', [
+                    'username' => $credentials['username'],
+                    'email' => $unifiedBackendCredentials['email'],
+                    'user_id' => $authResult['user']['id']
+                ]);
+
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            }
+
+            // Log authentication failure
+            Log::warning('Unified backend authentication failed', [
+                'username' => $credentials['username'],
+                'email' => $unifiedBackendCredentials['email'],
+                'error' => $authResult['error'] ?? 'Unknown error'
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['credentials' => 'Username atau password salah. Pastikan Anda menggunakan akun yang terdaftar di sistem.'])
+                ->withInput($request->only('username'));
+        } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage());
+            return redirect()->back()
+                ->withErrors(['error' => 'Terjadi kesalahan sistem'])
+                ->withInput($request->only('username'));
         }
-
-        return back()->with('error', 'Username atau password salah.');
     }
 
     public function showRegisterForm()
@@ -38,34 +112,72 @@ class AuthAdminController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username_akun_admin' => 'required|unique:admins,username_akun_admin',
+            'username_akun_admin' => 'required|string',
             'password_akun_admin' => 'required|confirmed',
-            'nama_lengkap_admin' => 'required',
+            'nama_lengkap_admin' => 'required|string',
             'tanggal_lahir_admin' => 'required|date',
-            'tempat_lahir_admin' => 'required',
-            'no_anggota' => 'required',
-            'no_handphone_admin' => 'required',
+            'tempat_lahir_admin' => 'required|string',
+            'no_anggota' => 'required|string',
+            'no_handphone_admin' => 'required|string',
         ]);
 
-        Admin::create([
-            'username_akun_admin' => $request->username_akun_admin,
-            'password_akun_admin' => Hash::make($request->password_akun_admin),
-            'nama_lengkap_admin' => $request->nama_lengkap_admin,
-            'tanggal_lahir_admin' => $request->tanggal_lahir_admin,
-            'tempat_lahir_admin' => $request->tempat_lahir_admin,
-            'no_anggota' => $request->no_anggota,
-            'no_handphone_admin' => $request->no_handphone_admin,
-        ]);
+        try {
+            // Register user in unified backend system
+            $registrationData = [
+                'name' => $request->nama_lengkap_admin,
+                'email' => $request->username_akun_admin . '@admin.astacala.local', // Convert username to email format
+                'password' => $request->password_akun_admin,
+                'password_confirmation' => $request->password_akun_admin_confirmation,
+                'phone' => $request->no_handphone_admin,
+                'role' => 'ADMIN',
+                'organization' => 'Astacala Rescue Team',
+                'birth_date' => $request->tanggal_lahir_admin,
+            ];
 
-        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login!');
+            // Use API client to register user
+            $result = $this->gibranAuthService->register($registrationData);
+
+            if ($result['success']) {
+                Log::info('Admin registration successful via unified backend', [
+                    'username' => $request->username_akun_admin,
+                    'name' => $request->nama_lengkap_admin,
+                    'user_id' => $result['user']['id'] ?? null
+                ]);
+
+                return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
+            } else {
+                Log::warning('Admin registration failed via unified backend', [
+                    'username' => $request->username_akun_admin,
+                    'error' => $result['error'] ?? 'Unknown error'
+                ]);
+
+                return back()
+                    ->withErrors(['error' => 'Registrasi gagal: ' . ($result['error'] ?? 'Terjadi kesalahan sistem')])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            Log::error('Admin registration error', [
+                'username' => $request->username_akun_admin,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()
+                ->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.'])
+                ->withInput();
+        }
     }
 
     public function logout(Request $request)
     {
-        // Hapus session admin_id
-        $request->session()->forget('admin_id');
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Clear local session
+        session()->flush();
+
+        // Optional: Also logout from API
+        try {
+            $this->gibranAuthService->logout();
+        } catch (\Exception $e) {
+            Log::warning('API logout failed', ['error' => $e->getMessage()]);
+        }
 
         return redirect('/login')->with('success', 'Logout berhasil.');
     }

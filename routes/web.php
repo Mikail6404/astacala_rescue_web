@@ -103,7 +103,7 @@ Route::middleware('api')->group(function () {
 
 // === AUTH ===
 Route::get('/login', [AuthAdminController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthAdminController::class, 'login'])->name('admin.login.post');
+Route::post('/login', [AuthAdminController::class, 'processLogin'])->name('admin.login.post');
 Route::get('/register', [AuthAdminController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthAdminController::class, 'register'])->name('register');
 Route::get('/logout', [AuthAdminController::class, 'logout'])->name('logout');
@@ -116,12 +116,32 @@ Route::get('/profil-admin/edit', [ProfileAdminController::class, 'edit'])->name(
 Route::put('/profil-admin/update', [ProfileAdminController::class, 'update'])->name('profil.admin.update')->middleware(AdminAuth::class);
 
 // === PROTECTED ===
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(AdminAuth::class);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(AdminAuth::class);
 
 
 
+// Test authentication route (no CSRF for testing)
+Route::post('/test-auth', function (Illuminate\Http\Request $request) {
+    $authController = new AuthAdminController(new App\Services\GibranAuthService(new App\Services\AstacalaApiClient()));
+    return $authController->processLogin($request);
+})->name('test.auth')->withoutMiddleware('web');
+
+// Test authentication page
+Route::get('/auth-test', function () {
+    return view('auth-test');
+});
+
+// Debug route to check session
+Route::get('/debug-session', function () {
+    return response()->json([
+        'session_data' => session()->all(),
+        'admin_id' => session('admin_id'),
+        'admin_username' => session('admin_username'),
+        'admin_name' => session('admin_name'),
+        'admin_email' => session('admin_email'),
+        'access_token' => session('access_token') ? 'present' : 'missing'
+    ]);
+})->withoutMiddleware('web');
 
 Route::get('/Logout', function () {
     return view('login');
