@@ -85,33 +85,43 @@
         </div>
         <section class="width-100% height-auto" style="margin-left: 80px; display: flex;">
             <div style="margin-top: 40px;">
-                <form action="/Pengguna/{{ $pengguna->id }}" method="POST">
+                @php
+                    // Handle both array and object data structures
+                    $id = is_array($pengguna) ? ($pengguna['id'] ?? 0) : ($pengguna->id ?? 0);
+                    $username = is_array($pengguna) ? ($pengguna['username'] ?? $pengguna['email'] ?? '') : ($pengguna->username_akun_pengguna ?? $pengguna->username ?? $pengguna->email ?? '');
+                    $name = is_array($pengguna) ? ($pengguna['name'] ?? '') : ($pengguna->nama_lengkap_pengguna ?? $pengguna->name ?? '');
+                    $birthDate = is_array($pengguna) ? ($pengguna['date_of_birth'] ?? '') : ($pengguna->tanggal_lahir_pengguna ?? $pengguna->date_of_birth ?? '');
+                    $birthPlace = is_array($pengguna) ? ($pengguna['place_of_birth'] ?? '') : ($pengguna->tempat_lahir_pengguna ?? $pengguna->place_of_birth ?? '');
+                    $phone = is_array($pengguna) ? ($pengguna['phone'] ?? '') : ($pengguna->no_handphone_pengguna ?? $pengguna->phone ?? '');
+                    $password = is_array($pengguna) ? '****' : ($pengguna->password_akun_pengguna ?? '****');
+                @endphp
+                <form action="/Pengguna/{{ $id }}" method="POST">
                     @method('put')
                     @csrf
                     <div style="margin-bottom: 20px">
                         <input type="text" name="username_akun_pengguna" placeholder="username_akun_pengguna"
-                            value="{{ $pengguna->username_akun_pengguna }}" style="width: 400px; height: 40px"><br>
+                            value="{{ $username }}" style="width: 400px; height: 40px"><br>
                     </div>
                     <div style="margin-bottom: 20px">
                         <input type="text" name="nama_lengkap_pengguna" placeholder="nama_lengkap_pengguna"
-                            value="{{ $pengguna->nama_lengkap_pengguna }}" style="width: 400px; height: 40px"> <br>
+                            value="{{ $name }}" style="width: 400px; height: 40px"> <br>
                     </div>
                     <div style="margin-bottom: 20px">
-                        <input type="text" name="tanggal_lahir_pengguna" placeholder="tanggal_lahir_pengguna"
-                            value="{{ $pengguna->tanggal_lahir_pengguna }}" style="width: 400px; height: 40px">
+                        <input type="date" name="tanggal_lahir_pengguna" placeholder="tanggal_lahir_pengguna"
+                            value="{{ $birthDate }}" style="width: 400px; height: 40px">
                         <br>
                     </div>
                     <div style="margin-bottom: 20px">
                         <input type="text" name="tempat_lahir_pengguna" placeholder="tempat_lahir_pengguna"
-                            value="{{ $pengguna->tempat_lahir_pengguna }}" style="width: 400px; height: 40px"> <br>
+                            value="{{ $birthPlace }}" style="width: 400px; height: 40px"> <br>
                     </div>
                     <div style="margin-bottom: 20px">
                         <input type="text" name="no_handphone_pengguna" placeholder="no_handphone_pengguna"
-                            value="{{ $pengguna->no_handphone_pengguna }}"style="width: 400px; height: 40px"> <br>
+                            value="{{ $phone }}"style="width: 400px; height: 40px"> <br>
                     </div>
                     <div style="margin-bottom: 20px">
                         <input type="text" name="password_akun_pengguna" placeholder="password_akun_pengguna"
-                            value="{{ $pengguna->password_akun_pengguna }}"style="width: 400px; height: 40px"> <br>
+                            value="{{ $password }}"style="width: 400px; height: 40px"> <br>
                     </div>
                     <div style="margin-bottom: 20px">
                         <input type="submit" name="submit" value="update"

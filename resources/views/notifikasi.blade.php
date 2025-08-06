@@ -85,27 +85,57 @@
             <h1 class="text-2xl font-bold text-red-700 mb-8">Notifikasi Pelaporan Bencana</h1>
 
             <div class="space-y-6">
-                @foreach ($data as $item)
+                @forelse ($data as $item)
+                    @php
+                        // Handle both array and object data structures
+                        $teamName = is_array($item) ? ($item['team_name'] ?? $item['nama_team_pelapor'] ?? '-') : ($item->nama_team_pelapor ?? $item->team_name ?? '-');
+                        $title = is_array($item) ? ($item['title'] ?? $item['informasi_singkat_bencana'] ?? '-') : ($item->informasi_singkat_bencana ?? $item->title ?? '-');
+                        $location = is_array($item) ? ($item['location_name'] ?? $item['lokasi_bencana'] ?? '-') : ($item->lokasi_bencana ?? $item->location_name ?? '-');
+                        $coordinates = is_array($item) ? ($item['coordinates'] ?? $item['titik_kordinat_lokasi_bencana'] ?? '-') : ($item->titik_kordinat_lokasi_bencana ?? $item->coordinates ?? '-');
+                        $createdAt = is_array($item) ? ($item['created_at'] ?? null) : ($item->created_at ?? null);
+                        
+                        // Handle datetime formatting for both array and object
+                        $formattedDate = '-';
+                        $diffForHumans = '-';
+                        if ($createdAt) {
+                            if (is_string($createdAt)) {
+                                $date = \Carbon\Carbon::parse($createdAt);
+                                $formattedDate = $date->format('d M Y H:i');
+                                $diffForHumans = $date->diffForHumans();
+                            } elseif (method_exists($createdAt, 'format')) {
+                                $formattedDate = $createdAt->format('d M Y H:i');
+                                $diffForHumans = $createdAt->diffForHumans();
+                            }
+                        }
+                    @endphp
                     <div class="flex justify-between items-center border-b pb-4">
                         <div>
-                            <h2 class="text-lg font-semibold capitalize">{{ $item->nama_team_pelapor }}</h2>
-                            <p class="text-sm text-gray-600 font-bold">{{ $item->informasi_singkat_bencana }}</p>
-                            <p class="text-sm">Lokasi: {{ $item->lokasi_bencana }}</p>
-                            <p class="text-sm">Koordinat: {{ $item->titik_kordinat_lokasi_bencana }}</p>
+                            <h2 class="text-lg font-semibold capitalize">{{ $teamName }}</h2>
+                            <p class="text-sm text-gray-600 font-bold">{{ $title }}</p>
+                            <p class="text-sm">Lokasi: {{ $location }}</p>
+                            <p class="text-sm">Koordinat: {{ $coordinates }}</p>
                             <p class="text-xs text-gray-500">
-                                Waktu: {{ $item->created_at ? $item->created_at->format('d M Y H:i') : '-' }}
+                                Waktu: {{ $formattedDate }}
                             </p>
                             <p class="text-xs text-red-600">
-                                {{ $item->created_at ? $item->created_at->diffForHumans() : '-' }}
+                                {{ $diffForHumans }}
                             </p>
                         </div>
                         <div class="flex flex-col items-center">
                             <i class="fas fa-bell text-red-700 text-3xl mb-2"></i>
-                            <a href="#"
+                            <a href="{{ route('notifikasi.detail', ['id' => is_array($item) ? ($item['id'] ?? $item['report_id'] ?? '-') : ($item->id ?? $item->report_id ?? '-')]) }}"
                                 class="bg-red-700 text-white py-1 px-4 rounded hover:bg-red-800">Detail</a>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="text-center text-gray-500 py-8">
+                        @if(isset($error))
+                            <p class="text-red-500">{{ $error }}</p>
+                        @else
+                            <p>Tidak ada notifikasi tersedia</p>
+                        @endif
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

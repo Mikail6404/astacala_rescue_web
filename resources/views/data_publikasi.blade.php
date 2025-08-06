@@ -107,33 +107,64 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $row)
+                        @forelse ($data as $row)
+                            @php
+                                // Handle both array and object data structures
+                                $title = is_array($row) ? ($row['title'] ?? $row['pblk_judul_bencana'] ?? '-') : ($row->pblk_judul_bencana ?? $row->title ?? '-');
+                                $description = is_array($row) ? ($row['content'] ?? $row['deskripsi_umum'] ?? '-') : ($row->deskripsi_umum ?? $row->content ?? '-');
+                                
+                                // Extract disaster-specific data from tags field
+                                $location = '-';
+                                $coordinates = '-';
+                                $scale = '-';
+                                
+                                if (is_array($row)) {
+                                    $tags = $row['tags'] ?? null;
+                                } else {
+                                    $tags = $row->tags ?? null;
+                                }
+                                
+                                if ($tags) {
+                                    $disasterInfo = json_decode($tags, true);
+                                    if (is_array($disasterInfo)) {
+                                        $location = $disasterInfo['location'] ?? '-';
+                                        $coordinates = $disasterInfo['coordinates'] ?? '-';
+                                        $scale = $disasterInfo['severity'] ?? '-';
+                                    }
+                                }
+                                
+                                $photo = is_array($row) ? ($row['featured_image'] ?? $row['image'] ?? $row['pblk_foto_bencana'] ?? null) : ($row->pblk_foto_bencana ?? $row->featured_image ?? $row->image ?? null);
+                                $author = is_array($row)
+                                    ? ($row['author']['name'] ?? $row['author_name'] ?? $row['author_id'] ?? $row['dibuat_oleh_admin_id'] ?? '-')
+                                    : (isset($row->author) && isset($row->author->name) ? $row->author->name : ($row->dibuat_oleh_admin_id ?? $row->author_id ?? '-'));
+                                $id = is_array($row) ? ($row['id'] ?? 0) : ($row->id ?? 0);
+                            @endphp
                             <tr class="hover:bg-gray-100">
-                                <td class="px-4 py-2 border">{{ $row->pblk_judul_bencana }}</td>
-                                <td class="px-4 py-2 border">{{ $row->pblk_lokasi_bencana }}</td>
-                                <td class="px-4 py-2 border">{{ $row->pblk_titik_kordinat_bencana }}</td>
-                                <td class="px-4 py-2 border">{{ $row->pblk_skala_bencana }}</td>
-                                <td class="px-4 py-2 border">{{ $row->deskripsi_umum }}</td>
+                                <td class="px-4 py-2 border">{{ $title }}</td>
+                                <td class="px-4 py-2 border">{{ $location }}</td>
+                                <td class="px-4 py-2 border">{{ $coordinates }}</td>
+                                <td class="px-4 py-2 border">{{ $scale }}</td>
+                                <td class="px-4 py-2 border">{{ $description }}</td>
                                 <td class="px-4 py-2 border">
-                                    @if ($row->pblk_foto_bencana)
-                                        <img src="{{ asset('storage/' . $row->pblk_foto_bencana) }}" width="100" />
+                                    @if ($photo)
+                                        <img src="{{ asset('storage/' . $photo) }}" width="100" />
                                     @else
                                         <span>Tidak ada foto</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-2 border">{{ $row->dibuat_oleh_admin_id }}</td>
+                                <td class="px-4 py-2 border">{{ $author }}</td>
                                 <td class="px-4 py-2 border text-center">
                                     <div class="flex flex-col items-center space-y-2">
-                                        <a href="{{ route('berita.edit', $row->id) }}"
+                                        <a href="{{ route('berita.edit', $id) }}"
                                             class="w-24 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</a>
-                                        <form action="{{ route('berita.destroy', $row->id) }}" method="POST"
+                                        <form action="{{ route('berita.destroy', $id) }}" method="POST"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
                                                 class="w-24 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
                                         </form>
-                                        <form action="{{ route('berita.publish', $row->id) }}" method="POST">
+                                        <form action="{{ route('berita.publish', $id) }}" method="POST">
                                             @csrf
                                             <button type="submit"
                                                 class="w-24 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Publish</button>
@@ -141,7 +172,17 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-4 py-2 border text-center text-gray-500">
+                                    @if(isset($error))
+                                        {{ $error }}
+                                    @else
+                                        Tidak ada data publikasi tersedia
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

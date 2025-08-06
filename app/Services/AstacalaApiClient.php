@@ -156,6 +156,9 @@ class AstacalaApiClient
 
         $endpoint = $endpoints[$category][$action];
 
+        // Replace version placeholder
+        $endpoint = str_replace('{version}', $this->version, $endpoint);
+
         // Replace parameters in URL
         foreach ($params as $key => $value) {
             $endpoint = str_replace("{{$key}}", $value, $endpoint);

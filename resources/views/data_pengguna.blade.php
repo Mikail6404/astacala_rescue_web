@@ -99,20 +99,30 @@
 
                     <!-- Tabel Body -->
                     <tbody>
-                        @foreach ($data_pengguna as $penggun)
+                        @forelse ($data_pengguna as $penggun)
+                            @php
+                                // Handle both array and object data structures
+                                $username = is_array($penggun) ? ($penggun['username'] ?? $penggun['email'] ?? 'N/A') : ($penggun->username_akun_pengguna ?? $penggun->username ?? $penggun->email ?? 'N/A');
+                                $name = is_array($penggun) ? ($penggun['name'] ?? 'N/A') : ($penggun->nama_lengkap_pengguna ?? $penggun->name ?? 'N/A');
+                                $birthDate = is_array($penggun) ? ($penggun['birth_date'] ?? 'N/A') : ($penggun->tanggal_lahir_pengguna ?? $penggun->birth_date ?? 'N/A');
+                                $birthPlace = is_array($penggun) ? ($penggun['place_of_birth'] ?? $penggun['birth_place'] ?? 'N/A') : ($penggun->tempat_lahir_pengguna ?? $penggun->place_of_birth ?? $penggun->birth_place ?? 'N/A');
+                                $phone = is_array($penggun) ? ($penggun['phone'] ?? 'N/A') : ($penggun->no_handphone_pengguna ?? $penggun->phone ?? 'N/A');
+                                $password = is_array($penggun) ? '****' : ($penggun->password_akun_pengguna ?? '****');
+                                $id = is_array($penggun) ? ($penggun['id'] ?? 0) : ($penggun->id ?? 0);
+                            @endphp
                             <tr class="hover:bg-gray-100">
-                                <td class="px-4 py-2 border">{{ $penggun->username_akun_pengguna }}</td>
-                                <td class="px-4 py-2 border">{{ $penggun->nama_lengkap_pengguna }}</td>
-                                <td class="px-4 py-2 border">{{ $penggun->tanggal_lahir_pengguna }}</td>
-                                <td class="px-4 py-2 border">{{ $penggun->tempat_lahir_pengguna }}</td>
-                                <td class="px-4 py-2 border">{{ $penggun->no_handphone_pengguna }}</td>
-                                <td class="px-4 py-2 border">{{ $penggun->password_akun_pengguna }}</td>
+                                <td class="px-4 py-2 border">{{ $username }}</td>
+                                <td class="px-4 py-2 border">{{ $name }}</td>
+                                <td class="px-4 py-2 border">{{ $birthDate }}</td>
+                                <td class="px-4 py-2 border">{{ $birthPlace }}</td>
+                                <td class="px-4 py-2 border">{{ $phone }}</td>
+                                <td class="px-4 py-2 border">{{ $password }}</td>
                                 <td class="px-4 py-2 border text-center flex flex-col items-center space-y-2">
-                                    <a href="/Pengguna/{{ $penggun->id }}/ubahpenggun" onclick="return confirmUpdate()"
+                                    <a href="/Pengguna/{{ $id }}/ubahpenggun" onclick="return confirmUpdate()"
                                         class="px-4 py-2 mb-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 inline-block">
                                         Update
                                     </a>
-                                    <form action="{{ url('/hapus_pengguna/' . $penggun->id) }}" method="POST"
+                                    <form action="{{ url('/hapus_pengguna/' . $id) }}" method="POST"
                                         class="inline">
                                         @csrf
                                         @method('DELETE')
@@ -123,7 +133,17 @@
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 border text-center text-gray-500">
+                                    <div class="flex flex-col items-center space-y-2">
+                                        <i class="fas fa-users text-4xl text-gray-300"></i>
+                                        <p>Tidak ada data pengguna yang tersedia</p>
+                                        <p class="text-sm">Data akan muncul setelah ada pengguna yang terdaftar</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

@@ -11,8 +11,6 @@ use App\Http\Middleware\AdminAuth;
 use App\Http\Controllers\ProfileAdminController;
 use App\Http\Controllers\AuthRelawanController;
 
-
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -45,9 +43,6 @@ Route::get('/Isidataregister', function () {
 //     return view('data_publikasi');
 // });
 
-
-
-
 // membaca data admin
 Route::get('/Dataadmin', [AdminController::class, 'controlleradmin']);
 // ubah data pengguna
@@ -55,9 +50,6 @@ Route::get('/Admin/{id}/ubahadmin', [AdminController::class, 'ubahadmin']);
 Route::put('/Admin/{id}', [AdminController::class, 'ubahadmi']);
 // menghapus data pengguna
 Route::delete('/hapus_admin/{id}', [AdminController::class, 'hapusadmin']);
-
-
-
 
 // membaca data pengguna
 Route::get('/Datapengguna', [PenggunaController::class, 'controllerpengguna']);
@@ -71,7 +63,6 @@ Route::middleware('api')
     ->prefix('api')
     ->group(base_path('routes/api.php'));
 
-
 // membaca data publikasi
 Route::get('/publikasi', [BeritaBencanaController::class, 'membacaDataPublikasiBeritaBencana'])->name('berita.index');
 Route::get('/publikasi/create', [BeritaBencanaController::class, 'tambahDataPublikasiBeritaBencana'])->name('berita.create');
@@ -84,22 +75,31 @@ Route::get('/berita-published', [BeritaBencanaController::class, 'apiPublishPubl
 Route::get('/berita-bencana', [BeritaBencanaController::class, 'getPublished']);
 Route::get('/berita-bencanas/{id}', [BeritaBencanaController::class, 'show']);
 
-
-
 // membaca data pelaporan
-
 Route::get('/pelaporan', [PelaporanController::class, 'membacaDataPelaporan'])->name('pelaporan.index');
 Route::delete('/pelaporan/delete/{id}', [PelaporanController::class, 'menghapusDataPelaporan'])->name('pelaporan.destroy');
 Route::get('/notifikasi', [PelaporanController::class, 'menampilkanNotifikasiPelaporanMasuk'])->name('pelaporan.notifikasi');
 Route::get('/pelaporan/verifikasi/{id}', [PelaporanController::class, 'memberikanNotifikasiVerifikasi'])->name('pelaporan.verifikasi');
 Route::get('/notifikasi/{pengguna_id}', [PelaporanController::class, 'getVerifikasi']);
+
+// TICKET #003: Navigation and Detail Views
+Route::get('/pelaporan/{id}', [PelaporanController::class, 'showDetail'])->name('pelaporan.detail');
+Route::get('/notifikasi/detail/{id}', [PelaporanController::class, 'showNotifikasiDetail'])->name('notifikasi.detail');
+
+// TICKET #001: CRUD Operations - API routes for AJAX operations
+Route::delete('/api/pelaporan/{id}', [PelaporanController::class, 'apiDeleteReport'])->name('api.pelaporan.delete');
+Route::post('/api/pelaporan/{id}/verify', [PelaporanController::class, 'apiVerifyReport'])->name('api.pelaporan.verify');
+
+// TICKET #001: CRUD Operations - API routes for AJAX operations  
+Route::delete('/api/admin/{id}', [AdminController::class, 'apiDeleteAdmin'])->name('api.admin.delete');
+
+// TICKET #005: CRUD Operations - API routes for AJAX operations (Issue 5a fix)
+Route::put('/api/admin/{id}', [AdminController::class, 'apiUpdateAdmin'])->name('api.admin.update');
+
 // Route API untuk Flutter mobile
 Route::middleware('api')->group(function () {
     Route::post('/api/pelaporans', [PelaporanController::class, 'store']);
 });
-
-
-
 
 // === AUTH ===
 Route::get('/login', [AuthAdminController::class, 'showLoginForm'])->name('login');
@@ -117,8 +117,6 @@ Route::put('/profil-admin/update', [ProfileAdminController::class, 'update'])->n
 
 // === PROTECTED ===
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(AdminAuth::class);
-
-
 
 // Test authentication route (no CSRF for testing)
 Route::post('/test-auth', function (Illuminate\Http\Request $request) {

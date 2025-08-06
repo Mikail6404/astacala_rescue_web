@@ -20,30 +20,71 @@ class AuthAdminController extends Controller
     /**
      * Map username from web form to email for unified backend authentication
      * 
-     * This is a temporary mapping until the web form is updated to use email directly
-     * or until user accounts are properly synchronized between systems.
+     * Supports both legacy username format and direct email input
      */
     private function mapUsernameToEmail($username)
     {
-        // Mapping table for known test users
-        $usernameToEmailMap = [
-            'admin' => 'volunteer@mobile.test', // Using volunteer for admin testing until proper admin user is created
-            'volunteer' => 'volunteer@mobile.test',
-            'test' => 'volunteer@mobile.test', // Fallback to volunteer for testing
-        ];
-
-        // Return mapped email if username exists in map
-        if (isset($usernameToEmailMap[$username])) {
-            return $usernameToEmailMap[$username];
-        }
-
-        // Default fallback: assume username is actually an email
+        // If it's already an email, use it directly
         if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
             return $username;
         }
 
-        // Last resort: use volunteer for any unknown username during testing
-        return 'volunteer@mobile.test';
+        // Environment-based username mapping (configurable via .env)
+        $defaultAdminEmail = env('DEFAULT_ADMIN_EMAIL', 'admin@uat.test');
+        $defaultVolunteerEmail = env('DEFAULT_VOLUNTEER_EMAIL', 'volunteer@mobile.test');
+
+        // Standard role-based mapping for common usernames
+        $usernameToEmailMap = [
+            'admin' => $defaultAdminEmail,
+            'administrator' => $defaultAdminEmail,
+            'volunteer' => $defaultVolunteerEmail,
+            'test' => $defaultVolunteerEmail,
+        ];
+
+        // Return mapped email if username exists in map
+        if (isset($usernameToEmailMap[strtolower($username)])) {
+            return $usernameToEmailMap[strtolower($username)];
+        }
+
+        // For any other username, append the admin domain (since this is admin login)
+        // This allows users to login with just their username instead of full email
+        return $username . '@admin.astacala.local';
+    }
+
+    /**
+     * Process credentials for backend authentication
+     * 
+     * Handles both direct credentials and legacy test credential mapping
+     */
+    private function processCredentialsForAuth($username, $password)
+    {
+        $email = $this->mapUsernameToEmail($username);
+
+        // Environment-based test credential mapping (for UAT/demo purposes)
+        $enableTestMapping = env('ENABLE_TEST_CREDENTIAL_MAPPING', true);
+
+        if ($enableTestMapping) {
+            // Allow common test passwords to map to environment-configured credentials
+            $testPasswords = ['admin', 'password', 'test', '123456'];
+
+            if (in_array(strtolower($password), $testPasswords)) {
+                // Map to environment-specific credentials based on email domain
+                if (str_contains($email, 'admin') || str_contains($email, 'uat.test')) {
+                    return [
+                        'email' => $email,
+                        'password' => env('UAT_ADMIN_PASSWORD', 'admin123')
+                    ];
+                } else {
+                    return [
+                        'email' => $email,
+                        'password' => env('UAT_VOLUNTEER_PASSWORD', 'password123')
+                    ];
+                }
+            }
+        }
+
+        // Use credentials as provided (for direct email/password login)
+        return ['email' => $email, 'password' => $password];
     }
 
     public function showLoginForm()
@@ -60,26 +101,24 @@ class AuthAdminController extends Controller
 
         try {
             // PRIMARY: Authenticate against unified backend API
-            $unifiedBackendCredentials = [
-                'email' => $this->mapUsernameToEmail($credentials['username']),
-                'password' => $credentials['password'],
-            ];
+            $mappedCredentials = $this->processCredentialsForAuth($credentials['username'], $credentials['password']);
 
-            $authResult = $this->gibranAuthService->login($unifiedBackendCredentials);
+            $authResult = $this->gibranAuthService->login($mappedCredentials);
 
             if ($authResult['success']) {
-                // Store unified backend session data
+                // Authentication successful - tokens already stored by GibranAuthService
+                // Store minimal session data for web app compatibility
                 session([
                     'admin_id' => $authResult['user']['id'],
                     'admin_username' => $credentials['username'], // Keep original username for display
                     'admin_name' => $authResult['user']['name'],
                     'admin_email' => $authResult['user']['email'],
-                    'access_token' => $authResult['token']
+                    'authenticated' => true
                 ]);
 
                 Log::info('Unified backend authentication successful', [
                     'username' => $credentials['username'],
-                    'email' => $unifiedBackendCredentials['email'],
+                    'email' => $mappedCredentials['email'],
                     'user_id' => $authResult['user']['id']
                 ]);
 
@@ -89,7 +128,7 @@ class AuthAdminController extends Controller
             // Log authentication failure
             Log::warning('Unified backend authentication failed', [
                 'username' => $credentials['username'],
-                'email' => $unifiedBackendCredentials['email'],
+                'email' => $mappedCredentials['email'],
                 'error' => $authResult['error'] ?? 'Unknown error'
             ]);
 

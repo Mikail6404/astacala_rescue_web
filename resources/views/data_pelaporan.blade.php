@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Sidebar Navigation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -105,36 +106,52 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach ($data as $row)
+                        <!-- Data count: {{ count($data ?? []) }} -->
+                        @forelse ($data as $row)
+                            @php
+                                // Handle both array and object data structures with enhanced backend field mapping
+                                $username = is_array($row) ? ($row['reporter_username'] ?? $row['reporter']['username'] ?? $row['username'] ?? 'N/A') : ($row->reporter_username ?? $row->pengguna->username_akun_pengguna ?? $row->username ?? 'N/A');
+                                $teamName = is_array($row) ? ($row['team_name'] ?? $row['nama_team_pelapor'] ?? 'N/A') : ($row->nama_team_pelapor ?? $row->team_name ?? 'N/A');
+                                $personnel = is_array($row) ? ($row['personnel_count'] ?? $row['jumlah_personel'] ?? 0) : ($row->jumlah_personel ?? $row->personnel_count ?? 0);
+                                $phone = is_array($row) ? ($row['reporter_phone'] ?? $row['contact_phone'] ?? $row['no_handphone'] ?? 'N/A') : ($row->reporter_phone ?? $row->no_handphone ?? $row->contact_phone ?? 'N/A');
+                                $title = is_array($row) ? ($row['title'] ?? $row['informasi_singkat_bencana'] ?? 'N/A') : ($row->informasi_singkat_bencana ?? $row->title ?? 'N/A');
+                                $location = is_array($row) ? ($row['location_name'] ?? $row['lokasi_bencana'] ?? 'N/A') : ($row->lokasi_bencana ?? $row->location_name ?? 'N/A');
+                                $coordinates = is_array($row) ? ($row['coordinate_display'] ?? $row['coordinates'] ?? $row['titik_kordinat_lokasi_bencana'] ?? 'N/A') : ($row->coordinate_display ?? $row->titik_kordinat_lokasi_bencana ?? $row->coordinates ?? 'N/A');
+                                $scale = is_array($row) ? ($row['severity_level'] ?? $row['skala_bencana'] ?? 'N/A') : ($row->skala_bencana ?? $row->severity_level ?? 'N/A');
+                                $casualties = is_array($row) ? ($row['casualties'] ?? $row['jumlah_korban'] ?? 0) : ($row->jumlah_korban ?? $row->casualties ?? 0);
+                                $description = is_array($row) ? ($row['description'] ?? $row['deskripsi_terkait_data_lainya'] ?? 'N/A') : ($row->deskripsi_terkait_data_lainya ?? $row->description ?? 'N/A');
+                                $photo = is_array($row) ? ($row['images'][0]['url'] ?? $row['foto_lokasi_bencana'] ?? null) : ($row->foto_lokasi_bencana ?? null);
+                                $document = is_array($row) ? ($row['evidence_document'] ?? $row['bukti_surat_perintah_tugas'] ?? null) : ($row->bukti_surat_perintah_tugas ?? null);
+                                $id = is_array($row) ? ($row['id'] ?? 0) : ($row->id ?? 0);
+                            @endphp
                             <tr class="hover:bg-gray-100">
+                                <td class="px-4 py-3">{{ $username }}</td>
+                                <td class="px-4 py-3">{{ $teamName }}</td>
+                                <td class="px-4 py-3">{{ $personnel }}</td>
+                                <td class="px-4 py-3">{{ $phone }}</td>
+                                <td class="px-4 py-3">{{ $title }}</td>
+                                <td class="px-4 py-3">{{ $location }}</td>
                                 <td class="px-4 py-3">
-                                    {{ $row->pengguna->username_akun_pengguna ?? 'Tidak ada username' }}</td>
-                                <td class="px-4 py-3">{{ $row->nama_team_pelapor }}</td>
-                                <td class="px-4 py-3">{{ $row->jumlah_personel }}</td>
-                                <td class="px-4 py-3">{{ $row->no_handphone }}</td>
-                                <td class="px-4 py-3">{{ $row->informasi_singkat_bencana }}</td>
-                                <td class="px-4 py-3">{{ $row->lokasi_bencana }}</td>
-                                <td class="px-4 py-3">
-                                    {{ $row->titik_kordinat_lokasi_bencana }}
-                                    <button onclick="showMap('{{ $row->titik_kordinat_lokasi_bencana }}')"
+                                    {{ $coordinates }}
+                                    <button onclick="showMap('{{ $coordinates }}')"
                                         class="ml-2 text-blue-600 hover:text-blue-800">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </td>
-                                <td class="px-4 py-3">{{ $row->skala_bencana }}</td>
-                                <td class="px-4 py-3">{{ $row->jumlah_korban }}</td>
-                                <td class="px-4 py-3">{{ $row->deskripsi_terkait_data_lainya }}</td>
+                                <td class="px-4 py-3">{{ $scale }}</td>
+                                <td class="px-4 py-3">{{ $casualties }}</td>
+                                <td class="px-4 py-3">{{ $description }}</td>
                                 <td class="px-4 py-3">
-                                    @if ($row->foto_lokasi_bencana)
-                                        <img src="{{ asset('storage/' . $row->foto_lokasi_bencana) }}"
+                                    @if ($photo)
+                                        <img src="{{ asset('storage/' . $photo) }}"
                                             alt="Foto Lokasi" class="w-24 h-auto rounded shadow">
                                     @else
                                         <span class="text-gray-500">Tidak ada foto</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    @if ($row->bukti_surat_perintah_tugas)
-                                        <a href="{{ asset('storage/' . $row->bukti_surat_perintah_tugas) }}"
+                                    @if ($document)
+                                        <a href="{{ asset('storage/' . $document) }}"
                                             target="_blank" class="text-blue-600 underline hover:text-blue-800">Lihat
                                             File</a>
                                     @else
@@ -142,22 +159,28 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 space-x-2">
-                                    <form action="{{ route('pelaporan.destroy', $row->id) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Hapus data ini?')"
-                                            class="px-6 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                            Delete
-                                        </button>
-                                    </form>
-                                    <button type="button" onclick="verifikasiData({{ $row->id }})"
+                                    <a href="{{ route('pelaporan.detail', ['id' => $id]) }}" class="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Detail</a>
+                                    <button type="button" onclick="deleteReport({{ $id }})"
+                                        class="px-6 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                                        Delete
+                                    </button>
+                                    <button type="button" onclick="verifikasiData({{ $id }})"
                                         class="px-5 py-1 mt-6 bg-green-500 text-white rounded hover:bg-green-600">
                                         Verifikasi
                                     </button>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="13" class="px-4 py-3 text-center text-gray-500">
+                                    @if(isset($error))
+                                        {{ $error }}
+                                    @else
+                                        Tidak ada data pelaporan tersedia
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -170,19 +193,147 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // TICKET #001: CRUD Operations - Delete Report Function
+        function deleteReport(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: "Apakah Anda yakin ingin menghapus data pelaporan ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Sedang memproses penghapusan data',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Make AJAX DELETE request
+                    fetch(`/api/pelaporan/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Reload page to refresh data
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: data.message || 'Terjadi kesalahan saat menghapus data',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Delete error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                }
+            });
+        }
+
+        // TICKET #001: CRUD Operations - Verify Report Function  
         function verifikasiData(id) {
             Swal.fire({
                 title: 'Verifikasi Pelaporan',
-                text: "Apakah data pelaporan ini DITERIMA atau DITOLAK?",
-                icon: 'question',
+                input: 'textarea',
+                inputLabel: 'Catatan (opsional)',
+                inputPlaceholder: 'Masukkan catatan verifikasi...',
                 showCancelButton: true,
                 confirmButtonText: 'DITERIMA',
                 cancelButtonText: 'DITOLAK',
+                showDenyButton: true,
+                denyButtonText: 'DITOLAK',
+                customClass: {
+                    actions: 'swal2-actions-custom',
+                    confirmButton: 'swal2-confirm-green',
+                    denyButton: 'swal2-deny-red'
+                }
             }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "/pelaporan/verifikasi/" + id + "?status=DITERIMA";
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    window.location.href = "/pelaporan/verifikasi/" + id + "?status=DITOLAK";
+                if (result.isConfirmed || result.isDenied) {
+                    const status = result.isConfirmed ? 'DITERIMA' : 'DITOLAK';
+                    const notes = result.value || '';
+
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Sedang memperbarui status verifikasi',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Make AJAX POST request
+                    fetch(`/api/pelaporan/${id}/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            status: status,
+                            notes: notes
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: `Status verifikasi berhasil diperbarui: ${data.status}`,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Reload page to refresh data
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: data.message || 'Terjadi kesalahan saat memperbarui status',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Verify error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
                 }
             });
         }
@@ -212,6 +363,18 @@
             });
         }
     </script>
+    <style>
+        .swal2-actions-custom {
+            display: flex !important;
+            justify-content: space-between !important;
+        }
+        .swal2-confirm-green {
+            background-color: #10b981 !important;
+        }
+        .swal2-deny-red {
+            background-color: #ef4444 !important;
+        }
+    </style>
 </body>
 
 

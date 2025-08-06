@@ -39,10 +39,11 @@ class GibranDashboardService
             $endpoint = $this->apiClient->getEndpoint('gibran', 'dashboard_statistics');
             $response = $this->apiClient->authenticatedRequest('GET', $endpoint, $filters);
 
-            if (isset($response['success']) && $response['success']) {
+            // Check for successful response in gibran format
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
-                    'message' => 'Dashboard statistics retrieved successfully',
+                    'message' => $response['message'] ?? 'Dashboard statistics retrieved successfully',
                     'data' => $response['data'] ?? []
                 ];
             }
@@ -72,10 +73,10 @@ class GibranDashboardService
             $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
             $response = $this->apiClient->authenticatedRequest('GET', $endpoint);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
-                    'message' => 'News data retrieved successfully',
+                    'message' => $response['message'] ?? 'News data retrieved successfully',
                     'data' => $response['data'] ?? []
                 ];
             }

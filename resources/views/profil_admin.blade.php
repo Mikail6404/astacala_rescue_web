@@ -21,7 +21,7 @@
 
         <label>Tanggal Lahir</label>
         <div class="relative mb-4">
-            <input type="text" class="w-full p-2 bg-gray-300 rounded" value="{{ $admin->tanggal_lahir_admin }}"
+            <input type="text" class="w-full p-2 bg-gray-300 rounded" value="{{ $admin->tanggal_lahir_admin ?: '-' }}"
                 readonly>
             <span class="absolute right-3 top-2.5">
                 📅
@@ -29,15 +29,15 @@
         </div>
 
         <label>Tempat Lahir</label>
-        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-4" value="{{ $admin->tempat_lahir_admin }}"
+        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-4" value="{{ $admin->tempat_lahir_admin ?: '-' }}"
             readonly>
 
         <label>No Handphone</label>
-        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-4" value="{{ $admin->no_handphone_admin }}"
+        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-4" value="{{ $admin->no_handphone_admin ?: '-' }}"
             readonly>
 
         <label>No Anggota</label>
-        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-6" value="{{ $admin->no_anggota }}" readonly>
+        <input type="text" class="w-full p-2 bg-gray-300 rounded mb-6" value="{{ $admin->no_anggota ?: '-' }}" readonly>
 
         <div class="flex space-x-4">
             <a href="{{ route('profil.admin.edit') }}" class="bg-red-600 text-white px-4 py-2 rounded inline-block">

@@ -49,10 +49,14 @@ return [
 
         'users' => [
             'profile' => '/api/{version}/users/profile',
+            'get_by_id' => '/api/{version}/users/{id}',
             'update_profile' => '/api/{version}/users/profile',
+            'update_user_by_id' => '/api/{version}/users/{id}',
+            'delete_user_by_id' => '/api/{version}/users/{id}',
             'upload_avatar' => '/api/{version}/users/profile/avatar',
             'reports' => '/api/{version}/users/reports',
             'admin_list' => '/api/{version}/users/admin-list',
+            'volunteer_list' => '/api/{version}/users/volunteer-list',
             'create_admin' => '/api/{version}/users/create-admin',
             'update_role' => '/api/{version}/users/{id}/role',
             'update_status' => '/api/{version}/users/{id}/status',
@@ -68,6 +72,15 @@ return [
             'broadcast' => '/api/{version}/notifications/broadcast',
         ],
 
+        'publications' => [
+            'index' => '/api/{version}/publications',
+            'show' => '/api/{version}/publications/{id}',
+            'store' => '/api/{version}/publications',
+            'update' => '/api/{version}/publications/{id}',
+            'destroy' => '/api/{version}/publications/{id}',
+            'publish' => '/api/{version}/publications/{id}/publish',
+        ],
+
         'files' => [
             'upload_disaster_images' => '/api/{version}/files/disasters/{reportId}/images',
             'delete_image' => '/api/{version}/files/disasters/{reportId}/images/{imageId}',
@@ -80,11 +93,14 @@ return [
         'gibran' => [
             'auth_login' => '/api/gibran/auth/login',
             'berita_bencana' => '/api/gibran/berita-bencana',
+            'publications' => '/api/gibran/publications',
             'dashboard_statistics' => '/api/gibran/dashboard/statistics',
             'notifikasi_send' => '/api/gibran/notifikasi/send',
             'notifikasi_user' => '/api/gibran/notifikasi/{pengguna_id}',
             'pelaporans_list' => '/api/gibran/pelaporans',
             'pelaporans_create' => '/api/gibran/pelaporans',
+            'pelaporans_show' => '/api/gibran/pelaporans/{id}',
+            'pelaporans_destroy' => '/api/gibran/pelaporans/{id}',
             'pelaporans_verify' => '/api/gibran/pelaporans/{id}/verify',
         ],
     ],

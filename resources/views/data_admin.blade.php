@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Data Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -97,39 +98,58 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data_admin as $admi)
+                        @forelse ($data_admin as $admi)
+                            @php
+                                // Handle both array and object data structures
+                                $username = is_array($admi) ? ($admi['username'] ?? $admi['email'] ?? 'N/A') : ($admi->username_akun_admin ?? $admi->username ?? $admi->email ?? 'N/A');
+                                $name = is_array($admi) ? ($admi['name'] ?? 'N/A') : ($admi->nama_lengkap_admin ?? $admi->name ?? 'N/A');
+                                $birthDate = is_array($admi) ? ($admi['birth_date'] ?? 'N/A') : ($admi->tanggal_lahir_admin ?? $admi->birth_date ?? 'N/A');
+                                $birthPlace = is_array($admi) ? ($admi['place_of_birth'] ?? $admi['birth_place'] ?? 'N/A') : ($admi->tempat_lahir_admin ?? $admi->place_of_birth ?? $admi->birth_place ?? 'N/A');
+                                $phone = is_array($admi) ? ($admi['phone'] ?? 'N/A') : ($admi->no_handphone_admin ?? $admi->phone ?? 'N/A');
+                                $memberNumber = is_array($admi) ? ($admi['member_number'] ?? $admi['organization'] ?? 'N/A') : ($admi->no_anggota ?? $admi->member_number ?? $admi->organization ?? 'N/A');
+                                $password = is_array($admi) ? '****' : ($admi->password_akun_admin ?? '****');
+                                $id = is_array($admi) ? ($admi['id'] ?? 0) : ($admi->id ?? 0);
+                            @endphp
                             <tr class="hover:bg-gray-100">
-                                <td class="border px-4 py-2">{{ $admi->username_akun_admin }}</td>
-                                <td class="border px-4 py-2">{{ $admi->nama_lengkap_admin }}</td>
-                                <td class="border px-4 py-2">{{ $admi->tanggal_lahir_admin }}</td>
-                                <td class="border px-4 py-2">{{ $admi->tempat_lahir_admin }}</td>
-                                <td class="border px-4 py-2">{{ $admi->no_handphone_admin }}</td>
-                                <td class="border px-4 py-2">{{ $admi->no_anggota }}</td>
-                                <td class="border px-4 py-2">{{ $admi->password_akun_admin }}</td>
+                                <td class="border px-4 py-2">{{ $username }}</td>
+                                <td class="border px-4 py-2">{{ $name }}</td>
+                                <td class="border px-4 py-2">{{ $birthDate }}</td>
+                                <td class="border px-4 py-2">{{ $birthPlace }}</td>
+                                <td class="border px-4 py-2">{{ $phone }}</td>
+                                <td class="border px-4 py-2">{{ $memberNumber }}</td>
+                                <td class="border px-4 py-2">{{ $password }}</td>
                                 <td class="border px-4 py-2 text-center">
                                     <div class="flex flex-col items-center space-y-2">
-                                        <a href="/Admin/{{ $admi->id }}/ubahadmin" onclick="return confirmUpdate()"
+                                        <a href="/Admin/{{ $id }}/ubahadmin" onclick="return confirmUpdate()"
                                             class="px-4 py-2 mb-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 inline-block">
                                             Update
                                         </a>
-                                        <form action="{{ url('/hapus_admin/' . $admi->id) }}" method="POST"
-                                            class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" onclick="return confirmDelete()"
-                                                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 inline-block">
-                                                Delete
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="deleteAdmin({{ $id }})"
+                                            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 inline-block">
+                                            Delete
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="border px-4 py-2 text-center text-gray-500">
+                                    @if(isset($error))
+                                        {{ $error }}
+                                    @else
+                                        Tidak ada data admin tersedia
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function confirmUpdate() {
@@ -138,6 +158,72 @@
 
         function confirmDelete() {
             return confirm("Apakah Anda yakin ingin menghapus data admin ini?");
+        }
+
+        // TICKET #001: CRUD Operations - Delete Admin Function
+        function deleteAdmin(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: "Apakah Anda yakin ingin menghapus data admin ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Sedang memproses penghapusan data admin',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Make AJAX DELETE request
+                    fetch(`/api/admin/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Berhasil!',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                // Reload page to refresh data
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: data.message || 'Terjadi kesalahan saat menghapus data',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Delete admin error:', error);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                }
+            });
         }
     </script>
 </body>

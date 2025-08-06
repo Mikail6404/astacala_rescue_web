@@ -36,14 +36,18 @@ class GibranContentService
     public function getAllPublications($filters = [])
     {
         try {
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
+            // Use standard publications endpoint instead of Gibran-specific one
+            $endpoint = $this->apiClient->getEndpoint('publications', 'index');
             $response = $this->apiClient->authenticatedRequest('GET', $endpoint, $filters);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
+                // Handle paginated response - extract the actual data array
+                $publicationsData = $response['data']['data'] ?? $response['data'] ?? [];
+
                 return [
                     'success' => true,
-                    'message' => 'Publications retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'message' => $response['message'] ?? 'Publications retrieved successfully',
+                    'data' => $publicationsData
                 ];
             }
 
@@ -70,10 +74,11 @@ class GibranContentService
     public function getPublication($publicationId)
     {
         try {
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
-            $response = $this->apiClient->authenticatedRequest('GET', $endpoint, ['id' => $publicationId]);
+            // Use standard publications endpoint with ID parameter
+            $endpoint = $this->apiClient->getEndpoint('publications', 'show', ['id' => $publicationId]);
+            $response = $this->apiClient->authenticatedRequest('GET', $endpoint);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
                     'message' => 'Publication retrieved successfully',
@@ -103,23 +108,29 @@ class GibranContentService
     public function createPublication($publicationData, $files = [])
     {
         try {
+            // Store disaster-specific data in tags as JSON
+            $disasterInfo = [
+                'location' => $publicationData['pblk_lokasi_bencana'] ?? null,
+                'coordinates' => $publicationData['pblk_titik_kordinat_bencana'] ?? null,
+                'severity' => $publicationData['pblk_skala_bencana'] ?? null
+            ];
+
             // Map web form data to backend API format
             $apiData = [
                 'title' => $publicationData['pblk_judul_bencana'] ?? $publicationData['title'],
                 'content' => $publicationData['deskripsi_umum'] ?? $publicationData['content'],
-                'type' => 'disaster_news',
+                'type' => 'report_summary', // Valid type for disaster reports
                 'category' => 'disaster_alert',
-                'location' => $publicationData['pblk_lokasi_bencana'] ?? null,
-                'coordinates' => $publicationData['pblk_titik_kordinat_bencana'] ?? null,
-                'severity' => $publicationData['pblk_skala_bencana'] ?? null,
-                'status' => 'draft', // Default to draft
-                'author_id' => $publicationData['dibuat_oleh_admin_id'] ?? null
+                'tags' => json_encode($disasterInfo), // Store disaster-specific info in tags
+                'status' => 'published', // Publish immediately for disaster reports
+                'meta_description' => 'Disaster report - ' . ($publicationData['pblk_lokasi_bencana'] ?? 'Unknown location')
             ];
 
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
+            // Use standard publications store endpoint
+            $endpoint = $this->apiClient->getEndpoint('publications', 'store');
             $response = $this->apiClient->authenticatedRequest('POST', $endpoint, $apiData, $files);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
                     'message' => 'Publication created successfully',
@@ -151,19 +162,29 @@ class GibranContentService
     public function updatePublication($publicationId, $publicationData, $files = [])
     {
         try {
-            // Map web form data to backend API format
-            $apiData = [
-                'title' => $publicationData['pblk_judul_bencana'] ?? $publicationData['title'],
-                'content' => $publicationData['deskripsi_umum'] ?? $publicationData['content'],
+            // Store disaster-specific data in tags as JSON
+            $disasterInfo = [
                 'location' => $publicationData['pblk_lokasi_bencana'] ?? null,
                 'coordinates' => $publicationData['pblk_titik_kordinat_bencana'] ?? null,
                 'severity' => $publicationData['pblk_skala_bencana'] ?? null
             ];
 
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
-            $response = $this->apiClient->authenticatedRequest('PUT', $endpoint, array_merge($apiData, ['id' => $publicationId]), $files);
+            // Map web form data to backend API format
+            $apiData = [
+                'title' => $publicationData['pblk_judul_bencana'] ?? $publicationData['title'],
+                'content' => $publicationData['deskripsi_umum'] ?? $publicationData['content'],
+                'type' => 'report_summary', // Valid type for disaster reports
+                'category' => 'disaster_alert',
+                'tags' => json_encode($disasterInfo), // Store disaster-specific info in tags
+                'status' => 'published', // Keep published status for updates
+                'meta_description' => 'Disaster report - ' . ($publicationData['pblk_lokasi_bencana'] ?? 'Unknown location')
+            ];
 
-            if (isset($response['success']) && $response['success']) {
+            // Use standard publications update endpoint with ID parameter
+            $endpoint = $this->apiClient->getEndpoint('publications', 'update', ['id' => $publicationId]);
+            $response = $this->apiClient->authenticatedRequest('PUT', $endpoint, $apiData, $files);
+
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
                     'message' => 'Publication updated successfully',
@@ -192,10 +213,11 @@ class GibranContentService
     public function deletePublication($publicationId)
     {
         try {
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
-            $response = $this->apiClient->authenticatedRequest('DELETE', $endpoint, ['id' => $publicationId]);
+            // Use standard publications destroy endpoint with ID parameter
+            $endpoint = $this->apiClient->getEndpoint('publications', 'destroy', ['id' => $publicationId]);
+            $response = $this->apiClient->authenticatedRequest('DELETE', $endpoint);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
                     'message' => 'Publication deleted successfully'
@@ -223,14 +245,14 @@ class GibranContentService
     public function publishPublication($publicationId)
     {
         try {
-            $endpoint = $this->apiClient->getEndpoint('gibran', 'berita_bencana');
-            $response = $this->apiClient->authenticatedRequest('PUT', $endpoint, [
-                'id' => $publicationId,
+            // Use standard publications publish endpoint with ID parameter
+            $endpoint = $this->apiClient->getEndpoint('publications', 'publish', ['id' => $publicationId]);
+            $response = $this->apiClient->authenticatedRequest('POST', $endpoint, [
                 'status' => 'published',
                 'published_at' => now()->toISOString()
             ]);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
                     'message' => 'Publication published successfully',

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TICKET #005 Browser Test</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 15px; margin: 5px; }
+        .result { margin-top: 10px; padding: 10px; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>TICKET #005 AJAX Browser Test</h1>
+    <p>Testing AJAX endpoints for admin CRUD operations</p>
+    
+    <div class="test-section">
+        <h3>Test Setup</h3>
+        <p><strong>Admin ID to test:</strong> <input type="number" id="adminId" value="4"></p>
+        <p><strong>Base URL:</strong> <span id="baseUrl">http://127.0.0.1:8001</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>Issue 5a: Update Admin (PUT /api/admin/{id})</h3>
+        <button onclick="testUpdateAdmin()">Test Update Admin</button>
+        <div id="updateResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Issue 5c: Delete Admin (DELETE /api/admin/{id})</h3>
+        <button onclick="testDeleteAdmin()">Test Delete Admin</button>
+        <div id="deleteResult" class="result"></div>
+    </div>
+
+    <script>
+        // Get CSRF token from meta tag or create a simple one for testing
+        function getCsrfToken() {
+            const metaToken = document.querySelector('meta[name="csrf-token"]');
+            return metaToken ? metaToken.getAttribute('content') : 'test-csrf-token';
+        }
+
+        async function testUpdateAdmin() {
+            const adminId = document.getElementById('adminId').value;
+            const resultDiv = document.getElementById('updateResult');
+            
+            const testData = {
+                username_akun_admin: "test_updated_username",
+                nama_lengkap_admin: "Test Updated Admin Name",
+                tanggal_lahir_admin: "1985-06-15",
+                tempat_lahir_admin: "Test Updated Birth Place",
+                no_anggota: "TEST123",
+                no_handphone_admin: "08987654321"
+            };
+
+            try {
+                resultDiv.innerHTML = '<p>Testing admin update...</p>';
+                
+                const response = await fetch(`/api/admin/${adminId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ UPDATE SUCCESS!</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${result.message}</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ UPDATE FAILED</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${result.message || 'Unknown error'}</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ REQUEST ERROR</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        async function testDeleteAdmin() {
+            const adminId = document.getElementById('adminId').value;
+            const resultDiv = document.getElementById('deleteResult');
+            
+            try {
+                resultDiv.innerHTML = '<p>Testing admin delete...</p>';
+                
+                const response = await fetch(`/api/admin/${adminId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ DELETE SUCCESS!</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${result.message}</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ DELETE FAILED</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Message:</strong> ${result.message || 'Unknown error'}</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ REQUEST ERROR</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        // Test CSRF token availability
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = getCsrfToken();
+            console.log('CSRF Token available:', token ? 'Yes' : 'No');
+            if (!token || token === 'test-csrf-token') {
+                console.warn('CSRF token may not be properly configured for this test');
+            }
+        });
+    </script>
+</body>
+</html>

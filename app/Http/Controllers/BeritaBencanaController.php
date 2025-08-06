@@ -68,7 +68,24 @@ class BeritaBencanaController extends Controller
         $response = $this->contentService->getPublication($id);
 
         if ($response['success']) {
-            $data = $response['data'];
+            $rawData = $response['data'];
+
+            // Transform API data to match template expectations
+            $data = new \stdClass();
+            $data->id = $rawData['id'];
+
+            // Parse tags JSON to extract disaster-specific data
+            $tagsData = json_decode($rawData['tags'] ?? '{}', true);
+
+            // Map standard publication fields to legacy template field names
+            $data->pblk_judul_bencana = $rawData['title'];
+            $data->pblk_lokasi_bencana = $tagsData['location'] ?? '';
+            $data->pblk_titik_kordinat_bencana = $tagsData['coordinates'] ?? '';
+            $data->pblk_skala_bencana = $tagsData['severity'] ?? '';
+            $data->deskripsi_umum = $rawData['content'];
+            $data->pblk_foto_bencana = $rawData['featured_image'] ?? '';
+            $data->dibuat_oleh_admin_id = $rawData['author_id'];
+
             return view('ubah_data_publikasi', compact('data'));
         } else {
             return redirect()->route('berita.index')->with('error', $response['message']);

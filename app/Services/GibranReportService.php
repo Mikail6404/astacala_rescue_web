@@ -37,12 +37,13 @@ class GibranReportService
     {
         try {
             $endpoint = $this->apiClient->getEndpoint('gibran', 'pelaporans_list');
-            $response = $this->apiClient->authenticatedRequest('GET', $endpoint, $filters);
+            // Use public request since the pelaporans GET endpoint is now public
+            $response = $this->apiClient->publicRequest('GET', $endpoint, $filters);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
-                    'message' => 'Reports retrieved successfully',
+                    'message' => $response['message'] ?? 'Reports retrieved successfully',
                     'data' => $response['data'] ?? []
                 ];
             }
@@ -74,10 +75,10 @@ class GibranReportService
             $endpoint = $this->apiClient->getEndpoint('gibran', 'pelaporans_create');
             $response = $this->apiClient->authenticatedRequest('POST', $endpoint, $reportData, $files);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['status']) && $response['status'] === 'success') {
                 return [
                     'success' => true,
-                    'message' => 'Report created successfully',
+                    'message' => $response['message'] ?? 'Report created successfully',
                     'data' => $response['data'] ?? []
                 ];
             }
@@ -91,6 +92,38 @@ class GibranReportService
             return [
                 'success' => false,
                 'message' => 'Failed to create report: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Get single disaster report by ID
+     * 
+     * @param int $reportId Report ID to retrieve
+     * @return array Standardized response with report data
+     */
+    public function getReport($reportId)
+    {
+        try {
+            $endpoint = $this->apiClient->getEndpoint('gibran', 'pelaporans_show', ['id' => $reportId]);
+            $response = $this->apiClient->authenticatedRequest('GET', $endpoint);
+
+            if (isset($response['success']) && $response['success']) {
+                return [
+                    'success' => true,
+                    'message' => $response['message'] ?? 'Report retrieved successfully',
+                    'data' => $response['data'] ?? []
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => $response['message'] ?? 'Failed to retrieve report'
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Failed to retrieve report: ' . $e->getMessage()
             ];
         }
     }
@@ -170,8 +203,7 @@ class GibranReportService
     public function deleteReport($reportId)
     {
         try {
-            // Note: Using generic endpoint as specific Gibran delete endpoint may not exist
-            $endpoint = $this->apiClient->getEndpoint('reports', 'destroy', ['id' => $reportId]);
+            $endpoint = $this->apiClient->getEndpoint('gibran', 'pelaporans_destroy', ['id' => $reportId]);
             $response = $this->apiClient->authenticatedRequest('DELETE', $endpoint);
 
             if (isset($response['success']) && $response['success']) {
@@ -217,40 +249,6 @@ class GibranReportService
         }
 
         return $this->getAllReports($filters);
-    }
-
-    /**
-     * Get a single report by ID
-     * 
-     * @param int $reportId Report ID
-     * @return array Single report data
-     */
-    public function getReport($reportId)
-    {
-        try {
-            $endpoint = $this->apiClient->getEndpoint('reports', 'show', ['id' => $reportId]);
-            $response = $this->apiClient->authenticatedRequest('GET', $endpoint);
-
-            if (isset($response['success']) && $response['success']) {
-                return [
-                    'success' => true,
-                    'message' => 'Report retrieved successfully',
-                    'data' => $response['data'] ?? []
-                ];
-            }
-
-            return [
-                'success' => false,
-                'message' => $response['message'] ?? 'Report not found',
-                'data' => []
-            ];
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Failed to retrieve report: ' . $e->getMessage(),
-                'data' => []
-            ];
-        }
     }
 
     /**

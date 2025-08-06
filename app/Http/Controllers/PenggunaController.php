@@ -18,13 +18,22 @@ class PenggunaController extends Controller
 
     public function controllerpengguna()
     {
-        $response = $this->userService->getAllUsers();
+        // Check if admin is logged in
+        if (!session()->has('admin_id')) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Get volunteers only (using dedicated volunteer endpoint)
+        $response = $this->userService->getVolunteerUsers();
 
         if ($response['success']) {
             $data_pengguna = $response['data'];
             return view('data_pengguna', compact('data_pengguna'));
         } else {
-            return redirect()->back()->with('Error', $response['message']);
+            // If API call fails, show empty state with error message
+            $data_pengguna = [];
+            return view('data_pengguna', compact('data_pengguna'))
+                ->with('error', 'Gagal memuat data pengguna: ' . $response['message']);
         }
     }
 
