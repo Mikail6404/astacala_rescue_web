@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
 use Exception;
 
 /**
  * Gibran Authentication Service
- * 
+ *
  * Handles authentication specifically for the web application using
  * the /api/gibran/auth/* endpoints from the unified backend.
- * 
+ *
  * This service provides web-specific authentication that integrates
  * with the cross-platform user management system.
- * 
+ *
  * @author Web Integration Team
+ *
  * @version 1.0.0
+ *
  * @date August 3, 2025
  */
 class GibranAuthService
@@ -29,8 +30,8 @@ class GibranAuthService
 
     /**
      * Authenticate admin user using Gibran-specific endpoint
-     * 
-     * @param array $credentials Login credentials (email, password)
+     *
+     * @param  array  $credentials  Login credentials (email, password)
      * @return array Standardized response with success/error status
      */
     public function login($credentials)
@@ -53,7 +54,7 @@ class GibranAuthService
                         'success' => true,
                         'message' => $response['message'] ?? 'Login successful',
                         'user' => $user,
-                        'token' => $token
+                        'token' => $token,
                     ];
                 }
             }
@@ -61,26 +62,26 @@ class GibranAuthService
             // Extract error message from response
             $errorMessage = $response['message'] ?? 'Login failed - invalid credentials';
             if (isset($response['error'])) {
-                $errorMessage .= ' (' . $response['error'] . ')';
+                $errorMessage .= ' ('.$response['error'].')';
             }
 
             return [
                 'success' => false,
                 'message' => $errorMessage,
-                'error' => $response['error'] ?? null
+                'error' => $response['error'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Login failed: ' . $e->getMessage(),
-                'error' => $e->getMessage()
+                'message' => 'Login failed: '.$e->getMessage(),
+                'error' => $e->getMessage(),
             ];
         }
     }
 
     /**
      * Logout current user and clear session
-     * 
+     *
      * @return array Response status
      */
     public function logout()
@@ -91,19 +92,19 @@ class GibranAuthService
 
             return [
                 'success' => true,
-                'message' => 'Logout successful'
+                'message' => 'Logout successful',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Logout failed: ' . $e->getMessage()
+                'message' => 'Logout failed: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Check if user is currently authenticated
-     * 
+     *
      * @return bool Authentication status
      */
     public function isAuthenticated()
@@ -113,7 +114,7 @@ class GibranAuthService
 
     /**
      * Get current authenticated user data
-     * 
+     *
      * @return array|null User data or null if not authenticated
      */
     public function getUser()
@@ -123,7 +124,7 @@ class GibranAuthService
 
     /**
      * Get current authentication token
-     * 
+     *
      * @return string|null JWT token or null if not authenticated
      */
     public function getToken()
@@ -133,8 +134,8 @@ class GibranAuthService
 
     /**
      * Register a new admin user
-     * 
-     * @param array $userData User registration data
+     *
+     * @param  array  $userData  User registration data
      * @return array Standardized response
      */
     public function register($userData)
@@ -148,19 +149,19 @@ class GibranAuthService
                 return [
                     'success' => true,
                     'message' => 'Registration successful',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Registration failed',
-                'errors' => $response['errors'] ?? null
+                'errors' => $response['errors'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Registration failed: ' . $e->getMessage()
+                'message' => 'Registration failed: '.$e->getMessage(),
             ];
         }
     }

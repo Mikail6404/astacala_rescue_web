@@ -10,7 +10,7 @@ echo "1. DATA DISPLAY ANALYSIS\n";
 echo "========================\n";
 
 // Test the data_admin.blade.php view structure
-$dataAdminFile = __DIR__ . '/resources/views/data_admin.blade.php';
+$dataAdminFile = __DIR__.'/resources/views/data_admin.blade.php';
 $dataAdminContent = file_get_contents($dataAdminFile);
 
 echo "✅ Delete functionality: Already implemented with AJAX + SweetAlert\n";
@@ -30,7 +30,7 @@ echo "\n";
 echo "2. UPDATE FORM ANALYSIS (ubah_admin.blade.php)\n";
 echo "=============================================\n";
 
-$updateFormFile = __DIR__ . '/resources/views/ubah_admin.blade.php';
+$updateFormFile = __DIR__.'/resources/views/ubah_admin.blade.php';
 $updateFormContent = file_get_contents($updateFormFile);
 
 echo "Checking edit form field population...\n";
@@ -42,7 +42,7 @@ $formFields = [
     'tempat_lahir_admin',
     'no_handphone_admin',
     'no_anggota',
-    'password_akun_admin'
+    'password_akun_admin',
 ];
 
 foreach ($formFields as $field) {
@@ -63,12 +63,12 @@ if (strpos($updateFormContent, 'action="/Admin/') !== false && strpos($updateFor
 
 echo "\n";
 
-// Check 3: Backend Service Analysis  
+// Check 3: Backend Service Analysis
 echo "3. BACKEND SERVICE INTEGRATION\n";
 echo "=============================\n";
 
 // Check the AdminController methods
-$adminControllerFile = __DIR__ . '/app/Http/Controllers/AdminController.php';
+$adminControllerFile = __DIR__.'/app/Http/Controllers/AdminController.php';
 $adminControllerContent = file_get_contents($adminControllerFile);
 
 echo "AdminController methods:\n";
@@ -96,14 +96,14 @@ echo "\n";
 echo "4. ROUTE CONFIGURATION\n";
 echo "=====================\n";
 
-$routesFile = __DIR__ . '/routes/web.php';
+$routesFile = __DIR__.'/routes/web.php';
 $routesContent = file_get_contents($routesFile);
 
 $expectedRoutes = [
     '/Admin/{id}/ubahadmin' => 'Edit form route',
     'PUT /Admin/{id}' => 'Traditional update route',
     'DELETE /api/admin/{id}' => 'AJAX delete route',
-    'PUT /api/admin/{id}' => 'AJAX update route (missing?)'
+    'PUT /api/admin/{id}' => 'AJAX update route (missing?)',
 ];
 
 foreach ($expectedRoutes as $route => $description) {
@@ -122,7 +122,7 @@ echo "5. FIELD MAPPING ANALYSIS\n";
 echo "========================\n";
 
 // Check GibranUserService for proper field mapping
-$userServiceFile = __DIR__ . '/app/Services/GibranUserService.php';
+$userServiceFile = __DIR__.'/app/Services/GibranUserService.php';
 if (file_exists($userServiceFile)) {
     $userServiceContent = file_get_contents($userServiceFile);
 

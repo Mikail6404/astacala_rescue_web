@@ -4,7 +4,6 @@
  * Simplified Test of TICKET #005 AJAX Endpoints
  * This directly tests the API endpoints with a known user ID
  */
-
 echo "=== Simplified Test of TICKET #005 AJAX Endpoints ===\n\n";
 
 $baseUrl = 'http://127.0.0.1:8001';
@@ -31,7 +30,7 @@ curl_close($ch);
 preg_match('/<meta name="csrf-token" content="([^"]+)"/', $pageResponse, $csrfMatches);
 $csrfToken = $csrfMatches[1] ?? 'test-csrf-token-123';
 
-echo "✅ CSRF Token obtained: " . substr($csrfToken, 0, 20) . "...\n\n";
+echo '✅ CSRF Token obtained: '.substr($csrfToken, 0, 20)."...\n\n";
 
 // Step 3: Test AJAX admin update (Issue 5a)
 echo "3. Testing AJAX admin update (Issue 5a):\n";
@@ -43,11 +42,11 @@ $updateData = [
     'tanggal_lahir_admin' => '1985-06-15',
     'tempat_lahir_admin' => 'Test Updated Birth Place',
     'no_anggota' => 'TEST123',
-    'no_handphone_admin' => '08987654321'
+    'no_handphone_admin' => '08987654321',
 ];
 
 echo "   - Calling: PUT $updateApiUrl\n";
-echo "   - Data: " . json_encode($updateData) . "\n";
+echo '   - Data: '.json_encode($updateData)."\n";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $updateApiUrl);
@@ -56,8 +55,8 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updateData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/test_cookies.txt');
@@ -71,10 +70,10 @@ $updateWorking = $httpCode === 200 && $updateResult && isset($updateResult['succ
 
 echo "   - Response HTTP Code: $httpCode\n";
 echo "   - Response Body: $updateApiResponse\n";
-echo "   - AJAX Update Admin: " . ($updateWorking ? "✅ WORKING" : "❌ FAILED") . "\n";
+echo '   - AJAX Update Admin: '.($updateWorking ? '✅ WORKING' : '❌ FAILED')."\n";
 
 if ($updateWorking) {
-    echo "   - ✅ Update success message: " . $updateResult['message'] . "\n";
+    echo '   - ✅ Update success message: '.$updateResult['message']."\n";
 }
 
 // Step 4: Test AJAX admin delete (Issue 5c)
@@ -89,8 +88,8 @@ curl_setopt($ch, CURLOPT_URL, $deleteApiUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/test_cookies.txt');
@@ -104,17 +103,17 @@ $deleteWorking = $httpCode === 200 && $deleteResult && isset($deleteResult['succ
 
 echo "   - Response HTTP Code: $httpCode\n";
 echo "   - Response Body: $deleteApiResponse\n";
-echo "   - AJAX Delete Admin: " . ($deleteWorking ? "✅ WORKING" : "❌ FAILED") . "\n";
+echo '   - AJAX Delete Admin: '.($deleteWorking ? '✅ WORKING' : '❌ FAILED')."\n";
 
 if ($deleteWorking) {
-    echo "   - ✅ Delete success message: " . $deleteResult['message'] . "\n";
+    echo '   - ✅ Delete success message: '.$deleteResult['message']."\n";
 }
 
 // Final summary
 echo "\n=== FINAL SUMMARY ===\n";
 echo "✅ CSRF Token: OBTAINED\n";
-echo ($updateWorking ? "✅" : "❌") . " Issue 5a (Update function): " . ($updateWorking ? "WORKING" : "FAILED") . "\n";
-echo ($deleteWorking ? "✅" : "❌") . " Issue 5c (Delete function): " . ($deleteWorking ? "WORKING" : "FAILED") . "\n";
+echo ($updateWorking ? '✅' : '❌').' Issue 5a (Update function): '.($updateWorking ? 'WORKING' : 'FAILED')."\n";
+echo ($deleteWorking ? '✅' : '❌').' Issue 5c (Delete function): '.($deleteWorking ? 'WORKING' : 'FAILED')."\n";
 
 if ($updateWorking && $deleteWorking) {
     echo "\n🎉 TICKET #005 SOLUTION COMPLETE!\n";

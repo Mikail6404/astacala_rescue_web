@@ -4,7 +4,7 @@ echo "=== ANALYZING V1 AUTH RESPONSE STRUCTURE ===\n";
 
 $loginData = [
     'email' => 'admin@uat.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 echo "🔍 V1 Authentication Response Analysis\n";
@@ -17,7 +17,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -26,7 +26,7 @@ curl_close($ch);
 
 echo "HTTP Code: $httpCode\n";
 echo "Raw Response:\n";
-echo $response . "\n\n";
+echo $response."\n\n";
 
 if ($httpCode === 200) {
     $data = json_decode($response, true);
@@ -37,10 +37,10 @@ if ($httpCode === 200) {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 echo "  {$prefix}$key: [array]\n";
-                printStructure($value, $prefix . '  ');
+                printStructure($value, $prefix.'  ');
             } else {
                 $displayValue = is_string($value) && strlen($value) > 50 ?
-                    substr($value, 0, 30) . '...' : $value;
+                    substr($value, 0, 30).'...' : $value;
                 echo "  {$prefix}$key: $displayValue\n";
             }
         }
@@ -60,7 +60,7 @@ if ($httpCode === 200) {
     echo "\n🔍 Token Extraction Attempts:\n";
     foreach ($possibleTokens as $path => $token) {
         if ($token) {
-            echo "  ✅ Found at $path: " . substr($token, 0, 20) . "...\n";
+            echo "  ✅ Found at $path: ".substr($token, 0, 20)."...\n";
 
             // Test this token
             echo "    Testing token with admin endpoint...\n";
@@ -70,7 +70,7 @@ if ($httpCode === 200) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Accept: application/json',
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $token
+                'Authorization: Bearer '.$token,
             ]);
 
             $testResponse = curl_exec($ch);
@@ -90,4 +90,4 @@ if ($httpCode === 200) {
     }
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";

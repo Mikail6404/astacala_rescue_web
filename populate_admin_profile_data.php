@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
+require_once __DIR__.'/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -30,7 +30,7 @@ try {
         ->whereNull('birth_date')
         ->get();
 
-    echo "📊 Found " . count($adminUsers) . " admin users needing profile data\n\n";
+    echo '📊 Found '.count($adminUsers)." admin users needing profile data\n\n";
 
     $sampleBirthPlaces = [
         'Jakarta',
@@ -42,7 +42,7 @@ try {
         'Palembang',
         'Tangerang',
         'Depok',
-        'Bekasi'
+        'Bekasi',
     ];
 
     $sampleOrganizations = [
@@ -55,16 +55,16 @@ try {
         'BPBD DKI',
         'Relawan Nusantara',
         'ACT',
-        'Dompet Dhuafa'
+        'Dompet Dhuafa',
     ];
 
     $updatedCount = 0;
 
     foreach ($adminUsers as $user) {
         // Generate sample data for admin
-        $birthDate = date('Y-m-d', strtotime('-' . rand(25, 50) . ' years'));
+        $birthDate = date('Y-m-d', strtotime('-'.rand(25, 50).' years'));
         $birthPlace = $sampleBirthPlaces[array_rand($sampleBirthPlaces)];
-        $phone = '08' . rand(10000000, 99999999);
+        $phone = '08'.rand(10000000, 99999999);
         $organization = $sampleOrganizations[array_rand($sampleOrganizations)];
 
         Capsule::table('users')
@@ -74,7 +74,7 @@ try {
                 'birth_place' => $birthPlace,
                 'phone' => $phone,
                 'organization' => $organization,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
         echo "✅ Updated admin: {$user->name} (ID: {$user->id})\n";
@@ -105,5 +105,5 @@ try {
     echo "   Admins with Phone: {$verifyStats->admins_with_phone}\n";
     echo "   Admins with Organization: {$verifyStats->admins_with_organization}\n";
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
 }

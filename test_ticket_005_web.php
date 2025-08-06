@@ -4,7 +4,6 @@
  * Test TICKET #005 Web Application AJAX Functionality
  * This script tests the complete CRUD flow for admin users from the web app perspective
  */
-
 echo "=== Testing TICKET #005: Web Application AJAX Functionality ===\n\n";
 
 // Test data
@@ -16,7 +15,7 @@ echo "1. Testing admin login via web app:\n";
 $loginUrl = "$baseUrl/test-auth";
 $loginData = [
     'username' => 'admin',
-    'password' => 'password'
+    'password' => 'password',
 ];
 
 $ch = curl_init();
@@ -25,7 +24,7 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($loginData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/x-www-form-urlencoded',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEJAR, '/tmp/cookies.txt'); // Store cookies
@@ -46,7 +45,7 @@ if ($httpCode === 200 && (strpos($loginResponse, 'dashboard') !== false || strpo
         echo "✅ Admin login successful\n\n";
     } else {
         echo "❌ Admin login failed (HTTP $httpCode)\n";
-        echo "Response: " . substr($loginResponse, 0, 200) . "...\n";
+        echo 'Response: '.substr($loginResponse, 0, 200)."...\n";
         exit(1);
     }
 }
@@ -59,7 +58,7 @@ $adminListUrl = "$baseUrl/Dataadmin";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $adminListUrl);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Accept: text/html,application/xhtml+xml,application/xml'
+    'Accept: text/html,application/xhtml+xml,application/xml',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/cookies.txt'); // Use stored cookies
@@ -75,7 +74,7 @@ if ($httpCode === 200) {
     preg_match_all('/\/Admin\/(\d+)\/ubahadmin/', $listResponse, $matches);
     $adminIds = $matches[1];
 
-    if (!empty($adminIds)) {
+    if (! empty($adminIds)) {
         $testAdminId = $adminIds[0]; // Use the first admin ID found
         echo "✅ Found test admin ID: $testAdminId\n\n";
     } else {
@@ -106,7 +105,7 @@ preg_match('/<meta name="csrf-token" content="([^"]+)"/', $updatePageResponse, $
 $csrfToken = $csrfMatches[1] ?? '';
 
 if ($csrfToken) {
-    echo "✅ CSRF token extracted: " . substr($csrfToken, 0, 20) . "...\n";
+    echo '✅ CSRF token extracted: '.substr($csrfToken, 0, 20)."...\n";
 } else {
     echo "❌ Could not extract CSRF token\n";
     exit(1);
@@ -120,7 +119,7 @@ $updateData = [
     'tanggal_lahir_admin' => '1985-06-15',
     'tempat_lahir_admin' => 'Updated Birth Place',
     'no_anggota' => 'UPD123',
-    'no_handphone_admin' => '08987654321'
+    'no_handphone_admin' => '08987654321',
 ];
 
 $ch = curl_init();
@@ -130,8 +129,8 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updateData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
@@ -143,9 +142,9 @@ curl_close($ch);
 $updateResult = json_decode($updateApiResponse, true);
 $updateWorking = $httpCode === 200 && $updateResult && isset($updateResult['success']) && $updateResult['success'];
 
-echo "   - AJAX Update Admin: " . ($updateWorking ? "✅ WORKING" : "❌ FAILED") . " (HTTP $httpCode)\n";
+echo '   - AJAX Update Admin: '.($updateWorking ? '✅ WORKING' : '❌ FAILED')." (HTTP $httpCode)\n";
 
-if (!$updateWorking) {
+if (! $updateWorking) {
     echo "   - Error: $updateApiResponse\n";
 }
 
@@ -159,8 +158,8 @@ curl_setopt($ch, CURLOPT_URL, $deleteApiUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/cookies.txt');
@@ -172,9 +171,9 @@ curl_close($ch);
 $deleteResult = json_decode($deleteApiResponse, true);
 $deleteWorking = $httpCode === 200 && $deleteResult && isset($deleteResult['success']) && $deleteResult['success'];
 
-echo "   - AJAX Delete Admin: " . ($deleteWorking ? "✅ WORKING" : "❌ FAILED") . " (HTTP $httpCode)\n";
+echo '   - AJAX Delete Admin: '.($deleteWorking ? '✅ WORKING' : '❌ FAILED')." (HTTP $httpCode)\n";
 
-if (!$deleteWorking) {
+if (! $deleteWorking) {
     echo "   - Error: $deleteApiResponse\n";
 }
 
@@ -182,8 +181,8 @@ if (!$deleteWorking) {
 echo "\n=== FINAL SUMMARY ===\n";
 echo "✅ Admin Authentication: WORKING\n";
 echo "✅ Admin List Access: WORKING\n";
-echo ($updateWorking ? "✅" : "❌") . " Issue 5a (Update function): " . ($updateWorking ? "WORKING" : "FAILED") . "\n";
-echo ($deleteWorking ? "✅" : "❌") . " Issue 5c (Delete function): " . ($deleteWorking ? "WORKING" : "FAILED") . "\n";
+echo ($updateWorking ? '✅' : '❌').' Issue 5a (Update function): '.($updateWorking ? 'WORKING' : 'FAILED')."\n";
+echo ($deleteWorking ? '✅' : '❌').' Issue 5c (Delete function): '.($deleteWorking ? 'WORKING' : 'FAILED')."\n";
 
 if ($updateWorking && $deleteWorking) {
     echo "\n🎉 TICKET #005 COMPLETE SOLUTION: ALL FUNCTIONALITY WORKING!\n";

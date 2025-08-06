@@ -18,7 +18,7 @@ curl_close($ch);
 
 if ($httpCode === 200) {
     echo "✅ Web application is accessible (HTTP $httpCode)\n";
-    echo "   Page length: " . strlen($response) . " characters\n";
+    echo '   Page length: '.strlen($response)." characters\n";
 } else {
     echo "❌ Web application not accessible (HTTP $httpCode)\n";
     exit(1);
@@ -27,7 +27,7 @@ if ($httpCode === 200) {
 // Test 2: Check login page
 echo "\n🔐 Testing login page...\n";
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $baseUrl . '/Login');
+curl_setopt($ch, CURLOPT_URL, $baseUrl.'/Login');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -37,8 +37,8 @@ curl_close($ch);
 
 if ($httpCode === 200) {
     echo "✅ Login page accessible (HTTP $httpCode)\n";
-    echo "   Page contains login form: " . (strpos($loginPageResponse, 'username') !== false ? 'Yes' : 'No') . "\n";
-    echo "   Page contains password field: " . (strpos($loginPageResponse, 'password') !== false ? 'Yes' : 'No') . "\n";
+    echo '   Page contains login form: '.(strpos($loginPageResponse, 'username') !== false ? 'Yes' : 'No')."\n";
+    echo '   Page contains password field: '.(strpos($loginPageResponse, 'password') !== false ? 'Yes' : 'No')."\n";
 } else {
     echo "❌ Login page not accessible (HTTP $httpCode)\n";
 }
@@ -48,7 +48,7 @@ echo "\n📝 Testing login form submission...\n";
 
 // First, get the login page to extract CSRF token
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $baseUrl . '/Login');
+curl_setopt($ch, CURLOPT_URL, $baseUrl.'/Login');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
 curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
@@ -62,17 +62,17 @@ preg_match('/<input[^>]*name="_token"[^>]*value="([^"]+)"/', $loginPage, $tokenM
 $csrfToken = $csrfMatches[1] ?? ($tokenMatches[1] ?? null);
 
 if ($csrfToken) {
-    echo "✅ CSRF token extracted: " . substr($csrfToken, 0, 20) . "...\n";
+    echo '✅ CSRF token extracted: '.substr($csrfToken, 0, 20)."...\n";
 
     // Attempt login with test credentials
     $loginData = [
         'username' => 'admin',  // Using the username mapping we saw in the code
         'password' => 'password123',
-        '_token' => $csrfToken
+        '_token' => $csrfToken,
     ];
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $baseUrl . '/login');
+    curl_setopt($ch, CURLOPT_URL, $baseUrl.'/login');
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($loginData));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -81,7 +81,7 @@ if ($csrfToken) {
     curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/x-www-form-urlencoded',
-        'X-CSRF-TOKEN: ' . $csrfToken
+        'X-CSRF-TOKEN: '.$csrfToken,
     ]);
 
     $loginResponse = curl_exec($ch);
@@ -99,7 +99,7 @@ if ($csrfToken) {
         // Test dashboard page access
         echo "\n🏠 Testing dashboard access...\n";
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $baseUrl . '/Home');
+        curl_setopt($ch, CURLOPT_URL, $baseUrl.'/Home');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
         $dashboardResponse = curl_exec($ch);
@@ -108,13 +108,13 @@ if ($csrfToken) {
 
         if ($httpCode === 200) {
             echo "✅ Dashboard accessible after login (HTTP $httpCode)\n";
-            echo "   Contains dashboard content: " . (strpos($dashboardResponse, 'dashboard') !== false ? 'Yes' : 'No') . "\n";
+            echo '   Contains dashboard content: '.(strpos($dashboardResponse, 'dashboard') !== false ? 'Yes' : 'No')."\n";
         } else {
             echo "❌ Dashboard not accessible after login (HTTP $httpCode)\n";
         }
     } else {
         echo "❌ Login failed - no redirect to dashboard\n";
-        echo "   Response preview: " . substr($loginResponse, 0, 200) . "...\n";
+        echo '   Response preview: '.substr($loginResponse, 0, 200)."...\n";
     }
 } else {
     echo "❌ Could not extract CSRF token from login page\n";

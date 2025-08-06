@@ -7,7 +7,7 @@ echo "=== TICKET #006 - DATAPENGGUNA CRUD OPERATIONS TESTING ===\n\n";
 $baseUrl = 'http://127.0.0.1:8000/api/v1';  // Backend API
 $loginData = [
     'email' => 'admin@test.com',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 echo "Testing Datapengguna (Volunteer Users) CRUD Operations via Backend API...\n\n";
@@ -27,8 +27,8 @@ try {
             CURLOPT_HTTPHEADER => array_filter([
                 'Content-Type: application/json',
                 'Accept: application/json',
-                $token ? "Authorization: Bearer $token" : null
-            ])
+                $token ? "Authorization: Bearer $token" : null,
+            ]),
         ]);
 
         if ($data && in_array($method, ['POST', 'PUT', 'PATCH'])) {
@@ -47,7 +47,7 @@ try {
         return [
             'http_code' => $httpCode,
             'body' => $response,
-            'data' => json_decode($response, true)
+            'data' => json_decode($response, true),
         ];
     }
 
@@ -60,10 +60,10 @@ try {
     if ($authResponse['http_code'] === 200 && isset($authResponse['data']['token'])) {
         $token = $authResponse['data']['token'];
         echo "✅ Authentication successful\n";
-        echo "Token: " . substr($token, 0, 20) . "...\n\n";
+        echo 'Token: '.substr($token, 0, 20)."...\n\n";
     } else {
         echo "❌ Authentication failed\n";
-        echo "Response: " . $authResponse['body'] . "\n";
+        echo 'Response: '.$authResponse['body']."\n";
         exit;
     }
 
@@ -75,32 +75,40 @@ try {
 
     if ($volunteersResponse['http_code'] === 200) {
         $volunteers = $volunteersResponse['data']['data'] ?? [];
-        echo "✅ SUCCESS: Found " . count($volunteers) . " volunteer users\n";
+        echo '✅ SUCCESS: Found '.count($volunteers)." volunteer users\n";
 
-        if (!empty($volunteers)) {
+        if (! empty($volunteers)) {
             $firstVolunteer = $volunteers[0];
             echo "Sample volunteer data (for Datapengguna display):\n";
-            echo "- ID: " . ($firstVolunteer['id'] ?? 'N/A') . "\n";
-            echo "- Name: " . ($firstVolunteer['name'] ?? 'N/A') . "\n";
-            echo "- Email: " . ($firstVolunteer['email'] ?? 'N/A') . "\n";
-            echo "- Phone: " . ($firstVolunteer['phone'] ?? 'N/A') . "\n";
-            echo "- Birth Date: " . ($firstVolunteer['birth_date'] ?? 'N/A') . "\n";
-            echo "- Birth Place: " . ($firstVolunteer['place_of_birth'] ?? 'N/A') . "\n";
-            echo "- Member Number: " . ($firstVolunteer['member_number'] ?? 'N/A') . "\n";
-            echo "- Role: " . ($firstVolunteer['role'] ?? 'N/A') . "\n";
-            echo "- Status: " . (($firstVolunteer['is_active'] ?? false) ? 'Active' : 'Inactive') . "\n";
+            echo '- ID: '.($firstVolunteer['id'] ?? 'N/A')."\n";
+            echo '- Name: '.($firstVolunteer['name'] ?? 'N/A')."\n";
+            echo '- Email: '.($firstVolunteer['email'] ?? 'N/A')."\n";
+            echo '- Phone: '.($firstVolunteer['phone'] ?? 'N/A')."\n";
+            echo '- Birth Date: '.($firstVolunteer['birth_date'] ?? 'N/A')."\n";
+            echo '- Birth Place: '.($firstVolunteer['place_of_birth'] ?? 'N/A')."\n";
+            echo '- Member Number: '.($firstVolunteer['member_number'] ?? 'N/A')."\n";
+            echo '- Role: '.($firstVolunteer['role'] ?? 'N/A')."\n";
+            echo '- Status: '.(($firstVolunteer['is_active'] ?? false) ? 'Active' : 'Inactive')."\n";
 
             // Check for TICKET #006 issues (missing fields for edit form)
             $issues = [];
-            if (empty($firstVolunteer['birth_date'])) $issues[] = "Missing birth_date field (tanggal_lahir_pengguna)";
-            if (empty($firstVolunteer['place_of_birth'])) $issues[] = "Missing place_of_birth field (tempat_lahir_pengguna)";
-            if (empty($firstVolunteer['phone'])) $issues[] = "Missing phone field (no_handphone_pengguna)";
-            if (empty($firstVolunteer['member_number'])) $issues[] = "Missing member_number field (no_anggota)";
+            if (empty($firstVolunteer['birth_date'])) {
+                $issues[] = 'Missing birth_date field (tanggal_lahir_pengguna)';
+            }
+            if (empty($firstVolunteer['place_of_birth'])) {
+                $issues[] = 'Missing place_of_birth field (tempat_lahir_pengguna)';
+            }
+            if (empty($firstVolunteer['phone'])) {
+                $issues[] = 'Missing phone field (no_handphone_pengguna)';
+            }
+            if (empty($firstVolunteer['member_number'])) {
+                $issues[] = 'Missing member_number field (no_anggota)';
+            }
 
-            if (!empty($issues)) {
+            if (! empty($issues)) {
                 echo "\n🔍 ISSUE 6b DETECTED - Missing fields for edit form:\n";
                 foreach ($issues as $issue) {
-                    echo "   - " . $issue . "\n";
+                    echo '   - '.$issue."\n";
                 }
             } else {
                 echo "\n✅ All required fields for edit form are populated\n";
@@ -109,15 +117,15 @@ try {
             echo "⚠️  No volunteer users found\n";
         }
     } else {
-        echo "❌ FAILED: HTTP " . $volunteersResponse['http_code'] . "\n";
-        echo "Response: " . $volunteersResponse['body'] . "\n";
+        echo '❌ FAILED: HTTP '.$volunteersResponse['http_code']."\n";
+        echo 'Response: '.$volunteersResponse['body']."\n";
         exit;
     }
 
     echo "\n";
 
     // If we have volunteers, test CRUD operations
-    if (!empty($volunteers)) {
+    if (! empty($volunteers)) {
         $testUserId = $firstVolunteer['id'];
 
         // STEP 3: Get Single Volunteer User (simulates loading edit form)
@@ -130,32 +138,40 @@ try {
             $user = $userResponse['data']['data'] ?? $userResponse['data'];
             echo "✅ SUCCESS: Retrieved volunteer user for editing\n";
             echo "Edit form fields (mapped to web form):\n";
-            echo "- username_akun_pengguna: " . ($user['email'] ?? 'N/A') . "\n";
-            echo "- nama_lengkap_pengguna: " . ($user['name'] ?? 'N/A') . "\n";
-            echo "- tanggal_lahir_pengguna: " . ($user['birth_date'] ?? 'N/A') . "\n";
-            echo "- tempat_lahir_pengguna: " . ($user['place_of_birth'] ?? 'N/A') . "\n";
-            echo "- no_handphone_pengguna: " . ($user['phone'] ?? 'N/A') . "\n";
+            echo '- username_akun_pengguna: '.($user['email'] ?? 'N/A')."\n";
+            echo '- nama_lengkap_pengguna: '.($user['name'] ?? 'N/A')."\n";
+            echo '- tanggal_lahir_pengguna: '.($user['birth_date'] ?? 'N/A')."\n";
+            echo '- tempat_lahir_pengguna: '.($user['place_of_birth'] ?? 'N/A')."\n";
+            echo '- no_handphone_pengguna: '.($user['phone'] ?? 'N/A')."\n";
             echo "- password_akun_pengguna: ****\n";
 
             // ISSUE 6b: Missing data in update form fields
             $missingFields = [];
-            if (empty($user['birth_date'])) $missingFields[] = "tanggal_lahir_pengguna (birth_date)";
-            if (empty($user['place_of_birth'])) $missingFields[] = "tempat_lahir_pengguna (place_of_birth)";
-            if (empty($user['phone'])) $missingFields[] = "no_handphone_pengguna (phone)";
-            if (empty($user['member_number'])) $missingFields[] = "no_anggota (member_number)";
+            if (empty($user['birth_date'])) {
+                $missingFields[] = 'tanggal_lahir_pengguna (birth_date)';
+            }
+            if (empty($user['place_of_birth'])) {
+                $missingFields[] = 'tempat_lahir_pengguna (place_of_birth)';
+            }
+            if (empty($user['phone'])) {
+                $missingFields[] = 'no_handphone_pengguna (phone)';
+            }
+            if (empty($user['member_number'])) {
+                $missingFields[] = 'no_anggota (member_number)';
+            }
 
-            if (!empty($missingFields)) {
+            if (! empty($missingFields)) {
                 echo "\n❌ ISSUE 6b CONFIRMED: Missing data in edit form fields:\n";
                 foreach ($missingFields as $field) {
-                    echo "   - " . $field . "\n";
+                    echo '   - '.$field."\n";
                 }
                 echo "   Users will see empty fields when editing volunteer data!\n";
             } else {
                 echo "\n✅ All edit form fields have data\n";
             }
         } else {
-            echo "❌ FAILED: HTTP " . $userResponse['http_code'] . "\n";
-            echo "Response: " . $userResponse['body'] . "\n";
+            echo '❌ FAILED: HTTP '.$userResponse['http_code']."\n";
+            echo 'Response: '.$userResponse['body']."\n";
         }
 
         echo "\n";
@@ -165,10 +181,10 @@ try {
         echo "=====================================\n";
 
         $updateData = [
-            'name' => ($user['name'] ?? 'Test User') . ' (Updated)',
+            'name' => ($user['name'] ?? 'Test User').' (Updated)',
             'phone' => '+628123456789',
             'birth_date' => '1990-05-15',
-            'place_of_birth' => 'Jakarta, Indonesia'
+            'place_of_birth' => 'Jakarta, Indonesia',
         ];
 
         // First test: Try updating via profile endpoint (this might be the issue)
@@ -178,8 +194,8 @@ try {
             echo "✅ SUCCESS: Update function working via profile endpoint\n";
         } else {
             echo "❌ ISSUE 6a CONFIRMED: Update function non-functional via profile endpoint\n";
-            echo "HTTP Code: " . $updateResponse['http_code'] . "\n";
-            echo "Response: " . $updateResponse['body'] . "\n";
+            echo 'HTTP Code: '.$updateResponse['http_code']."\n";
+            echo 'Response: '.$updateResponse['body']."\n";
 
             // Try alternative: Direct user update (admin endpoint)
             echo "\nTrying alternative admin update endpoint...\n";
@@ -190,8 +206,8 @@ try {
                 $updateResponse = $adminUpdateResponse; // Use this for verification
             } else {
                 echo "❌ Both update methods failed\n";
-                echo "Admin endpoint HTTP Code: " . $adminUpdateResponse['http_code'] . "\n";
-                echo "Admin endpoint response: " . $adminUpdateResponse['body'] . "\n";
+                echo 'Admin endpoint HTTP Code: '.$adminUpdateResponse['http_code']."\n";
+                echo 'Admin endpoint response: '.$adminUpdateResponse['body']."\n";
             }
         }
 
@@ -207,22 +223,28 @@ try {
             if ($verifyResponse['http_code'] === 200) {
                 $updatedUser = $verifyResponse['data']['data'] ?? $verifyResponse['data'];
                 echo "Updated user data:\n";
-                echo "- Name: " . ($updatedUser['name'] ?? 'N/A') . "\n";
-                echo "- Phone: " . ($updatedUser['phone'] ?? 'N/A') . "\n";
-                echo "- Birth Date: " . ($updatedUser['birth_date'] ?? 'N/A') . "\n";
-                echo "- Birth Place: " . ($updatedUser['place_of_birth'] ?? 'N/A') . "\n";
+                echo '- Name: '.($updatedUser['name'] ?? 'N/A')."\n";
+                echo '- Phone: '.($updatedUser['phone'] ?? 'N/A')."\n";
+                echo '- Birth Date: '.($updatedUser['birth_date'] ?? 'N/A')."\n";
+                echo '- Birth Place: '.($updatedUser['place_of_birth'] ?? 'N/A')."\n";
 
                 // Verify changes
                 $changes = [];
-                if ($updatedUser['name'] === $updateData['name']) $changes[] = "Name updated ✅";
-                else $changes[] = "Name NOT updated ❌";
+                if ($updatedUser['name'] === $updateData['name']) {
+                    $changes[] = 'Name updated ✅';
+                } else {
+                    $changes[] = 'Name NOT updated ❌';
+                }
 
-                if ($updatedUser['phone'] === $updateData['phone']) $changes[] = "Phone updated ✅";
-                else $changes[] = "Phone NOT updated ❌";
+                if ($updatedUser['phone'] === $updateData['phone']) {
+                    $changes[] = 'Phone updated ✅';
+                } else {
+                    $changes[] = 'Phone NOT updated ❌';
+                }
 
                 echo "\nUpdate verification:\n";
                 foreach ($changes as $change) {
-                    echo "   - " . $change . "\n";
+                    echo '   - '.$change."\n";
                 }
             }
 
@@ -247,7 +269,7 @@ try {
                 $verifiedUser = $verifyDeleteResponse['data']['data'] ?? $verifyDeleteResponse['data'];
                 $isActive = $verifiedUser['is_active'] ?? true;
 
-                if (!$isActive) {
+                if (! $isActive) {
                     echo "✅ SUCCESS: User is properly deactivated (is_active: false)\n";
                 } else {
                     echo "❌ ISSUE 6c CONFIRMED: Delete shows success but user is still active\n";
@@ -258,8 +280,8 @@ try {
             }
         } else {
             echo "❌ ISSUE 6c CONFIRMED: Delete function not working\n";
-            echo "HTTP Code: " . $deleteResponse['http_code'] . "\n";
-            echo "Response: " . $deleteResponse['body'] . "\n";
+            echo 'HTTP Code: '.$deleteResponse['http_code']."\n";
+            echo 'Response: '.$deleteResponse['body']."\n";
         }
     } else {
         echo "❌ SKIPPING CRUD TESTS: No volunteer users available for testing\n";
@@ -281,9 +303,9 @@ try {
 
     // Issue 6b: Missing edit form fields
     if (isset($missingFields)) {
-        if (!empty($missingFields)) {
-            echo "❌ Issue 6b (Missing form fields): CONFIRMED - " . count($missingFields) . " fields missing data\n";
-            echo "   Fields affected: " . implode(', ', $missingFields) . "\n";
+        if (! empty($missingFields)) {
+            echo '❌ Issue 6b (Missing form fields): CONFIRMED - '.count($missingFields)." fields missing data\n";
+            echo '   Fields affected: '.implode(', ', $missingFields)."\n";
         } else {
             echo "✅ Issue 6b (Missing form fields): NOT PRESENT - All fields have data\n";
         }
@@ -302,7 +324,7 @@ try {
         echo "❓ Issue 6c (Delete false success): NOT TESTED - No users available or delete failed\n";
     }
 } catch (Exception $e) {
-    echo "❌ CRITICAL ERROR: " . $e->getMessage() . "\n";
+    echo '❌ CRITICAL ERROR: '.$e->getMessage()."\n";
 }
 
 echo "\n=== TESTING COMPLETED ===\n";

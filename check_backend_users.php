@@ -17,8 +17,8 @@ try {
     if (class_exists($userModel)) {
         $users = $userModel::take(10)->get(['id', 'name', 'email']);
 
-        echo "📊 Found " . $users->count() . " users in backend database:\n";
-        echo str_repeat("-", 50) . "\n";
+        echo '📊 Found '.$users->count()." users in backend database:\n";
+        echo str_repeat('-', 50)."\n";
 
         foreach ($users as $user) {
             echo "ID: {$user->id} | Name: {$user->name} | Email: {$user->email}\n";
@@ -42,7 +42,7 @@ try {
         echo "❌ User model not found\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error accessing backend database: " . $e->getMessage() . "\n";
+    echo '❌ Error accessing backend database: '.$e->getMessage()."\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";

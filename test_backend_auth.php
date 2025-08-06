@@ -9,7 +9,7 @@ echo "==============================================\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password'
+    'password' => 'password',
 ];
 
 $ch = curl_init();
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -41,12 +41,12 @@ if ($error) {
         $responseData = json_decode($response, true);
         if (isset($responseData['success']) && $responseData['success']) {
             echo "✅ Backend authentication successful!\n";
-            echo "  User ID: " . ($responseData['user']['id'] ?? 'N/A') . "\n";
-            echo "  User Name: " . ($responseData['user']['name'] ?? 'N/A') . "\n";
-            echo "  User Email: " . ($responseData['user']['email'] ?? 'N/A') . "\n";
+            echo '  User ID: '.($responseData['user']['id'] ?? 'N/A')."\n";
+            echo '  User Name: '.($responseData['user']['name'] ?? 'N/A')."\n";
+            echo '  User Email: '.($responseData['user']['email'] ?? 'N/A')."\n";
         } else {
             echo "❌ Backend authentication failed\n";
-            echo "  Error: " . ($responseData['error'] ?? 'Unknown error') . "\n";
+            echo '  Error: '.($responseData['error'] ?? 'Unknown error')."\n";
         }
     } else {
         echo "❌ Backend API request failed (HTTP $httpCode)\n";
@@ -61,7 +61,7 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000/api/gibran/users/list');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $usersResponse = curl_exec($ch);
@@ -76,19 +76,19 @@ if ($usersHttpCode === 200) {
     if (isset($usersData['users']) && is_array($usersData['users'])) {
         echo "📊 Available users:\n";
         foreach ($usersData['users'] as $index => $user) {
-            echo "  " . ($index + 1) . ". ID: " . ($user['id'] ?? 'N/A');
-            echo " | Email: " . ($user['email'] ?? 'N/A');
-            echo " | Name: " . ($user['name'] ?? 'N/A') . "\n";
+            echo '  '.($index + 1).'. ID: '.($user['id'] ?? 'N/A');
+            echo ' | Email: '.($user['email'] ?? 'N/A');
+            echo ' | Name: '.($user['name'] ?? 'N/A')."\n";
         }
     } else {
         echo "⚠️  Users data format unexpected\n";
-        echo "Response: " . substr($usersResponse, 0, 300) . "...\n";
+        echo 'Response: '.substr($usersResponse, 0, 300)."...\n";
     }
 } else {
     echo "❌ Users endpoint not accessible\n";
-    echo "Response: " . substr($usersResponse, 0, 300) . "...\n";
+    echo 'Response: '.substr($usersResponse, 0, 300)."...\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 echo "BACKEND AUTHENTICATION TEST COMPLETED\n";
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";

@@ -20,6 +20,6 @@ class Admin extends Model
     ];
 
     protected $hidden = [
-        "password_akun_admin",
+        'password_akun_admin',
     ];
 }

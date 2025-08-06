@@ -25,6 +25,7 @@ function testWebPage($url, $description)
 
     if ($error) {
         echo "   ❌ CURL Error: $error\n";
+
         return false;
     }
 
@@ -34,12 +35,14 @@ function testWebPage($url, $description)
         // Check for Laravel error pages
         if (strpos($response, 'Whoops') !== false || strpos($response, 'Something went wrong') !== false) {
             echo "   ⚠️  Page loads but contains errors\n";
+
             return false;
         }
 
         return true;
     } else {
         echo "   ❌ FAILED (HTTP $httpCode)\n";
+
         return false;
     }
 }
@@ -50,7 +53,7 @@ echo "===============================\n";
 
 $backendHealth = testWebPage('http://127.0.0.1:8000/api/v1/health', 'Backend API Health Check');
 
-if (!$backendHealth) {
+if (! $backendHealth) {
     echo "❌ Backend API is not running! Start with: php artisan serve --port=8000\n";
     exit(1);
 }
@@ -61,7 +64,7 @@ echo "==================================\n";
 
 $webHealth = testWebPage('http://127.0.0.1:8001', 'Web Application Home Page');
 
-if (!$webHealth) {
+if (! $webHealth) {
     echo "❌ Web application is not running! Start with: php artisan serve --port=8001\n";
     exit(1);
 }
@@ -85,7 +88,7 @@ $webPages = [
     '/Home' => 'Dashboard/Home Page',
     '/publikasi' => 'Publications Page',
     '/Datapengguna' => 'User Data Page',
-    '/Dataadmin' => 'Admin Data Page'
+    '/Dataadmin' => 'Admin Data Page',
 ];
 
 $successCount = 0;
@@ -123,16 +126,16 @@ echo "📊 FINAL STATUS REPORT\n";
 echo "======================\n";
 
 echo "🔧 FIXED ISSUES STATUS:\n";
-echo "✅ Issue 1 (Reports 500 error): " . ($pelaporanFixed ? "RESOLVED" : "STILL ISSUES") . "\n";
+echo '✅ Issue 1 (Reports 500 error): '.($pelaporanFixed ? 'RESOLVED' : 'STILL ISSUES')."\n";
 echo "✅ Issue 2 (Session persistence): RESOLVED (middleware configured)\n";
-echo "✅ Issue 3 (Berita bencana endpoint): " . ($beritaFixed ? "RESOLVED" : "STILL ISSUES") . "\n";
+echo '✅ Issue 3 (Berita bencana endpoint): '.($beritaFixed ? 'RESOLVED' : 'STILL ISSUES')."\n";
 
 echo "\n🌐 WEB APPLICATION STATUS:\n";
-echo "Pages Working: $successCount/$totalPages (" . round(($successCount / $totalPages) * 100) . "%)\n";
-echo "Backend APIs Working: $apiSuccessCount/$totalApiEndpoints (" . round(($apiSuccessCount / $totalApiEndpoints) * 100) . "%)\n";
+echo "Pages Working: $successCount/$totalPages (".round(($successCount / $totalPages) * 100)."%)\n";
+echo "Backend APIs Working: $apiSuccessCount/$totalApiEndpoints (".round(($apiSuccessCount / $totalApiEndpoints) * 100)."%)\n";
 
 $overallScore = (($successCount / $totalPages) + ($apiSuccessCount / $totalApiEndpoints) + ($pelaporanFixed ? 1 : 0) + ($beritaFixed ? 1 : 0)) / 4;
-echo "\n🎯 OVERALL SYSTEM STATUS: " . round($overallScore * 100) . "% FUNCTIONAL\n";
+echo "\n🎯 OVERALL SYSTEM STATUS: ".round($overallScore * 100)."% FUNCTIONAL\n";
 
 if ($overallScore >= 0.85) {
     echo "🎉 EXCELLENT! All major issues resolved, system ready for production!\n";
@@ -142,6 +145,6 @@ if ($overallScore >= 0.85) {
     echo "⚠️  NEEDS WORK! Some major issues still exist.\n";
 }
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "COMPREHENSIVE TESTING COMPLETED\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";

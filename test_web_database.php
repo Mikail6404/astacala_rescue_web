@@ -13,7 +13,7 @@ try {
     echo "📋 Tables in database:\n";
     $stmt = $pdo->query('SHOW TABLES');
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-        echo "  - " . $row[0] . "\n";
+        echo '  - '.$row[0]."\n";
     }
 
     echo "\n";
@@ -27,7 +27,7 @@ try {
             $count = $stmt->fetchColumn();
             echo "✅ Table '$table': $count records\n";
         } catch (Exception $e) {
-            echo "❌ Table '$table': Error - " . $e->getMessage() . "\n";
+            echo "❌ Table '$table': Error - ".$e->getMessage()."\n";
         }
     }
 
@@ -43,11 +43,11 @@ try {
             $count = $stmt->fetchColumn();
             echo "✅ Table '$table': $count records\n";
         } catch (Exception $e) {
-            echo "❌ Table '$table': Error - " . $e->getMessage() . "\n";
+            echo "❌ Table '$table': Error - ".$e->getMessage()."\n";
         }
     }
 } catch (Exception $e) {
-    echo "❌ Database connection failed: " . $e->getMessage() . "\n";
+    echo '❌ Database connection failed: '.$e->getMessage()."\n";
 }
 
 echo "\n=== Test Complete ===\n";

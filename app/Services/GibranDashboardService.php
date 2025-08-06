@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
 use Exception;
 
 /**
  * Gibran Dashboard Service
- * 
+ *
  * Handles dashboard-related operations for the web application using
  * the /api/gibran/dashboard/* endpoints from the unified backend.
- * 
+ *
  * This service provides web admin dashboard functionality including
  * statistics, analytics, and overview data.
- * 
+ *
  * @author Web Integration Team
+ *
  * @version 1.0.0
+ *
  * @date August 3, 2025
  */
 class GibranDashboardService
@@ -29,8 +30,8 @@ class GibranDashboardService
 
     /**
      * Get dashboard statistics for admin overview
-     * 
-     * @param array $filters Optional date range or other filters
+     *
+     * @param  array  $filters  Optional date range or other filters
      * @return array Dashboard statistics data
      */
     public function getStatistics($filters = [])
@@ -44,27 +45,27 @@ class GibranDashboardService
                 return [
                     'success' => true,
                     'message' => $response['message'] ?? 'Dashboard statistics retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load dashboard statistics',
-                'data' => $this->getDefaultStatistics() // Fallback to default stats
+                'data' => $this->getDefaultStatistics(), // Fallback to default stats
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load dashboard statistics: ' . $e->getMessage(),
-                'data' => $this->getDefaultStatistics() // Fallback to default stats
+                'message' => 'Failed to load dashboard statistics: '.$e->getMessage(),
+                'data' => $this->getDefaultStatistics(), // Fallback to default stats
             ];
         }
     }
 
     /**
      * Get news/berita bencana data for admin management
-     * 
+     *
      * @return array News data
      */
     public function getBeritaBencana()
@@ -77,27 +78,27 @@ class GibranDashboardService
                 return [
                     'success' => true,
                     'message' => $response['message'] ?? 'News data retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load news data',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load news data: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load news data: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get system overview data for dashboard
-     * 
+     *
      * @return array System overview data
      */
     public function getSystemOverview()
@@ -114,22 +115,22 @@ class GibranDashboardService
                 'data' => [
                     'statistics' => $statistics['data'] ?? [],
                     'recent_reports' => $recentReports['data'] ?? [],
-                    'user_activity' => $userActivity['data'] ?? []
-                ]
+                    'user_activity' => $userActivity['data'] ?? [],
+                ],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load system overview: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load system overview: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get recent reports for dashboard display
-     * 
-     * @param int $limit Number of recent reports to fetch
+     *
+     * @param  int  $limit  Number of recent reports to fetch
      * @return array Recent reports data
      */
     protected function getRecentReports($limit = 5)
@@ -139,33 +140,33 @@ class GibranDashboardService
             $response = $this->apiClient->authenticatedRequest('GET', $endpoint, [
                 'limit' => $limit,
                 'order' => 'created_at',
-                'direction' => 'desc'
+                'direction' => 'desc',
             ]);
 
             if (isset($response['success']) && $response['success']) {
                 return [
                     'success' => true,
-                    'data' => array_slice($response['data'] ?? [], 0, $limit)
+                    'data' => array_slice($response['data'] ?? [], 0, $limit),
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => 'Failed to load recent reports',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load recent reports: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load recent reports: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get user activity data for dashboard
-     * 
+     *
      * @return array User activity data
      */
     protected function getUserActivity()
@@ -178,27 +179,27 @@ class GibranDashboardService
             if (isset($response['success']) && $response['success']) {
                 return [
                     'success' => true,
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => 'Failed to load user activity',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load user activity: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load user activity: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get default statistics structure for fallback
-     * 
+     *
      * @return array Default statistics
      */
     protected function getDefaultStatistics()
@@ -209,7 +210,7 @@ class GibranDashboardService
             'verified_reports' => 0,
             'total_users' => 0,
             'active_users' => 0,
-            'recent_activity' => []
+            'recent_activity' => [],
         ];
     }
 }

@@ -3,9 +3,9 @@
 echo "=== Testing Status of Remaining Issues ===\n\n";
 
 // Include Laravel bootstrap
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 echo "🔍 ISSUE 1: Reports Controller 500 Error\n";
@@ -27,7 +27,7 @@ try {
     }
 
     if ($pelaporanRoute) {
-        echo "   Current route action: " . $pelaporanRoute->getActionName() . "\n";
+        echo '   Current route action: '.$pelaporanRoute->getActionName()."\n";
 
         // Check if it's a closure (problematic) or controller method
         if (strpos($pelaporanRoute->getActionName(), 'Closure') !== false) {
@@ -41,7 +41,7 @@ try {
         echo "❓ No /Pelaporan route found\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error checking route: " . $e->getMessage() . "\n";
+    echo '❌ Error checking route: '.$e->getMessage()."\n";
 }
 
 echo "\n🔍 ISSUE 2: Session Persistence\n";
@@ -78,7 +78,7 @@ try {
         echo "❌ Basic PHP session not working\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error testing session: " . $e->getMessage() . "\n";
+    echo '❌ Error testing session: '.$e->getMessage()."\n";
 }
 
 echo "\n🔍 ISSUE 3: Berita Bencana Backend Endpoint\n";
@@ -88,7 +88,7 @@ try {
     // Test the backend API endpoint
     echo "Testing backend API berita bencana endpoint...\n";
 
-    $apiClient = new App\Services\AstacalaApiClient();
+    $apiClient = new App\Services\AstacalaApiClient;
 
     // Test the endpoint that was causing 500 errors
     $beritaEndpoint = $apiClient->getEndpoint('gibran', 'berita_bencana');
@@ -97,7 +97,7 @@ try {
     // First login to get authentication
     $credentials = [
         'email' => 'volunteer@mobile.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ];
 
     $loginEndpoint = $apiClient->getEndpoint('gibran', 'auth_login');
@@ -113,22 +113,22 @@ try {
 
         if (isset($beritaResponse['status']) && $beritaResponse['status'] === 'success') {
             echo "✅ Berita bencana endpoint working correctly\n";
-            echo "   Response contains: " . count($beritaResponse['data'] ?? []) . " items\n";
+            echo '   Response contains: '.count($beritaResponse['data'] ?? [])." items\n";
         } else {
             echo "❌ Berita bencana endpoint returning error\n";
-            echo "   Response: " . json_encode($beritaResponse, JSON_PRETTY_PRINT) . "\n";
+            echo '   Response: '.json_encode($beritaResponse, JSON_PRETTY_PRINT)."\n";
         }
     } else {
         echo "❌ Could not authenticate to test endpoint\n";
-        echo "   Login response: " . json_encode($loginResponse, JSON_PRETTY_PRINT) . "\n";
+        echo '   Login response: '.json_encode($loginResponse, JSON_PRETTY_PRINT)."\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error testing berita bencana endpoint: " . $e->getMessage() . "\n";
+    echo '❌ Error testing berita bencana endpoint: '.$e->getMessage()."\n";
 }
 
 echo "\n📋 SUMMARY OF ISSUE STATUS\n";
 echo "==========================\n";
-echo "Issue 1 (Reports 500 error): ";
-echo "Issue 2 (Session persistence): ";
-echo "Issue 3 (Berita bencana endpoint): ";
+echo 'Issue 1 (Reports 500 error): ';
+echo 'Issue 2 (Session persistence): ';
+echo 'Issue 3 (Berita bencana endpoint): ';
 echo "\nDetailed investigation completed.\n";

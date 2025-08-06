@@ -19,6 +19,6 @@ class BeritaBencana extends Model
         'pblk_skala_bencana',
         'dibuat_oleh_admin_id',
         'pblk_foto_bencana',
-        'is_published'
+        'is_published',
     ];
 }

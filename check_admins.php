@@ -13,14 +13,14 @@ try {
     echo "Database structure check:\n\n";
 
     // First, check if table exists and get its structure
-    $stmt = $pdo->query("DESCRIBE admins");
+    $stmt = $pdo->query('DESCRIBE admins');
     echo "Columns in admins table:\n";
     while ($col = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "- {$col['Field']} ({$col['Type']})\n";
     }
 
     echo "\nData in admins table:\n";
-    $stmt = $pdo->query("SELECT * FROM admins LIMIT 3");
+    $stmt = $pdo->query('SELECT * FROM admins LIMIT 3');
 
     while ($admin = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "\nAdmin record:\n";
@@ -30,7 +30,7 @@ try {
         echo "------------------------\n";
     }
 } catch (PDOException $e) {
-    echo "Database connection failed: " . $e->getMessage();
+    echo 'Database connection failed: '.$e->getMessage();
 }
 
 echo "\nYou can try logging in with any of these usernames.\n";

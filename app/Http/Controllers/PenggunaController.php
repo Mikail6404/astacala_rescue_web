@@ -19,7 +19,7 @@ class PenggunaController extends Controller
     public function controllerpengguna()
     {
         // Check if admin is logged in
-        if (!session()->has('admin_id')) {
+        if (! session()->has('admin_id')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -28,12 +28,14 @@ class PenggunaController extends Controller
 
         if ($response['success']) {
             $data_pengguna = $response['data'];
+
             return view('data_pengguna', compact('data_pengguna'));
         } else {
             // If API call fails, show empty state with error message
             $data_pengguna = [];
+
             return view('data_pengguna', compact('data_pengguna'))
-                ->with('error', 'Gagal memuat data pengguna: ' . $response['message']);
+                ->with('error', 'Gagal memuat data pengguna: '.$response['message']);
         }
     }
 
@@ -54,6 +56,7 @@ class PenggunaController extends Controller
 
         if ($response['success']) {
             $pengguna = $response['data'];
+
             return view('ubah_pengguna', compact(['pengguna']));
         } else {
             return redirect('/Datapengguna')->with('Error', $response['message']);

@@ -1,10 +1,9 @@
 <?php
+
 // Test CRUD Operations API Endpoints
 // TICKET #001 Testing
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-use Illuminate\Http\Request;
+require_once __DIR__.'/vendor/autoload.php';
 
 echo "=== TESTING CRUD OPERATIONS API ENDPOINTS ===\n\n";
 
@@ -13,14 +12,14 @@ echo "1. Testing new API routes registration...\n";
 
 // Since we can't run artisan serve, let's test our controller methods directly
 $pelaporanController = new App\Http\Controllers\PelaporanController(
-    new App\Services\GibranReportService(new App\Services\AstacalaApiClient()),
-    new App\Services\GibranAuthService(new App\Services\AstacalaApiClient())
+    new App\Services\GibranReportService(new App\Services\AstacalaApiClient),
+    new App\Services\GibranAuthService(new App\Services\AstacalaApiClient)
 );
 
 echo "✅ PelaporanController instantiated successfully\n";
 
 $adminController = new App\Http\Controllers\AdminController(
-    new App\Services\GibranUserService(new App\Services\AstacalaApiClient())
+    new App\Services\GibranUserService(new App\Services\AstacalaApiClient)
 );
 
 echo "✅ AdminController instantiated successfully\n";

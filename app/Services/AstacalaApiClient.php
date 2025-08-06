@@ -2,18 +2,22 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
 use Exception;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class AstacalaApiClient
 {
     protected $baseUrl;
+
     protected $version;
+
     protected $timeout;
+
     protected $retryAttempts;
+
     protected $headers;
 
     public function __construct()
@@ -32,12 +36,12 @@ class AstacalaApiClient
     {
         $token = $this->getStoredToken();
 
-        if (!$token) {
+        if (! $token) {
             throw new Exception('No authentication token found. Please login first.');
         }
 
         $headers = array_merge($this->headers, [
-            'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer '.$token,
         ]);
 
         return $this->makeRequest($method, $endpoint, $data, $headers, $files);
@@ -64,7 +68,7 @@ class AstacalaApiClient
                 ->retry($this->retryAttempts);
 
             // Handle file uploads
-            if (!empty($files)) {
+            if (! empty($files)) {
                 foreach ($files as $key => $file) {
                     $http->attach($key, $file->get(), $file->getClientOriginalName());
                 }
@@ -84,7 +88,7 @@ class AstacalaApiClient
                 'method' => $method,
                 'url' => $url,
                 'status' => $response->status(),
-                'headers' => $headers
+                'headers' => $headers,
             ]);
 
             return $this->handleResponse($response);
@@ -92,7 +96,7 @@ class AstacalaApiClient
             Log::error('API Request Failed', [
                 'method' => $method,
                 'url' => $url,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -111,19 +115,21 @@ class AstacalaApiClient
         // Handle authentication errors
         if ($response->status() === 401) {
             $this->clearStoredToken();
+
             return [
                 'success' => false,
                 'message' => 'Authentication failed. Please login again.',
-                'status_code' => 401
+                'status_code' => 401,
             ];
         }
 
         // Handle other errors
         $error = $response->json('message') ?? 'API request failed';
+
         return [
             'success' => false,
             'message' => $error,
-            'status_code' => $response->status()
+            'status_code' => $response->status(),
         ];
     }
 
@@ -133,14 +139,14 @@ class AstacalaApiClient
     protected function buildUrl($endpoint)
     {
         // Replace version placeholder
-        if (!empty($this->version)) {
+        if (! empty($this->version)) {
             $endpoint = str_replace('{version}', $this->version, $endpoint);
         } else {
             // Remove the version placeholder and clean up double slashes
             $endpoint = str_replace('/{version}', '', $endpoint);
         }
 
-        return rtrim($this->baseUrl, '/') . $endpoint;
+        return rtrim($this->baseUrl, '/').$endpoint;
     }
 
     /**
@@ -150,7 +156,7 @@ class AstacalaApiClient
     {
         $endpoints = config('astacala_api.endpoints');
 
-        if (!isset($endpoints[$category][$action])) {
+        if (! isset($endpoints[$category][$action])) {
             throw new Exception("Endpoint not found: {$category}.{$action}");
         }
 
@@ -209,6 +215,6 @@ class AstacalaApiClient
      */
     public function isAuthenticated()
     {
-        return !is_null($this->getStoredToken());
+        return ! is_null($this->getStoredToken());
     }
 }

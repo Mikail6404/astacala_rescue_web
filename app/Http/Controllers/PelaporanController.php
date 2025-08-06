@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\GibranReportService;
 use App\Services\GibranAuthService;
+use App\Services\GibranReportService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class PelaporanController extends Controller
 {
     protected $reportService;
+
     protected $authService;
 
     public function __construct(GibranReportService $reportService, GibranAuthService $authService)
@@ -25,11 +26,13 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return view('data_pelaporan', ['data' => $result['data']]);
             } else {
-                Log::error('Failed to fetch reports: ' . $result['message']);
+                Log::error('Failed to fetch reports: '.$result['message']);
+
                 return view('data_pelaporan', ['data' => []]);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in membacaDataPelaporan: ' . $e->getMessage());
+            Log::error('Exception in membacaDataPelaporan: '.$e->getMessage());
+
             return view('data_pelaporan', ['data' => []]);
         }
     }
@@ -41,10 +44,11 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return redirect()->route('pelaporan.index')->with('success', 'Laporan berhasil dihapus');
             } else {
-                return redirect()->route('pelaporan.index')->with('error', 'Gagal menghapus laporan: ' . $result['message']);
+                return redirect()->route('pelaporan.index')->with('error', 'Gagal menghapus laporan: '.$result['message']);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in menghapusDataPelaporan: ' . $e->getMessage());
+            Log::error('Exception in menghapusDataPelaporan: '.$e->getMessage());
+
             return redirect()->route('pelaporan.index')->with('error', 'Terjadi kesalahan saat menghapus laporan');
         }
     }
@@ -56,11 +60,13 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return view('notifikasi', ['data' => $result['data']]);
             } else {
-                Log::error('Failed to fetch reports for notifications: ' . $result['message']);
+                Log::error('Failed to fetch reports for notifications: '.$result['message']);
+
                 return view('notifikasi', ['data' => []]);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in menampilkanNotifikasiPelaporanMasuk: ' . $e->getMessage());
+            Log::error('Exception in menampilkanNotifikasiPelaporanMasuk: '.$e->getMessage());
+
             return view('notifikasi', ['data' => []]);
         }
     }
@@ -72,10 +78,11 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return redirect()->route('pelaporan.notifikasi')->with('success', 'Laporan berhasil diverifikasi');
             } else {
-                return redirect()->route('pelaporan.notifikasi')->with('error', 'Gagal memverifikasi laporan: ' . $result['message']);
+                return redirect()->route('pelaporan.notifikasi')->with('error', 'Gagal memverifikasi laporan: '.$result['message']);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in memberikanNotifikasiVerifikasi: ' . $e->getMessage());
+            Log::error('Exception in memberikanNotifikasiVerifikasi: '.$e->getMessage());
+
             return redirect()->route('pelaporan.notifikasi')->with('error', 'Terjadi kesalahan saat memverifikasi laporan');
         }
     }
@@ -84,9 +91,11 @@ class PelaporanController extends Controller
     {
         try {
             $result = $this->reportService->getReportsByUser($pengguna_id);
+
             return response()->json($result);
         } catch (\Exception $e) {
-            Log::error('Exception in getVerifikasi: ' . $e->getMessage());
+            Log::error('Exception in getVerifikasi: '.$e->getMessage());
+
             return response()->json(['status' => 'error', 'message' => 'Internal server error'], 500);
         }
     }
@@ -95,9 +104,11 @@ class PelaporanController extends Controller
     {
         try {
             $result = $this->reportService->deleteReport($id);
+
             return response()->json($result);
         } catch (\Exception $e) {
-            Log::error('Exception in apiDeleteReport: ' . $e->getMessage());
+            Log::error('Exception in apiDeleteReport: '.$e->getMessage());
+
             return response()->json(['status' => 'error', 'message' => 'Internal server error'], 500);
         }
     }
@@ -106,9 +117,11 @@ class PelaporanController extends Controller
     {
         try {
             $result = $this->reportService->verifyReport($id);
+
             return response()->json($result);
         } catch (\Exception $e) {
-            Log::error('Exception in apiVerifyReport: ' . $e->getMessage());
+            Log::error('Exception in apiVerifyReport: '.$e->getMessage());
+
             return response()->json(['status' => 'error', 'message' => 'Internal server error'], 500);
         }
     }
@@ -117,9 +130,11 @@ class PelaporanController extends Controller
     {
         try {
             $result = $this->reportService->createReport($request->all());
+
             return response()->json($result);
         } catch (\Exception $e) {
-            Log::error('Exception in store: ' . $e->getMessage());
+            Log::error('Exception in store: '.$e->getMessage());
+
             return response()->json(['status' => 'error', 'message' => 'Internal server error'], 500);
         }
     }
@@ -133,12 +148,14 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return view('detail_pelaporan', ['report' => $result['data']]);
             } else {
-                Log::error('Failed to fetch report detail: ' . $result['message']);
+                Log::error('Failed to fetch report detail: '.$result['message']);
+
                 return redirect()->route('pelaporan.index')
-                    ->with('error', 'Report not found: ' . $result['message']);
+                    ->with('error', 'Report not found: '.$result['message']);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in showDetail: ' . $e->getMessage());
+            Log::error('Exception in showDetail: '.$e->getMessage());
+
             return redirect()->route('pelaporan.index')
                 ->with('error', 'Error loading report detail');
         }
@@ -152,12 +169,14 @@ class PelaporanController extends Controller
             if ($result['success'] === true) {
                 return view('detail_notifikasi', ['notifikasi' => $result['data']]);
             } else {
-                Log::error('Failed to fetch notifikasi detail: ' . $result['message']);
+                Log::error('Failed to fetch notifikasi detail: '.$result['message']);
+
                 return redirect()->route('pelaporan.notifikasi')
-                    ->with('error', 'Notifikasi not found: ' . $result['message']);
+                    ->with('error', 'Notifikasi not found: '.$result['message']);
             }
         } catch (\Exception $e) {
-            Log::error('Exception in showNotifikasiDetail: ' . $e->getMessage());
+            Log::error('Exception in showNotifikasiDetail: '.$e->getMessage());
+
             return redirect()->route('pelaporan.notifikasi')
                 ->with('error', 'Error loading notifikasi detail');
         }

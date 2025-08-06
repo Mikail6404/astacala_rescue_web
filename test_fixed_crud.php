@@ -10,48 +10,48 @@ $kernel->bootstrap();
 // Load environment
 $app->loadEnvironmentFrom('.env');
 
-use App\Services\GibranUserService;
-use App\Services\AstacalaApiClient;
 use App\Services\ApiAuthService;
+use App\Services\AstacalaApiClient;
+use App\Services\GibranUserService;
 
 echo "=== TESTING FIXED CRUD OPERATIONS ===\n\n";
 
 try {
     // Create service instances
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $authService = new ApiAuthService($apiClient);
     $userService = new GibranUserService($apiClient, $authService);
 
     // Test 1: Get admin users list (should work now with authentication)
     echo "1. Testing Get Admin Users:\n";
     $result = $userService->getAdminUsers();
-    echo "Result: " . ($result['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+    echo 'Result: '.($result['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
     echo "Message: {$result['message']}\n";
-    if (isset($result['data']) && !empty($result['data'])) {
-        echo "Found " . count($result['data']) . " admin users\n";
+    if (isset($result['data']) && ! empty($result['data'])) {
+        echo 'Found '.count($result['data'])." admin users\n";
         $firstAdmin = $result['data'][0];
         echo "First admin: {$firstAdmin['name']} ({$firstAdmin['email']})\n";
     }
     echo "\n";
 
-    if ($result['success'] && !empty($result['data'])) {
+    if ($result['success'] && ! empty($result['data'])) {
         $testUserId = $result['data'][0]['id'];
 
         // Test 2: Get single user (should populate form fields correctly)
         echo "2. Testing Get Single User (ID: $testUserId):\n";
         $userResult = $userService->getUser($testUserId);
-        echo "Result: " . ($userResult['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+        echo 'Result: '.($userResult['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
         echo "Message: {$userResult['message']}\n";
 
         if ($userResult['success'] && $userResult['data']) {
             $userData = $userResult['data'];
             echo "User data fields:\n";
-            echo "- nama_lengkap: " . ($userData['nama_lengkap'] ?? 'NOT SET') . "\n";
-            echo "- email: " . ($userData['email'] ?? 'NOT SET') . "\n";
-            echo "- tanggal_lahir: " . ($userData['tanggal_lahir'] ?? 'NOT SET') . "\n";
-            echo "- tempat_lahir: " . ($userData['tempat_lahir'] ?? 'NOT SET') . "\n";
-            echo "- no_handphone: " . ($userData['no_handphone'] ?? 'NOT SET') . "\n";
-            echo "- no_anggota: " . ($userData['no_anggota'] ?? 'NOT SET') . "\n";
+            echo '- nama_lengkap: '.($userData['nama_lengkap'] ?? 'NOT SET')."\n";
+            echo '- email: '.($userData['email'] ?? 'NOT SET')."\n";
+            echo '- tanggal_lahir: '.($userData['tanggal_lahir'] ?? 'NOT SET')."\n";
+            echo '- tempat_lahir: '.($userData['tempat_lahir'] ?? 'NOT SET')."\n";
+            echo '- no_handphone: '.($userData['no_handphone'] ?? 'NOT SET')."\n";
+            echo '- no_anggota: '.($userData['no_anggota'] ?? 'NOT SET')."\n";
 
             // Test 3: Update user (should work with field mapping)
             echo "\n3. Testing Update User:\n";
@@ -61,11 +61,11 @@ try {
                 'tanggal_lahir' => $userData['tanggal_lahir'] ?? '1990-01-01',
                 'tempat_lahir' => $userData['tempat_lahir'] ?? 'Jakarta Updated',
                 'no_handphone' => $userData['no_handphone'] ?? '+6281234567890',
-                'no_anggota' => $userData['no_anggota'] ?? 'ADM999'
+                'no_anggota' => $userData['no_anggota'] ?? 'ADM999',
             ];
 
             $updateResult = $userService->updateUser($testUserId, $updateData);
-            echo "Result: " . ($updateResult['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+            echo 'Result: '.($updateResult['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
             echo "Message: {$updateResult['message']}\n";
 
             if ($updateResult['success']) {
@@ -89,6 +89,6 @@ try {
     echo "✅ Error Handling - Better logging and error reporting\n";
     echo "✅ CRUD Operations - All operations now use proper endpoints\n";
 } catch (Exception $e) {
-    echo "❌ ERROR: " . $e->getMessage() . "\n";
-    echo "Trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ ERROR: '.$e->getMessage()."\n";
+    echo 'Trace: '.$e->getTraceAsString()."\n";
 }

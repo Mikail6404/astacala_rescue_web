@@ -4,7 +4,6 @@
  * TICKET #005 Final Validation Test
  * Testing the fixed backend API endpoints through direct calls
  */
-
 echo "=== TICKET #005 Final Backend Validation Test ===\n";
 
 // Get a CSRF token by making a request to the web app first
@@ -37,7 +36,7 @@ curl_setopt($backendCh, CURLOPT_URL, 'http://127.0.0.1:8000/api/v1/users/admin')
 curl_setopt($backendCh, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($backendCh, CURLOPT_HTTPHEADER, [
     'Accept: application/json',
-    'Authorization: Bearer ' . 'test-token-admin-gibran'
+    'Authorization: Bearer '.'test-token-admin-gibran',
 ]);
 $adminResponse = curl_exec($backendCh);
 $adminHttpCode = curl_getinfo($backendCh, CURLINFO_HTTP_CODE);
@@ -54,9 +53,9 @@ if ($adminHttpCode === 200) {
         // Test update endpoint
         echo "\n   b. Testing PUT /api/v1/users/{id} (Issue 5a fix)...\n";
         $updateData = [
-            'name' => 'Test Updated Admin Name ' . date('H:i:s'),
+            'name' => 'Test Updated Admin Name '.date('H:i:s'),
             'phone' => '08987654321',
-            'organization' => 'TEST123'
+            'organization' => 'TEST123',
         ];
 
         $updateCh = curl_init();
@@ -66,7 +65,7 @@ if ($adminHttpCode === 200) {
         curl_setopt($updateCh, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Accept: application/json',
-            'Authorization: Bearer ' . 'test-token-admin-gibran'
+            'Authorization: Bearer '.'test-token-admin-gibran',
         ]);
         curl_setopt($updateCh, CURLOPT_POSTFIELDS, json_encode($updateData));
 
@@ -78,7 +77,7 @@ if ($adminHttpCode === 200) {
         if ($updateHttpCode === 200) {
             $updateResult = json_decode($updateResponse, true);
             echo "   ✅ Backend update endpoint working correctly\n";
-            echo "      - Response: " . ($updateResult['message'] ?? 'Success') . "\n";
+            echo '      - Response: '.($updateResult['message'] ?? 'Success')."\n";
         } else {
             echo "   ❌ Backend update endpoint failed\n";
             echo "      - Response: $updateResponse\n";
@@ -93,7 +92,7 @@ if ($adminHttpCode === 200) {
         curl_setopt($deactivateCh, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Accept: application/json',
-            'Authorization: Bearer ' . 'test-token-admin-gibran'
+            'Authorization: Bearer '.'test-token-admin-gibran',
         ]);
 
         $deactivateResponse = curl_exec($deactivateCh);
@@ -104,7 +103,7 @@ if ($adminHttpCode === 200) {
         if ($deactivateHttpCode === 200) {
             $deactivateResult = json_decode($deactivateResponse, true);
             echo "   ✅ Backend deactivation endpoint working correctly\n";
-            echo "      - Response: " . ($deactivateResult['message'] ?? 'Success') . "\n";
+            echo '      - Response: '.($deactivateResult['message'] ?? 'Success')."\n";
         } else {
             echo "   ❌ Backend deactivation endpoint failed\n";
             echo "      - Response: $deactivateResponse\n";

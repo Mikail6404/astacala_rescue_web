@@ -4,7 +4,6 @@
  * Direct Test of TICKET #005 AJAX Endpoints
  * This bypasses login and directly tests the API endpoints
  */
-
 echo "=== Direct Test of TICKET #005 AJAX Endpoints ===\n\n";
 
 $baseUrl = 'http://127.0.0.1:8001';
@@ -13,12 +12,12 @@ $baseUrl = 'http://127.0.0.1:8001';
 echo "1. Setting up test admin session:\n";
 
 // Get backend API admin user credentials
-require_once __DIR__ . '/../../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
-$app = require_once __DIR__ . '/../../../astacala_backend/astacala-rescue-api/bootstrap/app.php';
+require_once __DIR__.'/../../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
+$app = require_once __DIR__.'/../../../astacala_backend/astacala-rescue-api/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 $adminUser = App\Models\User::where('role', 'ADMIN')->first();
-if (!$adminUser) {
+if (! $adminUser) {
     echo "❌ No admin user found\n";
     exit(1);
 }
@@ -46,7 +45,7 @@ curl_close($ch);
 preg_match('/<meta name="csrf-token" content="([^"]+)"/', $pageResponse, $csrfMatches);
 $csrfToken = $csrfMatches[1] ?? '';
 
-if (!$csrfToken) {
+if (! $csrfToken) {
     // Try alternative method to get CSRF token
     $tokenUrl = "$baseUrl/Dataadmin";
     $ch = curl_init();
@@ -61,7 +60,7 @@ if (!$csrfToken) {
     $csrfToken = $csrfMatches[1] ?? 'test-token-123';
 }
 
-echo "✅ CSRF Token: " . substr($csrfToken, 0, 20) . "...\n\n";
+echo '✅ CSRF Token: '.substr($csrfToken, 0, 20)."...\n\n";
 
 // Step 2: Get admin list to find an admin user to test with
 echo "2. Getting admin list:\n";
@@ -83,7 +82,7 @@ if ($httpCode === 200) {
     preg_match_all('/\/Admin\/(\d+)\/ubahadmin/', $listResponse, $matches);
     $adminIds = $matches[1];
 
-    if (!empty($adminIds)) {
+    if (! empty($adminIds)) {
         $testAdminId = $adminIds[0];
         echo "✅ Found test admin ID: $testAdminId\n\n";
     } else {
@@ -108,7 +107,7 @@ $updateData = [
     'tanggal_lahir_admin' => '1985-06-15',
     'tempat_lahir_admin' => 'Test Updated Birth Place',
     'no_anggota' => 'TEST123',
-    'no_handphone_admin' => '08987654321'
+    'no_handphone_admin' => '08987654321',
 ];
 
 $ch = curl_init();
@@ -118,8 +117,8 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updateData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/test_cookies.txt');
@@ -131,10 +130,10 @@ curl_close($ch);
 $updateResult = json_decode($updateApiResponse, true);
 $updateWorking = $httpCode === 200 && $updateResult && isset($updateResult['success']) && $updateResult['success'];
 
-echo "   - AJAX Update Admin: " . ($updateWorking ? "✅ WORKING" : "❌ FAILED") . " (HTTP $httpCode)\n";
+echo '   - AJAX Update Admin: '.($updateWorking ? '✅ WORKING' : '❌ FAILED')." (HTTP $httpCode)\n";
 
 if ($updateWorking) {
-    echo "   - ✅ Update response: " . $updateResult['message'] . "\n";
+    echo '   - ✅ Update response: '.$updateResult['message']."\n";
 } else {
     echo "   - ❌ Update error: $updateApiResponse\n";
 }
@@ -149,8 +148,8 @@ curl_setopt($ch, CURLOPT_URL, $deleteApiUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/json',
-    'X-CSRF-TOKEN: ' . $csrfToken,
-    'X-Requested-With: XMLHttpRequest'
+    'X-CSRF-TOKEN: '.$csrfToken,
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_COOKIEFILE, '/tmp/test_cookies.txt');
@@ -162,10 +161,10 @@ curl_close($ch);
 $deleteResult = json_decode($deleteApiResponse, true);
 $deleteWorking = $httpCode === 200 && $deleteResult && isset($deleteResult['success']) && $deleteResult['success'];
 
-echo "   - AJAX Delete Admin: " . ($deleteWorking ? "✅ WORKING" : "❌ FAILED") . " (HTTP $httpCode)\n";
+echo '   - AJAX Delete Admin: '.($deleteWorking ? '✅ WORKING' : '❌ FAILED')." (HTTP $httpCode)\n";
 
 if ($deleteWorking) {
-    echo "   - ✅ Delete response: " . $deleteResult['message'] . "\n";
+    echo '   - ✅ Delete response: '.$deleteResult['message']."\n";
 } else {
     echo "   - ❌ Delete error: $deleteApiResponse\n";
 }
@@ -173,8 +172,8 @@ if ($deleteWorking) {
 // Final summary
 echo "\n=== FINAL SUMMARY ===\n";
 echo "✅ Test Setup: COMPLETE\n";
-echo ($updateWorking ? "✅" : "❌") . " Issue 5a (Update function): " . ($updateWorking ? "WORKING" : "FAILED") . "\n";
-echo ($deleteWorking ? "✅" : "❌") . " Issue 5c (Delete function): " . ($deleteWorking ? "WORKING" : "FAILED") . "\n";
+echo ($updateWorking ? '✅' : '❌').' Issue 5a (Update function): '.($updateWorking ? 'WORKING' : 'FAILED')."\n";
+echo ($deleteWorking ? '✅' : '❌').' Issue 5c (Delete function): '.($deleteWorking ? 'WORKING' : 'FAILED')."\n";
 
 if ($updateWorking && $deleteWorking) {
     echo "\n🎉 TICKET #005 AJAX FUNCTIONALITY: ALL TESTS PASSED!\n";

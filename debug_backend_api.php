@@ -19,7 +19,7 @@ echo "\n2. Testing auth endpoint with detailed request...\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -29,7 +29,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Accept: application/json',
-    'X-Requested-With: XMLHttpRequest'
+    'X-Requested-With: XMLHttpRequest',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -40,7 +40,7 @@ $error = curl_error($ch);
 curl_close($ch);
 
 echo "HTTP Status: $httpCode\n";
-echo "Response: " . substr($response, 0, 500) . "...\n";
+echo 'Response: '.substr($response, 0, 500)."...\n";
 
 if ($error) {
     echo "cURL Error: $error\n";
@@ -55,7 +55,7 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($loginData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/x-www-form-urlencoded',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -65,6 +65,6 @@ $httpCode2 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 echo "Form data HTTP Status: $httpCode2\n";
-echo "Form data Response: " . substr($response2, 0, 500) . "...\n";
+echo 'Form data Response: '.substr($response2, 0, 500)."...\n";
 
 echo "\n=== BACKEND API DEBUG COMPLETE ===\n";

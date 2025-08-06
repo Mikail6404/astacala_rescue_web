@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 echo "🧪 COMPREHENSIVE CROSS-PLATFORM DASHBOARD TEST\n";
 echo "===============================================\n\n";
@@ -29,14 +29,14 @@ try {
     $backendPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Check users table data completeness
-    $stmt = $backendPdo->query("
+    $stmt = $backendPdo->query('
         SELECT 
             COUNT(*) as total_users,
             COUNT(birth_date) as users_with_birth_date,
             COUNT(phone) as users_with_phone,
             COUNT(organization) as users_with_organization
         FROM users
-    ");
+    ');
     $userStats = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo "👥 USERS TABLE ANALYSIS:\n";
@@ -46,11 +46,11 @@ try {
     echo "   Users with Organization: {$userStats['users_with_organization']}\n";
 
     // Check role distribution
-    $stmt = $backendPdo->query("
+    $stmt = $backendPdo->query('
         SELECT role, COUNT(*) as count 
         FROM users 
         GROUP BY role
-    ");
+    ');
     $roleStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo "\n📊 ROLE DISTRIBUTION:\n";
@@ -59,14 +59,14 @@ try {
     }
 
     // Check disaster reports data completeness
-    $stmt = $backendPdo->query("
+    $stmt = $backendPdo->query('
         SELECT 
             COUNT(*) as total_reports,
             COUNT(personnel_count) as reports_with_personnel,
             COUNT(contact_phone) as reports_with_contact,
             COUNT(coordinate_string) as reports_with_coordinates
         FROM disaster_reports
-    ");
+    ');
     $reportStats = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo "\n🚨 DISASTER REPORTS ANALYSIS:\n";
@@ -76,19 +76,19 @@ try {
     echo "   Reports with Coordinates: {$reportStats['reports_with_coordinates']}\n";
 
     // Check publications data
-    $stmt = $backendPdo->query("
+    $stmt = $backendPdo->query('
         SELECT 
             COUNT(*) as total_publications,
             COUNT(author_id) as publications_with_author
         FROM publications
-    ");
+    ');
     $pubStats = $stmt->fetch(PDO::FETCH_ASSOC);
 
     echo "\n📰 PUBLICATIONS ANALYSIS:\n";
     echo "   Total Publications: {$pubStats['total_publications']}\n";
     echo "   Publications with Author: {$pubStats['publications_with_author']}\n";
 } catch (Exception $e) {
-    echo "❌ Backend database connection failed: " . $e->getMessage() . "\n";
+    echo '❌ Backend database connection failed: '.$e->getMessage()."\n";
 }
 
 echo "\n\n📡 PHASE 2: API Endpoint Testing\n";
@@ -105,7 +105,7 @@ function testApiEndpoint($url, $description)
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
-        'Content-Type: application/json'
+        'Content-Type: application/json',
     ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
@@ -133,10 +133,10 @@ function testApiEndpoint($url, $description)
 // Test backend API endpoints
 $backendBaseUrl = 'http://127.0.0.1:8000/api/v1';
 
-testApiEndpoint($backendBaseUrl . '/users/admin-list', 'Backend Admin List');
-testApiEndpoint($backendBaseUrl . '/users/volunteer-list', 'Backend Volunteer List');
-testApiEndpoint($backendBaseUrl . '/disaster-reports', 'Backend Disaster Reports');
-testApiEndpoint($backendBaseUrl . '/publications', 'Backend Publications');
+testApiEndpoint($backendBaseUrl.'/users/admin-list', 'Backend Admin List');
+testApiEndpoint($backendBaseUrl.'/users/volunteer-list', 'Backend Volunteer List');
+testApiEndpoint($backendBaseUrl.'/disaster-reports', 'Backend Disaster Reports');
+testApiEndpoint($backendBaseUrl.'/publications', 'Backend Publications');
 
 echo "\n🌐 PHASE 3: Web App Service Layer Testing\n";
 echo "----------------------------------------\n";
@@ -178,10 +178,10 @@ function testWebPage($url, $description)
     echo "\n";
 }
 
-testWebPage($webApiUrl . '/Dataadmin', 'Web Admin Data Page');
-testWebPage($webApiUrl . '/Datapengguna', 'Web User Data Page');
-testWebPage($webApiUrl . '/pelaporan', 'Web Disaster Reports Page');
-testWebPage($webApiUrl . '/publikasi', 'Web Publications Page');
+testWebPage($webApiUrl.'/Dataadmin', 'Web Admin Data Page');
+testWebPage($webApiUrl.'/Datapengguna', 'Web User Data Page');
+testWebPage($webApiUrl.'/pelaporan', 'Web Disaster Reports Page');
+testWebPage($webApiUrl.'/publikasi', 'Web Publications Page');
 
 echo "\n📋 SUMMARY AND RECOMMENDATIONS\n";
 echo "=============================\n";

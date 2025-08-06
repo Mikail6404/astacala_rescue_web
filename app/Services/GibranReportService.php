@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
 use Exception;
 
 /**
  * Gibran Report Service
- * 
+ *
  * Handles disaster report operations for the web application using
  * the /api/gibran/pelaporans/* endpoints from the unified backend.
- * 
+ *
  * This service provides web admin functionality for viewing, managing,
  * and verifying disaster reports submitted through the mobile app.
- * 
+ *
  * @author Web Integration Team
+ *
  * @version 1.0.0
+ *
  * @date August 3, 2025
  */
 class GibranReportService
@@ -29,8 +30,8 @@ class GibranReportService
 
     /**
      * Get all disaster reports for admin review
-     * 
-     * @param array $filters Optional filters (status, date_range, etc.)
+     *
+     * @param  array  $filters  Optional filters (status, date_range, etc.)
      * @return array Standardized response with reports data
      */
     public function getAllReports($filters = [])
@@ -44,29 +45,29 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => $response['message'] ?? 'Reports retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load reports',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load reports: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load reports: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Create a new disaster report (for web admin use)
-     * 
-     * @param array $reportData Report data
-     * @param array $files Optional file uploads
+     *
+     * @param  array  $reportData  Report data
+     * @param  array  $files  Optional file uploads
      * @return array Standardized response
      */
     public function createReport($reportData, $files = [])
@@ -79,27 +80,27 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => $response['message'] ?? 'Report created successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to create report',
-                'errors' => $response['errors'] ?? null
+                'errors' => $response['errors'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to create report: ' . $e->getMessage()
+                'message' => 'Failed to create report: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Get single disaster report by ID
-     * 
-     * @param int $reportId Report ID to retrieve
+     *
+     * @param  int  $reportId  Report ID to retrieve
      * @return array Standardized response with report data
      */
     public function getReport($reportId)
@@ -112,27 +113,27 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => $response['message'] ?? 'Report retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to retrieve report'
+                'message' => $response['message'] ?? 'Failed to retrieve report',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to retrieve report: ' . $e->getMessage()
+                'message' => 'Failed to retrieve report: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Verify a disaster report (admin action)
-     * 
-     * @param int $reportId Report ID to verify
-     * @param array $verificationData Verification status and notes
+     *
+     * @param  int  $reportId  Report ID to verify
+     * @param  array  $verificationData  Verification status and notes
      * @return array Standardized response
      */
     public function verifyReport($reportId, $verificationData = [])
@@ -145,25 +146,25 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => 'Report verification updated successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to verify report'
+                'message' => $response['message'] ?? 'Failed to verify report',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to verify report: ' . $e->getMessage()
+                'message' => 'Failed to verify report: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Get report statistics for dashboard
-     * 
+     *
      * @return array Statistics data
      */
     public function getReportStatistics()
@@ -176,28 +177,28 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => 'Statistics retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load statistics',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load statistics: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load statistics: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Delete a disaster report (admin action)
-     * 
-     * @param int $reportId Report ID to delete
+     *
+     * @param  int  $reportId  Report ID to delete
      * @return array Standardized response
      */
     public function deleteReport($reportId)
@@ -209,25 +210,25 @@ class GibranReportService
             if (isset($response['success']) && $response['success']) {
                 return [
                     'success' => true,
-                    'message' => 'Report deleted successfully'
+                    'message' => 'Report deleted successfully',
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to delete report'
+                'message' => $response['message'] ?? 'Failed to delete report',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to delete report: ' . $e->getMessage()
+                'message' => 'Failed to delete report: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Get pending reports (those awaiting verification)
-     * 
+     *
      * @return array Pending reports
      */
     public function getPendingReports()
@@ -237,8 +238,8 @@ class GibranReportService
 
     /**
      * Get user's reports (for verification display)
-     * 
-     * @param int|null $userId Optional user ID filter
+     *
+     * @param  int|null  $userId  Optional user ID filter
      * @return array User reports
      */
     public function getUserReports($userId = null)
@@ -253,10 +254,10 @@ class GibranReportService
 
     /**
      * Update an existing report
-     * 
-     * @param int $reportId Report ID
-     * @param array $reportData Updated report data
-     * @param array $files Optional file uploads
+     *
+     * @param  int  $reportId  Report ID
+     * @param  array  $reportData  Updated report data
+     * @param  array  $files  Optional file uploads
      * @return array Standardized response
      */
     public function updateReport($reportId, $reportData, $files = [])
@@ -271,19 +272,19 @@ class GibranReportService
                 return [
                     'success' => true,
                     'message' => 'Report updated successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to update report',
-                'errors' => $response['errors'] ?? null
+                'errors' => $response['errors'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to update report: ' . $e->getMessage()
+                'message' => 'Failed to update report: '.$e->getMessage(),
             ];
         }
     }

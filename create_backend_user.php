@@ -11,7 +11,7 @@ $registerData = [
     'name' => 'Admin User',
     'email' => 'volunteer@mobile.test',
     'password' => 'password',
-    'password_confirmation' => 'password'
+    'password_confirmation' => 'password',
 ];
 
 $ch = curl_init();
@@ -21,7 +21,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($registerData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -54,7 +54,7 @@ echo "==========================================\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password'
+    'password' => 'password',
 ];
 
 $ch = curl_init();
@@ -64,7 +64,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $loginResponse = curl_exec($ch);
@@ -89,6 +89,6 @@ if ($loginHttpCode === 200) {
     echo "❌ Login failed (HTTP $loginHttpCode)\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 echo "USER CREATION TEST COMPLETED\n";
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";

@@ -5,7 +5,7 @@ $pdo = new PDO('mysql:host=127.0.0.1;dbname=astacala_rescue', 'root', '');
 echo "=== ADMINS TABLE STRUCTURE ===\n";
 $stmt = $pdo->query('DESCRIBE admins');
 while ($row = $stmt->fetch()) {
-    echo $row['Field'] . ' - ' . $row['Type'] . "\n";
+    echo $row['Field'].' - '.$row['Type']."\n";
 }
 
 echo "\n=== SAMPLE ADMIN DATA ===\n";
@@ -17,7 +17,7 @@ while ($row = $stmt->fetch()) {
 echo "\n=== PENGGUNAS TABLE STRUCTURE ===\n";
 $stmt = $pdo->query('DESCRIBE penggunas');
 while ($row = $stmt->fetch()) {
-    echo $row['Field'] . ' - ' . $row['Type'] . "\n";
+    echo $row['Field'].' - '.$row['Type']."\n";
 }
 
 echo "\n=== SAMPLE PENGGUNA DATA ===\n";

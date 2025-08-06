@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
-use Illuminate\Support\Facades\Session;
 use Exception;
+use Illuminate\Support\Facades\Session;
 
 class AuthService
 {
@@ -34,18 +33,18 @@ class AuthService
                 return [
                     'success' => true,
                     'user' => $user,
-                    'token' => $token
+                    'token' => $token,
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Login failed'
+                'message' => $response['message'] ?? 'Login failed',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
@@ -69,18 +68,18 @@ class AuthService
                 return [
                     'success' => true,
                     'user' => $user,
-                    'token' => $token
+                    'token' => $token,
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Registration failed'
+                'message' => $response['message'] ?? 'Registration failed',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
@@ -106,7 +105,7 @@ class AuthService
 
             return [
                 'success' => true,
-                'message' => 'Logged out locally due to API error: ' . $e->getMessage()
+                'message' => 'Logged out locally due to API error: '.$e->getMessage(),
             ];
         }
     }
@@ -117,7 +116,7 @@ class AuthService
     public function getUser()
     {
         try {
-            if (!$this->apiClient->isAuthenticated()) {
+            if (! $this->apiClient->isAuthenticated()) {
                 return null;
             }
 
@@ -144,6 +143,7 @@ class AuthService
         } catch (Exception $e) {
             // Clear stored data if API call fails
             $this->apiClient->clearStoredToken();
+
             return null;
         }
     }
@@ -153,7 +153,7 @@ class AuthService
      */
     public function check()
     {
-        return $this->apiClient->isAuthenticated() && !is_null($this->getUser());
+        return $this->apiClient->isAuthenticated() && ! is_null($this->getUser());
     }
 
     /**
@@ -162,6 +162,7 @@ class AuthService
     public function getUserRole()
     {
         $user = $this->getUser();
+
         return $user['role'] ?? null;
     }
 
@@ -202,12 +203,12 @@ class AuthService
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Token refresh failed'
+                'message' => $response['message'] ?? 'Token refresh failed',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\GibranUserService;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -17,7 +17,7 @@ class AdminController extends Controller
     public function controlleradmin()
     {
         // Check if admin is logged in
-        if (!session()->has('admin_id')) {
+        if (! session()->has('admin_id')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -26,12 +26,14 @@ class AdminController extends Controller
 
         if ($response['success']) {
             $data_admin = $response['data'];
+
             return view('data_admin', compact('data_admin'));
         } else {
             // If API call fails, show empty state with error message
             $data_admin = [];
+
             return view('data_admin', compact('data_admin'))
-                ->with('error', 'Gagal memuat data admin: ' . $response['message']);
+                ->with('error', 'Gagal memuat data admin: '.$response['message']);
         }
     }
 
@@ -58,18 +60,18 @@ class AdminController extends Controller
             if ($response['success']) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Data admin berhasil dihapus'
+                    'message' => 'Data admin berhasil dihapus',
                 ]);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => $response['message'] ?? 'Gagal menghapus data admin'
+                'message' => $response['message'] ?? 'Gagal menghapus data admin',
             ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan sistem: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -88,12 +90,12 @@ class AdminController extends Controller
                 'tempat_lahir_admin' => 'sometimes|string|max:255',
                 'no_handphone_admin' => 'sometimes|string|max:50',
                 'no_anggota' => 'sometimes|string|max:50',
-                'password_akun_admin' => 'sometimes|string|min:6'
+                'password_akun_admin' => 'sometimes|string|min:6',
             ]);
 
             // Remove empty fields to avoid overwriting with blanks
             $adminData = array_filter($validated, function ($value) {
-                return !empty($value);
+                return ! empty($value);
             });
 
             $response = $this->userService->updateUser($id, $adminData);
@@ -102,24 +104,24 @@ class AdminController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Data admin berhasil diperbarui',
-                    'data' => $response['data'] ?? null
+                    'data' => $response['data'] ?? null,
                 ]);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => $response['message'] ?? 'Gagal memperbarui data admin'
+                'message' => $response['message'] ?? 'Gagal memperbarui data admin',
             ], 400);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data tidak valid',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan sistem: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -130,6 +132,7 @@ class AdminController extends Controller
 
         if ($response['success']) {
             $admin = $response['data'];
+
             return view('ubah_admin', compact(['admin']));
         } else {
             return redirect('/Dataadmin')->with('Error', $response['message']);

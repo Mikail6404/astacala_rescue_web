@@ -13,23 +13,23 @@ try {
 
     // 1. Analyze source data
     echo "1. Source Data Analysis:\n";
-    echo "=" . str_repeat("=", 25) . "\n";
+    echo '='.str_repeat('=', 25)."\n";
 
-    $stmt = $webPdo->prepare("SELECT COUNT(*) FROM pelaporans");
+    $stmt = $webPdo->prepare('SELECT COUNT(*) FROM pelaporans');
     $stmt->execute();
     $sourceCount = $stmt->fetchColumn();
     echo "📊 Source reports (pelaporans): $sourceCount records\n";
 
-    $stmt = $backendPdo->prepare("SELECT COUNT(*) FROM disaster_reports");
+    $stmt = $backendPdo->prepare('SELECT COUNT(*) FROM disaster_reports');
     $stmt->execute();
     $targetCount = $stmt->fetchColumn();
     echo "📊 Target reports (disaster_reports): $targetCount records\n";
 
     // 2. Analyze report structure
     echo "\n2. Report Structure Analysis:\n";
-    echo "=" . str_repeat("=", 31) . "\n";
+    echo '='.str_repeat('=', 31)."\n";
 
-    $stmt = $webPdo->prepare("
+    $stmt = $webPdo->prepare('
         SELECT 
             id,
             informasi_singkat_bencana,
@@ -43,7 +43,7 @@ try {
             created_at
         FROM pelaporans 
         ORDER BY id
-    ");
+    ');
     $stmt->execute();
     $sourceReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -75,18 +75,18 @@ try {
 
     // 3. Check user ID mapping requirements
     echo "3. User ID Mapping Analysis:\n";
-    echo "=" . str_repeat("=", 30) . "\n";
+    echo '='.str_repeat('=', 30)."\n";
 
     // Get unique reporter IDs from pelaporans
-    $stmt = $webPdo->prepare("SELECT DISTINCT pelapor_pengguna_id FROM pelaporans WHERE pelapor_pengguna_id IS NOT NULL");
+    $stmt = $webPdo->prepare('SELECT DISTINCT pelapor_pengguna_id FROM pelaporans WHERE pelapor_pengguna_id IS NOT NULL');
     $stmt->execute();
     $reporterIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    echo "📊 Unique reporter IDs in reports: " . implode(', ', $reporterIds) . "\n";
+    echo '📊 Unique reporter IDs in reports: '.implode(', ', $reporterIds)."\n";
 
     // Check if these users exist in migration log
-    if (!empty($reporterIds)) {
-        $placeholders = str_repeat('?,', count($reporterIds) - 1) . '?';
+    if (! empty($reporterIds)) {
+        $placeholders = str_repeat('?,', count($reporterIds) - 1).'?';
         $stmt = $backendPdo->prepare("
             SELECT source_id, target_user_id, source_username, target_email 
             FROM user_migration_log 
@@ -104,22 +104,22 @@ try {
         $mappedIds = array_column($userMappings, 'source_id');
         $unmappedIds = array_diff($reporterIds, $mappedIds);
 
-        if (!empty($unmappedIds)) {
-            echo "⚠️  Unmapped reporter IDs: " . implode(', ', $unmappedIds) . "\n";
+        if (! empty($unmappedIds)) {
+            echo '⚠️  Unmapped reporter IDs: '.implode(', ', $unmappedIds)."\n";
             echo "   These will be set to NULL or a default user ID\n";
         }
     }
 
     // 4. Check for conflicts
     echo "\n4. Conflict Detection:\n";
-    echo "=" . str_repeat("=", 20) . "\n";
+    echo '='.str_repeat('=', 20)."\n";
 
     // Check if any reports have conflicting titles or data
     foreach ($sourceReports as $report) {
-        $stmt = $backendPdo->prepare("
+        $stmt = $backendPdo->prepare('
             SELECT COUNT(*) FROM disaster_reports 
             WHERE title = ? OR location_name = ?
-        ");
+        ');
         $stmt->execute([$report['informasi_singkat_bencana'], $report['lokasi_bencana']]);
         $conflicts = $stmt->fetchColumn();
 
@@ -132,18 +132,18 @@ try {
 
     // 5. Migration readiness assessment
     echo "\n5. Migration Readiness Assessment:\n";
-    echo "=" . str_repeat("=", 35) . "\n";
+    echo '='.str_repeat('=', 35)."\n";
 
     $readyForMigration = true;
     $issues = [];
 
     if ($sourceCount == 0) {
-        $issues[] = "No source reports to migrate";
+        $issues[] = 'No source reports to migrate';
         $readyForMigration = false;
     }
 
-    if (empty($userMappings) && !empty($reporterIds)) {
-        $issues[] = "User mappings not available (run user migration first)";
+    if (empty($userMappings) && ! empty($reporterIds)) {
+        $issues[] = 'User mappings not available (run user migration first)';
         $readyForMigration = false;
     }
 
@@ -152,8 +152,8 @@ try {
         echo "📊 Summary:\n";
         echo "   • Source reports: $sourceCount\n";
         echo "   • Target reports before: $targetCount\n";
-        echo "   • Expected total after: " . ($targetCount + $sourceCount) . "\n";
-        echo "   • User mappings: " . count($userMappings) . " available\n";
+        echo '   • Expected total after: '.($targetCount + $sourceCount)."\n";
+        echo '   • User mappings: '.count($userMappings)." available\n";
 
         echo "\n🚀 Next step: Execute migration_02_reports.php\n";
     } else {
@@ -164,7 +164,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    echo "❌ Analysis failed: " . $e->getMessage() . "\n";
+    echo '❌ Analysis failed: '.$e->getMessage()."\n";
 }
 
 echo "\n=== REPORT MIGRATION ANALYSIS COMPLETE ===\n";

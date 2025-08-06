@@ -7,27 +7,27 @@ $kernel->bootstrap();
 
 use App\Services\AstacalaApiClient;
 use App\Services\GibranAuthService;
-use App\Services\GibranUserService;
-use App\Services\GibranReportService;
 use App\Services\GibranContentService;
 use App\Services\GibranDashboardService;
+use App\Services\GibranReportService;
+use App\Services\GibranUserService;
 
 echo "=== FINAL COMPREHENSIVE DASHBOARD TEST ===\n\n";
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $gibranAuthService = new GibranAuthService($apiClient);
 
     // Test authentication first
     echo "1. Testing Authentication...\n";
     $credentials = [
         'email' => 'mikailadmin@admin.astacala.local',
-        'password' => 'mikailadmin'
+        'password' => 'mikailadmin',
     ];
 
     $authResult = $gibranAuthService->login($credentials);
-    if (!$authResult['success']) {
-        echo "   ❌ Authentication failed: " . $authResult['message'] . "\n";
+    if (! $authResult['success']) {
+        echo '   ❌ Authentication failed: '.$authResult['message']."\n";
         exit(1);
     }
     echo "   ✅ Authentication successful\n\n";
@@ -55,11 +55,11 @@ try {
             if ($singleUserResult['success']) {
                 echo "      ✅ Single user fetch working (for edit functionality)\n";
             } else {
-                echo "      ❌ Single user fetch failed: " . $singleUserResult['message'] . "\n";
+                echo '      ❌ Single user fetch failed: '.$singleUserResult['message']."\n";
             }
         }
     } else {
-        echo "      ❌ Users data fetch failed: " . $usersResult['message'] . "\n";
+        echo '      ❌ Users data fetch failed: '.$usersResult['message']."\n";
     }
 
     // Test Admin Data (Dataadmin)
@@ -69,7 +69,7 @@ try {
         $adminCount = count($adminsResult['data']);
         echo "      ✅ Admin data fetched: $adminCount admins found\n";
     } else {
-        echo "      ❌ Admin data fetch failed: " . $adminsResult['message'] . "\n";
+        echo '      ❌ Admin data fetch failed: '.$adminsResult['message']."\n";
     }
 
     // Test Reports Data (Pelaporan)
@@ -79,7 +79,7 @@ try {
         $reportCount = count($reportsResult['data']);
         echo "      ✅ Reports data fetched: $reportCount reports found\n";
     } else {
-        echo "      ❌ Reports data fetch failed: " . $reportsResult['message'] . "\n";
+        echo '      ❌ Reports data fetch failed: '.$reportsResult['message']."\n";
     }
 
     // Test Notifications Data (pending reports)
@@ -89,7 +89,7 @@ try {
         $notificationCount = count($notificationsResult['data']);
         echo "      ✅ Notifications data fetched: $notificationCount notifications found\n";
     } else {
-        echo "      ❌ Notifications data fetch failed: " . $notificationsResult['message'] . "\n";
+        echo '      ❌ Notifications data fetch failed: '.$notificationsResult['message']."\n";
     }
 
     // Test Publications Data
@@ -99,7 +99,7 @@ try {
         $publicationCount = count($publicationsResult['data']);
         echo "      ✅ Publications data fetched: $publicationCount publications found\n";
     } else {
-        echo "      ❌ Publications data fetch failed: " . $publicationsResult['message'] . "\n";
+        echo '      ❌ Publications data fetch failed: '.$publicationsResult['message']."\n";
     }
 
     // Test Dashboard Statistics
@@ -110,13 +110,13 @@ try {
         if (isset($statsResult['data'])) {
             $stats = $statsResult['data'];
             echo "      📊 Statistics Overview:\n";
-            echo "         - Total Reports: " . ($stats['total_pelaporan'] ?? 'N/A') . "\n";
-            echo "         - Pending Reports: " . ($stats['pelaporan_pending'] ?? 'N/A') . "\n";
-            echo "         - Verified Reports: " . ($stats['pelaporan_verified'] ?? 'N/A') . "\n";
-            echo "         - Total Victims: " . ($stats['total_korban'] ?? 'N/A') . "\n";
+            echo '         - Total Reports: '.($stats['total_pelaporan'] ?? 'N/A')."\n";
+            echo '         - Pending Reports: '.($stats['pelaporan_pending'] ?? 'N/A')."\n";
+            echo '         - Verified Reports: '.($stats['pelaporan_verified'] ?? 'N/A')."\n";
+            echo '         - Total Victims: '.($stats['total_korban'] ?? 'N/A')."\n";
         }
     } else {
-        echo "      ❌ Dashboard statistics fetch failed: " . $statsResult['message'] . "\n";
+        echo '      ❌ Dashboard statistics fetch failed: '.$statsResult['message']."\n";
     }
 
     echo "\n3. Testing Profile Admin Functionality...\n";
@@ -130,23 +130,23 @@ try {
         if (isset($profileResponse['user'])) {
             $user = $profileResponse['user'];
             echo "   📄 Profile Data Available:\n";
-            echo "      - Name: " . ($user['name'] ?? 'N/A') . "\n";
-            echo "      - Date of Birth: " . ($user['date_of_birth'] ?? 'N/A') . "\n";
-            echo "      - Place of Birth: " . ($user['place_of_birth'] ?? 'N/A') . "\n";
-            echo "      - Phone: " . ($user['phone'] ?? 'N/A') . "\n";
-            echo "      - Member Number: " . ($user['member_number'] ?? 'N/A') . "\n";
+            echo '      - Name: '.($user['name'] ?? 'N/A')."\n";
+            echo '      - Date of Birth: '.($user['date_of_birth'] ?? 'N/A')."\n";
+            echo '      - Place of Birth: '.($user['place_of_birth'] ?? 'N/A')."\n";
+            echo '      - Phone: '.($user['phone'] ?? 'N/A')."\n";
+            echo '      - Member Number: '.($user['member_number'] ?? 'N/A')."\n";
         }
     } else {
-        echo "   ❌ Profile data fetch failed: " . ($profileResponse['message'] ?? 'Unknown error') . "\n";
+        echo '   ❌ Profile data fetch failed: '.($profileResponse['message'] ?? 'Unknown error')."\n";
     }
 
     echo "\n4. Testing Data Structure Compatibility...\n";
 
     // Check if the data returned is in array format (which should work with our fixed blade templates)
-    if ($usersResult['success'] && !empty($usersResult['data'])) {
+    if ($usersResult['success'] && ! empty($usersResult['data'])) {
         $firstUser = $usersResult['data'][0];
         $isArray = is_array($firstUser);
-        echo "   📋 User data structure: " . ($isArray ? "Array ✅" : "Object ⚠️") . "\n";
+        echo '   📋 User data structure: '.($isArray ? 'Array ✅' : 'Object ⚠️')."\n";
 
         if ($isArray && isset($firstUser['id'])) {
             echo "   ✅ Array data structure compatible with fixed blade templates\n";
@@ -155,35 +155,47 @@ try {
         }
     }
 
-    if ($reportsResult['success'] && !empty($reportsResult['data'])) {
+    if ($reportsResult['success'] && ! empty($reportsResult['data'])) {
         $firstReport = $reportsResult['data'][0];
         $isArray = is_array($firstReport);
-        echo "   📋 Report data structure: " . ($isArray ? "Array ✅" : "Object ⚠️") . "\n";
+        echo '   📋 Report data structure: '.($isArray ? 'Array ✅' : 'Object ⚠️')."\n";
     }
 
-    if ($publicationsResult['success'] && !empty($publicationsResult['data'])) {
+    if ($publicationsResult['success'] && ! empty($publicationsResult['data'])) {
         $firstPublication = $publicationsResult['data'][0];
         $isArray = is_array($firstPublication);
-        echo "   📋 Publication data structure: " . ($isArray ? "Array ✅" : "Object ⚠️") . "\n";
+        echo '   📋 Publication data structure: '.($isArray ? 'Array ✅' : 'Object ⚠️')."\n";
     }
 
     echo "\n5. Summary of Dashboard Functionality:\n";
     echo "   ✅ Authentication: Working\n";
-    echo "   " . ($usersResult['success'] ? '✅' : '❌') . " Datapengguna: " . ($usersResult['success'] ? 'Working' : 'Failed') . "\n";
-    echo "   " . ($adminsResult['success'] ? '✅' : '❌') . " Dataadmin: " . ($adminsResult['success'] ? 'Working' : 'Failed') . "\n";
-    echo "   " . ($reportsResult['success'] ? '✅' : '❌') . " Pelaporan: " . ($reportsResult['success'] ? 'Working' : 'Failed') . "\n";
-    echo "   " . ($notificationsResult['success'] ? '✅' : '❌') . " Notifikasi: " . ($notificationsResult['success'] ? 'Working' : 'Failed') . "\n";
-    echo "   " . ($publicationsResult['success'] ? '✅' : '❌') . " Publikasi: " . ($publicationsResult['success'] ? 'Working' : 'Failed') . "\n";
-    echo "   " . ($statsResult['success'] ? '✅' : '❌') . " Dashboard Statistics: " . ($statsResult['success'] ? 'Working' : 'Failed') . "\n";
+    echo '   '.($usersResult['success'] ? '✅' : '❌').' Datapengguna: '.($usersResult['success'] ? 'Working' : 'Failed')."\n";
+    echo '   '.($adminsResult['success'] ? '✅' : '❌').' Dataadmin: '.($adminsResult['success'] ? 'Working' : 'Failed')."\n";
+    echo '   '.($reportsResult['success'] ? '✅' : '❌').' Pelaporan: '.($reportsResult['success'] ? 'Working' : 'Failed')."\n";
+    echo '   '.($notificationsResult['success'] ? '✅' : '❌').' Notifikasi: '.($notificationsResult['success'] ? 'Working' : 'Failed')."\n";
+    echo '   '.($publicationsResult['success'] ? '✅' : '❌').' Publikasi: '.($publicationsResult['success'] ? 'Working' : 'Failed')."\n";
+    echo '   '.($statsResult['success'] ? '✅' : '❌').' Dashboard Statistics: '.($statsResult['success'] ? 'Working' : 'Failed')."\n";
 
     $successCount = 0;
     $totalTests = 6;
-    if ($usersResult['success']) $successCount++;
-    if ($adminsResult['success']) $successCount++;
-    if ($reportsResult['success']) $successCount++;
-    if ($notificationsResult['success']) $successCount++;
-    if ($publicationsResult['success']) $successCount++;
-    if ($statsResult['success']) $successCount++;
+    if ($usersResult['success']) {
+        $successCount++;
+    }
+    if ($adminsResult['success']) {
+        $successCount++;
+    }
+    if ($reportsResult['success']) {
+        $successCount++;
+    }
+    if ($notificationsResult['success']) {
+        $successCount++;
+    }
+    if ($publicationsResult['success']) {
+        $successCount++;
+    }
+    if ($statsResult['success']) {
+        $successCount++;
+    }
 
     echo "\n📊 OVERALL DASHBOARD FUNCTIONALITY: $successCount/$totalTests tests passed\n";
 
@@ -201,8 +213,8 @@ try {
         echo "⚠️  Some dashboard pages may still have issues. Check individual page errors above.\n";
     }
 } catch (Exception $e) {
-    echo "❌ Test error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ Test error: '.$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
 }
 
 echo "\n=== FINAL COMPREHENSIVE DASHBOARD TEST COMPLETE ===\n";

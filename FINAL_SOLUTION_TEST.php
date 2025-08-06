@@ -6,8 +6,8 @@ $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
 use App\Services\AstacalaApiClient;
-use App\Services\GibranDashboardService;
 use App\Services\GibranAuthService;
+use App\Services\GibranDashboardService;
 
 echo "=== COMPREHENSIVE FINAL SOLUTION TEST ===\n\n";
 
@@ -19,17 +19,17 @@ try {
     echo "1. Testing Username Login (Issue: Users had to use full email)\n";
     echo "   Solution: Automatic username-to-email mapping\n";
 
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $authService = new GibranAuthService($apiClient);
 
     // Test with just username
     $usernameLogin = [
         'email' => 'mikailadmin@admin.astacala.local', // This would be mapped automatically in the controller
-        'password' => 'mikailadmin'
+        'password' => 'mikailadmin',
     ];
 
     $loginResult = $authService->login($usernameLogin);
-    echo "   Username 'mikailadmin' login: " . ($loginResult['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+    echo "   Username 'mikailadmin' login: ".($loginResult['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
 
     if ($loginResult['success']) {
         echo "     → User can now login with username only\n";
@@ -41,9 +41,9 @@ try {
     echo "   Solution: Fixed token storage using AstacalaApiClient\n";
 
     $storedToken = $apiClient->getStoredToken();
-    echo "   Token stored properly: " . ($storedToken ? "✅ YES" : "❌ NO") . "\n";
+    echo '   Token stored properly: '.($storedToken ? '✅ YES' : '❌ NO')."\n";
     if ($storedToken) {
-        echo "     → Token: " . substr($storedToken, 0, 20) . "...\n";
+        echo '     → Token: '.substr($storedToken, 0, 20)."...\n";
     }
 
     // Issue 3: Data Fetching
@@ -56,11 +56,11 @@ try {
     $services = [
         'Statistics' => $dashboardService->getStatistics(),
         'Berita Bencana' => $dashboardService->getBeritaBencana(),
-        'System Overview' => $dashboardService->getSystemOverview()
+        'System Overview' => $dashboardService->getSystemOverview(),
     ];
 
     foreach ($services as $name => $result) {
-        echo "   $name: " . ($result['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+        echo "   $name: ".($result['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
         if ($result['success'] && isset($result['data'])) {
             $dataCount = is_array($result['data']) ? count($result['data']) : 'N/A';
             echo "     → Data fields: $dataCount\n";
@@ -74,7 +74,7 @@ try {
     $endpoints = [
         'User Statistics' => $apiClient->getEndpoint('users', 'statistics'),
         'Admin List' => $apiClient->getEndpoint('users', 'admin_list'),
-        'Dashboard Stats' => $apiClient->getEndpoint('gibran', 'dashboard_statistics')
+        'Dashboard Stats' => $apiClient->getEndpoint('gibran', 'dashboard_statistics'),
     ];
 
     foreach ($endpoints as $name => $endpoint) {
@@ -82,15 +82,15 @@ try {
             $response = $apiClient->authenticatedRequest('GET', $endpoint);
             $success = (isset($response['success']) && $response['success']) ||
                 (isset($response['status']) && $response['status'] === 'success');
-            echo "   $name ($endpoint): " . ($success ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+            echo "   $name ($endpoint): ".($success ? '✅ SUCCESS' : '❌ FAILED')."\n";
         } catch (Exception $e) {
-            echo "   $name: ❌ ERROR - " . $e->getMessage() . "\n";
+            echo "   $name: ❌ ERROR - ".$e->getMessage()."\n";
         }
     }
 
-    echo "\n" . str_repeat("=", 50) . "\n";
+    echo "\n".str_repeat('=', 50)."\n";
     echo "✅ ALL ISSUES RESOLVED SUCCESSFULLY!\n";
-    echo str_repeat("=", 50) . "\n\n";
+    echo str_repeat('=', 50)."\n\n";
 
     echo "📋 USER INSTRUCTIONS:\n";
     echo "---------------------\n";
@@ -118,7 +118,7 @@ try {
     echo "• Users can login with just the username ('mikailadmin')\n";
     echo "• No need to remember the full email address\n\n";
 } catch (Exception $e) {
-    echo "❌ Test error: " . $e->getMessage() . "\n";
+    echo '❌ Test error: '.$e->getMessage()."\n";
 }
 
 echo "=== COMPREHENSIVE TEST COMPLETE ===\n";

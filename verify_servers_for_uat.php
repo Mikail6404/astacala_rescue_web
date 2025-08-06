@@ -59,4 +59,4 @@ if (($httpCode === 200 || $httpCode === 302)) {
     echo "   ❌ Fix server issues before starting UAT\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";

@@ -9,10 +9,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Admin Model - Web App Administrator Authentication
- * 
+ *
  * This model provides backward compatibility for the web app's admin system
  * while maintaining integration with the unified backend authentication system.
- * 
+ *
  * NOTE: This is a transitional model. Future versions should migrate to
  * unified User model with role-based authentication.
  */

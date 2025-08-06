@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
 use Exception;
 
 /**
  * Gibran Notification Service
- * 
+ *
  * Handles notification operations for the web application using
  * the /api/gibran/notifikasi/* endpoints from the unified backend.
- * 
+ *
  * This service provides web admin notification functionality for
  * managing and sending notifications to mobile users.
- * 
+ *
  * @author Web Integration Team
+ *
  * @version 1.0.0
+ *
  * @date August 3, 2025
  */
 class GibranNotificationService
@@ -29,8 +30,8 @@ class GibranNotificationService
 
     /**
      * Send notification to specific user
-     * 
-     * @param array $notificationData Notification content and recipient info
+     *
+     * @param  array  $notificationData  Notification content and recipient info
      * @return array Standardized response
      */
     public function sendNotification($notificationData)
@@ -43,26 +44,26 @@ class GibranNotificationService
                 return [
                     'success' => true,
                     'message' => 'Notification sent successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to send notification'
+                'message' => $response['message'] ?? 'Failed to send notification',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to send notification: ' . $e->getMessage()
+                'message' => 'Failed to send notification: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Get notifications for specific user
-     * 
-     * @param int $penggunaId User ID
+     *
+     * @param  int  $penggunaId  User ID
      * @return array User notifications
      */
     public function getUserNotifications($penggunaId)
@@ -75,30 +76,30 @@ class GibranNotificationService
                 return [
                     'success' => true,
                     'message' => 'User notifications retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load user notifications',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load user notifications: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load user notifications: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Send verification notification for a report
-     * 
-     * @param int $reportId Report ID
-     * @param string $status Verification status (verified, rejected, etc.)
-     * @param string $message Optional message for the user
+     *
+     * @param  int  $reportId  Report ID
+     * @param  string  $status  Verification status (verified, rejected, etc.)
+     * @param  string  $message  Optional message for the user
      * @return array Response
      */
     public function sendVerificationNotification($reportId, $status, $message = '')
@@ -108,7 +109,7 @@ class GibranNotificationService
             'report_id' => $reportId,
             'status' => $status,
             'message' => $message ?: "Your disaster report has been {$status}",
-            'priority' => 'high'
+            'priority' => 'high',
         ];
 
         return $this->sendNotification($notificationData);
@@ -116,8 +117,8 @@ class GibranNotificationService
 
     /**
      * Send broadcast notification to all users
-     * 
-     * @param array $broadcastData Broadcast message content
+     *
+     * @param  array  $broadcastData  Broadcast message content
      * @return array Response
      */
     public function sendBroadcastNotification($broadcastData)
@@ -131,26 +132,26 @@ class GibranNotificationService
                 return [
                     'success' => true,
                     'message' => 'Broadcast notification sent successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to send broadcast notification'
+                'message' => $response['message'] ?? 'Failed to send broadcast notification',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to send broadcast notification: ' . $e->getMessage()
+                'message' => 'Failed to send broadcast notification: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Send emergency alert notification
-     * 
-     * @param array $emergencyData Emergency alert content
+     *
+     * @param  array  $emergencyData  Emergency alert content
      * @return array Response
      */
     public function sendEmergencyAlert($emergencyData)
@@ -158,7 +159,7 @@ class GibranNotificationService
         $alertData = array_merge($emergencyData, [
             'type' => 'emergency_alert',
             'priority' => 'critical',
-            'immediate' => true
+            'immediate' => true,
         ]);
 
         return $this->sendBroadcastNotification($alertData);

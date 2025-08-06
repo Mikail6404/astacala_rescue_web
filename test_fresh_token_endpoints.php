@@ -9,7 +9,7 @@ echo "==============================================\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -35,13 +35,13 @@ if ($httpCode !== 200) {
 $authData = json_decode($response, true);
 $token = $authData['data']['tokens']['accessToken'] ?? null;
 
-if (!$token) {
+if (! $token) {
     echo "❌ No token in login response\n";
     echo "Response: $response\n";
     exit(1);
 }
 
-echo "✅ Login successful, token obtained: " . substr($token, 0, 20) . "...\n\n";
+echo '✅ Login successful, token obtained: '.substr($token, 0, 20)."...\n\n";
 
 // Step 2: Test current user info first
 echo "🔍 STEP 2: Testing current user info\n";
@@ -53,7 +53,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/json',
     'Content-Type: application/json',
-    'Authorization: Bearer ' . $token
+    'Authorization: Bearer '.$token,
 ]);
 
 $response = curl_exec($ch);
@@ -64,16 +64,16 @@ echo "HTTP Code: $httpCode\n";
 if ($httpCode === 200) {
     $userData = json_decode($response, true);
     echo "✅ User Info Retrieved:\n";
-    echo "📧 Email: " . ($userData['data']['email'] ?? 'N/A') . "\n";
-    echo "👤 Name: " . ($userData['data']['name'] ?? 'N/A') . "\n";
-    echo "🔑 Role: " . ($userData['data']['role'] ?? 'N/A') . "\n";
-    echo "🆔 ID: " . ($userData['data']['id'] ?? 'N/A') . "\n";
+    echo '📧 Email: '.($userData['data']['email'] ?? 'N/A')."\n";
+    echo '👤 Name: '.($userData['data']['name'] ?? 'N/A')."\n";
+    echo '🔑 Role: '.($userData['data']['role'] ?? 'N/A')."\n";
+    echo '🆔 ID: '.($userData['data']['id'] ?? 'N/A')."\n";
 
     $userRole = $userData['data']['role'] ?? 'UNKNOWN';
     echo "\n📋 User Role Analysis:\n";
     echo "Current role: $userRole\n";
     echo "Admin endpoints require: admin or super_admin role\n";
-    echo "User has admin access: " . (in_array($userRole, ['admin', 'super_admin', 'ADMIN']) ? 'YES' : 'NO') . "\n";
+    echo 'User has admin access: '.(in_array($userRole, ['admin', 'super_admin', 'ADMIN']) ? 'YES' : 'NO')."\n";
 } else {
     echo "❌ Failed to get user info\n";
     echo "Response: $response\n";
@@ -89,19 +89,19 @@ $endpoints = [
     'User Profile' => '/api/v1/users/profile',
     'Gibran Dashboard Stats' => '/api/gibran/dashboard/statistics',
     'Gibran Pelaporans' => '/api/gibran/pelaporans',
-    'Gibran Berita' => '/api/gibran/berita-bencana'
+    'Gibran Berita' => '/api/gibran/berita-bencana',
 ];
 
 foreach ($endpoints as $name => $endpoint) {
     echo "\n🔍 Testing $name ($endpoint):\n";
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000' . $endpoint);
+    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000'.$endpoint);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
         'Content-Type: application/json',
-        'Authorization: Bearer ' . $token
+        'Authorization: Bearer '.$token,
     ]);
 
     $response = curl_exec($ch);
@@ -115,9 +115,9 @@ foreach ($endpoints as $name => $endpoint) {
         $data = json_decode($response, true);
         if (isset($data['data'])) {
             if (is_array($data['data'])) {
-                echo "  📊 Data count: " . count($data['data']) . "\n";
+                echo '  📊 Data count: '.count($data['data'])."\n";
             } else {
-                echo "  📊 Data type: " . gettype($data['data']) . "\n";
+                echo '  📊 Data type: '.gettype($data['data'])."\n";
             }
         }
     } elseif ($httpCode === 401) {
@@ -131,12 +131,12 @@ foreach ($endpoints as $name => $endpoint) {
         echo "  ❌ ERROR - HTTP $httpCode\n";
         $errorData = json_decode($response, true);
         if (isset($errorData['message'])) {
-            echo "  📝 Message: " . $errorData['message'] . "\n";
+            echo '  📝 Message: '.$errorData['message']."\n";
         }
-        echo "  📝 Response: " . substr($response, 0, 200) . "\n";
+        echo '  📝 Response: '.substr($response, 0, 200)."\n";
     }
 }
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "ENDPOINT TESTING COMPLETED\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";

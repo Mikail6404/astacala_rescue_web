@@ -17,7 +17,7 @@ curl_close($ch);
 preg_match('/<input type="hidden" name="_token" value="([^"]+)"/', $loginPage, $matches);
 $csrfToken = $matches[1] ?? '';
 
-if (!$csrfToken) {
+if (! $csrfToken) {
     echo "❌ Could not get CSRF token\n";
     exit(1);
 }
@@ -26,7 +26,7 @@ if (!$csrfToken) {
 $loginData = [
     '_token' => $csrfToken,
     'username' => 'admin',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -69,7 +69,7 @@ if ($loginHttpCode === 302) {
 
     if ($dashboardCode === 500) {
         echo "❌ 500 Error on dashboard. Response preview:\n";
-        echo substr($dashboardResponse, 0, 1000) . "...\n";
+        echo substr($dashboardResponse, 0, 1000)."...\n";
 
         // Check if response contains Laravel error page
         if (strpos($dashboardResponse, 'Whoops') !== false || strpos($dashboardResponse, 'Something went wrong') !== false) {

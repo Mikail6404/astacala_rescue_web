@@ -8,7 +8,7 @@
  * 3. Views can be loaded without errors
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 echo "=== Testing Restored Functionality ===\n\n";
 
@@ -16,18 +16,18 @@ echo "=== Testing Restored Functionality ===\n\n";
 echo "1. Testing API Routes Registration:\n";
 
 try {
-    $routes = shell_exec('cd "' . __DIR__ . '" && php artisan route:list --json');
+    $routes = shell_exec('cd "'.__DIR__.'" && php artisan route:list --json');
     $routesData = json_decode($routes, true);
 
     $expectedRoutes = [
         'DELETE api/pelaporan/{id}',
         'POST api/pelaporan/{id}/verify',
-        'DELETE api/admin/{id}'
+        'DELETE api/admin/{id}',
     ];
 
     $foundRoutes = [];
     foreach ($routesData as $route) {
-        $routeSignature = $route['method'] . ' ' . $route['uri'];
+        $routeSignature = $route['method'].' '.$route['uri'];
         if (in_array($routeSignature, $expectedRoutes)) {
             $foundRoutes[] = $routeSignature;
         }
@@ -41,7 +41,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    echo "   ERROR: " . $e->getMessage() . "\n";
+    echo '   ERROR: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -51,7 +51,7 @@ echo "2. Testing Controller Methods:\n";
 
 $controllerMethods = [
     'App\Http\Controllers\PelaporanController' => ['apiDeleteReport', 'apiVerifyReport', 'menampilkanNotifikasiPelaporanMasuk'],
-    'App\Http\Controllers\AdminController' => ['apiDeleteAdmin']
+    'App\Http\Controllers\AdminController' => ['apiDeleteAdmin'],
 ];
 
 foreach ($controllerMethods as $controller => $methods) {
@@ -76,13 +76,13 @@ echo "3. Testing Required Views:\n";
 
 $requiredViews = [
     'data_pelaporan.blade.php',
-    'notifikasi.blade.php'
+    'notifikasi.blade.php',
 ];
 
-$viewsPath = __DIR__ . '/resources/views/';
+$viewsPath = __DIR__.'/resources/views/';
 
 foreach ($requiredViews as $view) {
-    if (file_exists($viewsPath . $view)) {
+    if (file_exists($viewsPath.$view)) {
         echo "   ✓ $view - EXISTS\n";
     } else {
         echo "   ✗ $view - MISSING\n";

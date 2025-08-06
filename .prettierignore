@@ -1,0 +1,6 @@
+vendor/
+public/build/
+storage/
+*.min.js
+*.min.css
+*.php

@@ -3,10 +3,9 @@
 
 /**
  * Simple Web Dashboard N/A Data Verification Test
- * 
+ *
  * Tests that the web dashboard is now showing actual data instead of N/A
  */
-
 echo "🔍 WEB DASHBOARD N/A DATA VERIFICATION\n";
 echo "====================================\n\n";
 
@@ -19,8 +18,8 @@ function testWebPage($url, $description)
     $context = stream_context_create([
         'http' => [
             'method' => 'GET',
-            'timeout' => 10
-        ]
+            'timeout' => 10,
+        ],
     ]);
 
     $content = @file_get_contents($url, false, $context);
@@ -36,7 +35,7 @@ echo "------------------------------\n";
 
 // Test Admin Data Page
 echo "1. Testing Admin Data Page...\n";
-$admin_result = testWebPage("$web_url/Dataadmin", "Admin Dashboard");
+$admin_result = testWebPage("$web_url/Dataadmin", 'Admin Dashboard');
 
 if ($admin_result['success']) {
     $content = $admin_result['content'];
@@ -66,7 +65,7 @@ if ($admin_result['success']) {
 
     echo "   ✅ Admin Data Page accessible\n";
     echo "   📊 N/A entries in table: $na_count\n";
-    echo "   📊 City names found: $city_count entries (" . implode(', ', $found_cities) . ")\n";
+    echo "   📊 City names found: $city_count entries (".implode(', ', $found_cities).")\n";
     echo "   📊 ADM member numbers: $adm_count entries\n";
 
     if ($na_count < 5 && $city_count > 5 && $adm_count > 5) {
@@ -82,7 +81,7 @@ if ($admin_result['success']) {
 }
 
 echo "\n2. Testing Volunteer Data Page...\n";
-$volunteer_result = testWebPage("$web_url/Datapengguna", "Volunteer Dashboard");
+$volunteer_result = testWebPage("$web_url/Datapengguna", 'Volunteer Dashboard');
 
 if ($volunteer_result['success']) {
     $content = $volunteer_result['content'];
@@ -92,7 +91,7 @@ if ($volunteer_result['success']) {
     preg_match_all('/<td class="px-4 py-2 border">N\/A<\/td>/', $content, $na_matches);
     $na_count = count($na_matches[0]);
 
-    // Count actual city names  
+    // Count actual city names
     $cities = ['Malang', 'Bogor', 'Pekanbaru', 'Yogyakarta', 'Pontianak', 'Banjarmasin', 'Solo', 'Padang', 'Cirebon'];
     $city_count = 0;
     $found_cities = [];
@@ -107,7 +106,7 @@ if ($volunteer_result['success']) {
 
     echo "   ✅ Volunteer Data Page accessible\n";
     echo "   📊 N/A entries in table: $na_count\n";
-    echo "   📊 City names found: $city_count entries (" . implode(', ', array_slice($found_cities, 0, 5)) . "...)\n";
+    echo "   📊 City names found: $city_count entries (".implode(', ', array_slice($found_cities, 0, 5))."...)\n";
 
     if ($na_count < 5 && $city_count > 10) {
         echo "   🎉 VOLUNTEER DATA: FIXED! Shows actual data instead of N/A\n";
@@ -146,8 +145,12 @@ if ($admin_fixed && $volunteer_fixed) {
     exit(0);
 } else {
     echo "❌ SOME ISSUES REMAIN:\n";
-    if (!$admin_fixed) echo "  - Admin dashboard still has problems\n";
-    if (!$volunteer_fixed) echo "  - Volunteer dashboard still has problems\n";
+    if (! $admin_fixed) {
+        echo "  - Admin dashboard still has problems\n";
+    }
+    if (! $volunteer_fixed) {
+        echo "  - Volunteer dashboard still has problems\n";
+    }
 
     exit(1);
 }

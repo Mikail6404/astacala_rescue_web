@@ -5,18 +5,18 @@ echo "=== COMPREHENSIVE DATABASE SCHEMA ANALYSIS ===\n\n";
 try {
     // Backend Database Analysis (astacala_rescue)
     echo "1. BACKEND DATABASE SCHEMA (astacala_rescue) - Target Database:\n";
-    echo "=" . str_repeat("=", 60) . "\n";
+    echo '='.str_repeat('=', 60)."\n";
 
     $backendPdo = new PDO('mysql:host=127.0.0.1;dbname=astacala_rescue', 'root', '');
 
     // Get all tables
-    $stmt = $backendPdo->prepare("SHOW TABLES");
+    $stmt = $backendPdo->prepare('SHOW TABLES');
     $stmt->execute();
     $backendTables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     foreach ($backendTables as $table) {
         echo "\nTable: $table\n";
-        echo str_repeat("-", 30) . "\n";
+        echo str_repeat('-', 30)."\n";
 
         // Get table structure
         $stmt = $backendPdo->prepare("DESCRIBE $table");
@@ -38,18 +38,18 @@ try {
 
     // Web Database Analysis (astacalarescue)
     echo "2. WEB DATABASE SCHEMA (astacalarescue) - Source Database:\n";
-    echo "=" . str_repeat("=", 60) . "\n";
+    echo '='.str_repeat('=', 60)."\n";
 
     $webPdo = new PDO('mysql:host=127.0.0.1;dbname=astacalarescue', 'root', '');
 
     // Get all tables
-    $stmt = $webPdo->prepare("SHOW TABLES");
+    $stmt = $webPdo->prepare('SHOW TABLES');
     $stmt->execute();
     $webTables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     foreach ($webTables as $table) {
         echo "\nTable: $table\n";
-        echo str_repeat("-", 30) . "\n";
+        echo str_repeat('-', 30)."\n";
 
         // Get table structure
         $stmt = $webPdo->prepare("DESCRIBE $table");
@@ -71,14 +71,14 @@ try {
 
     // Cross-reference analysis
     echo "3. CROSS-REFERENCE ANALYSIS:\n";
-    echo "=" . str_repeat("=", 40) . "\n";
+    echo '='.str_repeat('=', 40)."\n";
 
-    echo "\nBackend Tables: " . count($backendTables) . " total\n";
+    echo "\nBackend Tables: ".count($backendTables)." total\n";
     foreach ($backendTables as $table) {
         echo "  - $table\n";
     }
 
-    echo "\nWeb Tables: " . count($webTables) . " total\n";
+    echo "\nWeb Tables: ".count($webTables)." total\n";
     foreach ($webTables as $table) {
         echo "  - $table\n";
     }
@@ -101,7 +101,7 @@ try {
         echo "  🌐 $table (web only - NEEDS MIGRATION)\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n=== MIGRATION PLANNING REQUIRED ===\n";

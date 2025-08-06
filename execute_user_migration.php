@@ -13,7 +13,7 @@ try {
 
     // 1. Create backup
     echo "1. Creating backup...\n";
-    $backendPdo->exec("CREATE TABLE IF NOT EXISTS users_backup_pre_migration AS SELECT * FROM users");
+    $backendPdo->exec('CREATE TABLE IF NOT EXISTS users_backup_pre_migration AS SELECT * FROM users');
     echo "✅ Backup created\n\n";
 
     // 2. Create migration log table
@@ -37,12 +37,12 @@ try {
     // 3. Migrate penggunas (volunteers)
     echo "3. Migrating penggunas (volunteers)...\n";
 
-    $stmt = $webPdo->prepare("SELECT * FROM penggunas");
+    $stmt = $webPdo->prepare('SELECT * FROM penggunas');
     $stmt->execute();
     $penggunas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($penggunas as $pengguna) {
-        $targetEmail = $pengguna['username_akun_pengguna'] . '@web.local';
+        $targetEmail = $pengguna['username_akun_pengguna'].'@web.local';
 
         try {
             $insertStmt = $backendPdo->prepare("
@@ -55,7 +55,7 @@ try {
                 $targetEmail,
                 $pengguna['no_handphone_pengguna'] ?: null,
                 $pengguna['created_at'],
-                $pengguna['updated_at']
+                $pengguna['updated_at'],
             ]);
 
             $newUserId = $backendPdo->lastInsertId();
@@ -76,18 +76,18 @@ try {
             ");
             $logStmt->execute([$pengguna['id'], $pengguna['username_akun_pengguna'], $targetEmail, $e->getMessage()]);
 
-            echo "  ❌ Failed: {$pengguna['nama_lengkap_pengguna']} → Error: " . $e->getMessage() . "\n";
+            echo "  ❌ Failed: {$pengguna['nama_lengkap_pengguna']} → Error: ".$e->getMessage()."\n";
         }
     }
 
     echo "\n4. Migrating admins...\n";
 
-    $stmt = $webPdo->prepare("SELECT * FROM admins");
+    $stmt = $webPdo->prepare('SELECT * FROM admins');
     $stmt->execute();
     $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($admins as $admin) {
-        $targetEmail = $admin['username_akun_admin'] . '@admin.local';
+        $targetEmail = $admin['username_akun_admin'].'@admin.local';
 
         try {
             $insertStmt = $backendPdo->prepare("
@@ -100,7 +100,7 @@ try {
                 $targetEmail,
                 $admin['no_handphone_admin'] ?: null,
                 $admin['created_at'],
-                $admin['updated_at']
+                $admin['updated_at'],
             ]);
 
             $newUserId = $backendPdo->lastInsertId();
@@ -121,19 +121,19 @@ try {
             ");
             $logStmt->execute([$admin['id'], $admin['username_akun_admin'], $targetEmail, $e->getMessage()]);
 
-            echo "  ❌ Failed: {$admin['nama_lengkap_admin']} → Error: " . $e->getMessage() . "\n";
+            echo "  ❌ Failed: {$admin['nama_lengkap_admin']} → Error: ".$e->getMessage()."\n";
         }
     }
 
     echo "\n5. Migration Summary:\n";
-    echo "=" . str_repeat("=", 30) . "\n";
+    echo '='.str_repeat('=', 30)."\n";
 
     // Get migration statistics
-    $stmt = $backendPdo->prepare("
+    $stmt = $backendPdo->prepare('
         SELECT source_table, migration_status, COUNT(*) as count 
         FROM user_migration_log 
         GROUP BY source_table, migration_status
-    ");
+    ');
     $stmt->execute();
     $stats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -143,13 +143,13 @@ try {
     }
 
     // Final user count
-    $stmt = $backendPdo->prepare("SELECT COUNT(*) FROM users");
+    $stmt = $backendPdo->prepare('SELECT COUNT(*) FROM users');
     $stmt->execute();
     $finalCount = $stmt->fetchColumn();
     echo "\n📊 Total users in backend database: $finalCount\n";
 
     // Show new users by role
-    $stmt = $backendPdo->prepare("SELECT role, COUNT(*) as count FROM users GROUP BY role");
+    $stmt = $backendPdo->prepare('SELECT role, COUNT(*) as count FROM users GROUP BY role');
     $stmt->execute();
     $roleStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -164,7 +164,7 @@ try {
     echo "2. Validate authentication for migrated users\n";
     echo "3. Proceed to Phase 2: Report Migration\n";
 } catch (Exception $e) {
-    echo "❌ Migration failed: " . $e->getMessage() . "\n";
+    echo '❌ Migration failed: '.$e->getMessage()."\n";
     echo "\nRollback may be required. Check backup tables.\n";
 }
 

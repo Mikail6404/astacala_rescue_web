@@ -2,27 +2,28 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
-use App\Services\ApiAuthService;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 /**
  * Gibran User Service
- * 
+ *
  * Handles user management operations for the web application using
  * the unified backend API instead of local database queries.
- * 
+ *
  * This service provides web admin functionality for viewing, managing,
  * and administering users across both mobile and web platforms.
- * 
+ *
  * @author Web Integration Team
+ *
  * @version 1.1.0 - Fixed CRUD operations with proper authentication
+ *
  * @date August 5, 2025
  */
 class GibranUserService
 {
     protected $apiClient;
+
     protected $authService;
 
     public function __construct(AstacalaApiClient $apiClient, ApiAuthService $authService)
@@ -33,20 +34,20 @@ class GibranUserService
 
     /**
      * Ensure we have valid authentication before making requests
-     * 
+     *
      * @throws Exception If authentication fails
      */
     protected function ensureAuthenticated()
     {
-        if (!$this->authService->ensureAuthenticated()) {
+        if (! $this->authService->ensureAuthenticated()) {
             throw new Exception('Failed to authenticate with backend API');
         }
     }
 
     /**
      * Get volunteer users for management
-     * 
-     * @param array $filters Optional filters
+     *
+     * @param  array  $filters  Optional filters
      * @return array Standardized response with volunteer users data
      */
     public function getVolunteerUsers($filters = [])
@@ -59,28 +60,28 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'Volunteer users retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load volunteer users',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load volunteer users: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load volunteer users: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get admin users for management
-     * 
-     * @param array $filters Optional filters
+     *
+     * @param  array  $filters  Optional filters
      * @return array Standardized response with admin users data
      */
     public function getAdminUsers($filters = [])
@@ -99,33 +100,36 @@ class GibranUserService
 
             if (isset($response['success']) && $response['success']) {
                 Log::info('GibranUserService: Admin users retrieved successfully', ['count' => count($response['data'] ?? [])]);
+
                 return [
                     'success' => true,
                     'message' => 'Admin users retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             Log::warning('GibranUserService: API call failed', ['response' => $response]);
+
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load admin users',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             Log::error('GibranUserService: Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
             return [
                 'success' => false,
-                'message' => 'Failed to load admin users: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load admin users: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get all users for admin management
-     * 
-     * @param array $filters Optional filters (role, status, etc.)
+     *
+     * @param  array  $filters  Optional filters (role, status, etc.)
      * @return array Standardized response with users data
      */
     public function getAllUsers($filters = [])
@@ -138,28 +142,28 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'Users retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load users',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load users: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load users: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Get a specific user by ID
-     * 
-     * @param int $userId User ID
+     *
+     * @param  int  $userId  User ID
      * @return array Standardized response with user data
      */
     public function getUser($userId)
@@ -195,7 +199,7 @@ class GibranUserService
                     return [
                         'success' => true,
                         'message' => 'User retrieved successfully',
-                        'data' => $userData
+                        'data' => $userData,
                     ];
                 }
             }
@@ -227,29 +231,31 @@ class GibranUserService
                     return [
                         'success' => true,
                         'message' => 'User retrieved successfully',
-                        'data' => $userData
+                        'data' => $userData,
                     ];
                 }
             }
 
             Log::warning('GibranUserService: User not found in either admin or volunteer list', ['user_id' => $userId]);
+
             return [
                 'success' => false,
-                'message' => 'User not found'
+                'message' => 'User not found',
             ];
         } catch (Exception $e) {
             Log::error('GibranUserService: Get user exception', ['user_id' => $userId, 'error' => $e->getMessage()]);
+
             return [
                 'success' => false,
-                'message' => 'Failed to load user: ' . $e->getMessage()
+                'message' => 'Failed to load user: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Create a new user (admin function)
-     * 
-     * @param array $userData User data
+     *
+     * @param  array  $userData  User data
      * @return array Standardized response
      */
     public function createUser($userData)
@@ -262,28 +268,28 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'User created successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to create user',
-                'errors' => $response['errors'] ?? null
+                'errors' => $response['errors'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to create user: ' . $e->getMessage()
+                'message' => 'Failed to create user: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Update a user (admin function)
-     * 
-     * @param int $userId User ID to update
-     * @param array $userData Updated user data
+     *
+     * @param  int  $userId  User ID to update
+     * @param  array  $userData  Updated user data
      * @return array Standardized response
      */
     public function updateUser($userId, $userData)
@@ -303,31 +309,34 @@ class GibranUserService
 
             if (isset($response['success']) && $response['success']) {
                 Log::info('GibranUserService: User updated successfully', ['user_id' => $userId]);
+
                 return [
                     'success' => true,
                     'message' => 'User updated successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             Log::warning('GibranUserService: User update failed', ['user_id' => $userId, 'response' => $response]);
+
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to update user'
+                'message' => $response['message'] ?? 'Failed to update user',
             ];
         } catch (Exception $e) {
             Log::error('GibranUserService: User update exception', ['user_id' => $userId, 'error' => $e->getMessage()]);
+
             return [
                 'success' => false,
-                'message' => 'Failed to update user: ' . $e->getMessage()
+                'message' => 'Failed to update user: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Delete a user (admin function) - HARD DELETE
-     * 
-     * @param int $userId User ID to delete
+     *
+     * @param  int  $userId  User ID to delete
      * @return array Standardized response
      */
     public function deleteUser($userId)
@@ -344,31 +353,34 @@ class GibranUserService
 
             if (isset($response['success']) && $response['success']) {
                 Log::info('GibranUserService: User deleted successfully', ['user_id' => $userId]);
+
                 return [
                     'success' => true,
                     'message' => 'User deleted successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             Log::warning('GibranUserService: User deletion failed', ['user_id' => $userId, 'response' => $response]);
+
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to delete user'
+                'message' => $response['message'] ?? 'Failed to delete user',
             ];
         } catch (Exception $e) {
             Log::error('GibranUserService: User deletion exception', ['user_id' => $userId, 'error' => $e->getMessage()]);
+
             return [
                 'success' => false,
-                'message' => 'Failed to delete user: ' . $e->getMessage()
+                'message' => 'Failed to delete user: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Map web form user data to backend API field names
-     * 
-     * @param array $userData Raw user data from web form
+     *
+     * @param  array  $userData  Raw user data from web form
      * @return array Mapped data for API
      */
     protected function mapUserDataForApi($userData)
@@ -410,7 +422,7 @@ class GibranUserService
             'member_number' => 'member_number',
             'address' => 'address',
             'organization' => 'organization',
-            'is_active' => 'is_active'
+            'is_active' => 'is_active',
         ];
 
         $mappedData = [];
@@ -420,7 +432,7 @@ class GibranUserService
                 $apiKey = $mapping[$key];
 
                 // Handle status conversion
-                if ($apiKey === 'is_active' && !is_bool($value)) {
+                if ($apiKey === 'is_active' && ! is_bool($value)) {
                     if (in_array(strtolower($value), ['active', '1', 'true', 'yes'])) {
                         $value = true;
                     } else {
@@ -433,7 +445,7 @@ class GibranUserService
         }
 
         // Ensure required fields are set with defaults if missing
-        if (!isset($mappedData['name']) && !empty($userData['nama_lengkap'])) {
+        if (! isset($mappedData['name']) && ! empty($userData['nama_lengkap'])) {
             $mappedData['name'] = $userData['nama_lengkap'];
         }
 
@@ -444,8 +456,8 @@ class GibranUserService
 
     /**
      * Map API user data to web form field names
-     * 
-     * @param array $apiData User data from API
+     *
+     * @param  array  $apiData  User data from API
      * @return array Mapped data for web forms
      */
     protected function mapUserDataFromApi($apiData)
@@ -526,7 +538,7 @@ class GibranUserService
 
         Log::info('GibranUserService: API to Web mapping completed', [
             'api_fields' => array_keys($apiData),
-            'web_fields' => array_keys($mappedData)
+            'web_fields' => array_keys($mappedData),
         ]);
 
         return $mappedData;
@@ -534,9 +546,9 @@ class GibranUserService
 
     /**
      * Update user role (admin function)
-     * 
-     * @param int $userId User ID
-     * @param string $role New role (ADMIN, VOLUNTEER, etc.)
+     *
+     * @param  int  $userId  User ID
+     * @param  string  $role  New role (ADMIN, VOLUNTEER, etc.)
      * @return array Standardized response
      */
     public function updateUserRole($userId, $role)
@@ -549,25 +561,25 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'User role updated successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Failed to update user role'
+                'message' => $response['message'] ?? 'Failed to update user role',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to update user role: ' . $e->getMessage()
+                'message' => 'Failed to update user role: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Get user statistics for dashboard
-     * 
+     *
      * @return array Statistics data
      */
     public function getUserStatistics()
@@ -580,28 +592,28 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'User statistics retrieved successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Failed to load user statistics',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Failed to load user statistics: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Failed to load user statistics: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }
 
     /**
      * Search users by various criteria
-     * 
-     * @param array $searchCriteria Search parameters
+     *
+     * @param  array  $searchCriteria  Search parameters
      * @return array Standardized response with search results
      */
     public function searchUsers($searchCriteria)
@@ -614,20 +626,20 @@ class GibranUserService
                 return [
                     'success' => true,
                     'message' => 'Search completed successfully',
-                    'data' => $response['data'] ?? []
+                    'data' => $response['data'] ?? [],
                 ];
             }
 
             return [
                 'success' => false,
                 'message' => $response['message'] ?? 'Search failed',
-                'data' => []
+                'data' => [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => 'Search failed: ' . $e->getMessage(),
-                'data' => []
+                'message' => 'Search failed: '.$e->getMessage(),
+                'data' => [],
             ];
         }
     }

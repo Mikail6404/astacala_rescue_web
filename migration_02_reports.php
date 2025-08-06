@@ -13,7 +13,7 @@ try {
 
     // 1. Create backup
     echo "1. Creating backup...\n";
-    $backendPdo->exec("CREATE TABLE IF NOT EXISTS disaster_reports_backup_pre_migration AS SELECT * FROM disaster_reports");
+    $backendPdo->exec('CREATE TABLE IF NOT EXISTS disaster_reports_backup_pre_migration AS SELECT * FROM disaster_reports');
     echo "✅ Backup created\n\n";
 
     // 2. Create migration log table for reports
@@ -48,12 +48,12 @@ try {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $userMappings[$row['source_id']] = $row['target_user_id'];
     }
-    echo "✅ User mappings loaded: " . count($userMappings) . " mappings\n\n";
+    echo '✅ User mappings loaded: '.count($userMappings)." mappings\n\n";
 
     // 4. Migrate pelaporans to disaster_reports
     echo "4. Migrating pelaporans (disaster reports)...\n";
 
-    $stmt = $webPdo->prepare("SELECT * FROM pelaporans ORDER BY id");
+    $stmt = $webPdo->prepare('SELECT * FROM pelaporans ORDER BY id');
     $stmt->execute();
     $pelaporans = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -84,17 +84,17 @@ try {
             // Create comprehensive description
             $description = $pelaporan['informasi_singkat_bencana'];
             if ($pelaporan['deskripsi_terkait_data_lainya']) {
-                $description .= ' - ' . $pelaporan['deskripsi_terkait_data_lainya'];
+                $description .= ' - '.$pelaporan['deskripsi_terkait_data_lainya'];
             }
 
-            $insertStmt = $backendPdo->prepare("
+            $insertStmt = $backendPdo->prepare('
                 INSERT INTO disaster_reports (
                     title, description, disaster_type, severity_level, status,
                     location_name, team_name, estimated_affected, 
                     personnel_count, casualty_count, reported_by, 
                     created_at, updated_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ");
+            ');
 
             $insertStmt->execute([
                 $pelaporan['informasi_singkat_bencana'],                    // title
@@ -109,7 +109,7 @@ try {
                 $pelaporan['jumlah_korban'] ?: 0,                          // casualty_count
                 $reportedBy,                                               // reported_by
                 $pelaporan['created_at'] ?: 'NOW()',                       // created_at
-                $pelaporan['updated_at'] ?: 'NOW()'                        // updated_at
+                $pelaporan['updated_at'] ?: 'NOW()',                        // updated_at
             ]);
 
             $newReportId = $backendPdo->lastInsertId();
@@ -127,10 +127,10 @@ try {
                 $pelaporan['informasi_singkat_bencana'],
                 $pelaporan['informasi_singkat_bencana'],
                 $pelaporan['pelapor_pengguna_id'],
-                $reportedBy
+                $reportedBy,
             ]);
 
-            $reporterInfo = $reportedBy ? "(Reporter: $reportedBy)" : "(Reporter: NULL)";
+            $reporterInfo = $reportedBy ? "(Reporter: $reportedBy)" : '(Reporter: NULL)';
             echo "  ✅ Migrated: {$pelaporan['informasi_singkat_bencana']} → ID: $newReportId $reporterInfo\n";
             echo "     Location: {$pelaporan['lokasi_bencana']}\n";
             echo "     Severity: {$pelaporan['skala_bencana']} → $severityLevel\n";
@@ -147,22 +147,22 @@ try {
                 $pelaporan['id'],
                 $pelaporan['informasi_singkat_bencana'],
                 $pelaporan['pelapor_pengguna_id'],
-                $e->getMessage()
+                $e->getMessage(),
             ]);
 
-            echo "  ❌ Failed: {$pelaporan['informasi_singkat_bencana']} → Error: " . $e->getMessage() . "\n\n";
+            echo "  ❌ Failed: {$pelaporan['informasi_singkat_bencana']} → Error: ".$e->getMessage()."\n\n";
         }
     }
 
     echo "\n5. Migration Summary:\n";
-    echo "=" . str_repeat("=", 18) . "\n";
+    echo '='.str_repeat('=', 18)."\n";
 
     // Get migration statistics
-    $stmt = $backendPdo->prepare("
+    $stmt = $backendPdo->prepare('
         SELECT migration_status, COUNT(*) as count 
         FROM report_migration_log 
         GROUP BY migration_status
-    ");
+    ');
     $stmt->execute();
     $stats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -172,13 +172,13 @@ try {
     }
 
     // Final report count
-    $stmt = $backendPdo->prepare("SELECT COUNT(*) FROM disaster_reports");
+    $stmt = $backendPdo->prepare('SELECT COUNT(*) FROM disaster_reports');
     $stmt->execute();
     $finalCount = $stmt->fetchColumn();
     echo "\n📊 Total disaster reports in backend database: $finalCount\n";
 
     // Show reports by status
-    $stmt = $backendPdo->prepare("SELECT status, COUNT(*) as count FROM disaster_reports GROUP BY status");
+    $stmt = $backendPdo->prepare('SELECT status, COUNT(*) as count FROM disaster_reports GROUP BY status');
     $stmt->execute();
     $statusStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -188,7 +188,7 @@ try {
     }
 
     // Show reports by severity
-    $stmt = $backendPdo->prepare("SELECT severity_level, COUNT(*) as count FROM disaster_reports GROUP BY severity_level");
+    $stmt = $backendPdo->prepare('SELECT severity_level, COUNT(*) as count FROM disaster_reports GROUP BY severity_level');
     $stmt->execute();
     $severityStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -203,7 +203,7 @@ try {
     echo "2. Validate report data integrity\n";
     echo "3. Proceed to Phase 3: Service Layer Migration\n";
 } catch (Exception $e) {
-    echo "❌ Migration failed: " . $e->getMessage() . "\n";
+    echo '❌ Migration failed: '.$e->getMessage()."\n";
     echo "\nRollback may be required. Check backup tables.\n";
 }
 

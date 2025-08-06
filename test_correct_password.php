@@ -9,7 +9,7 @@ echo "==================================================\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -44,6 +44,6 @@ if ($httpCode === 200) {
     echo "❌ Backend API request failed (HTTP $httpCode)\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 echo "CORRECT PASSWORD TEST COMPLETED\n";
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";

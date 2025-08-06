@@ -1,15 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BeritaBencanaController;
-use App\Http\Controllers\PelaporanController;
 use App\Http\Controllers\AuthAdminController;
+use App\Http\Controllers\BeritaBencanaController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Middleware\AdminAuth;
+use App\Http\Controllers\PelaporanController;
+use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\ProfileAdminController;
-use App\Http\Controllers\AuthRelawanController;
+use App\Http\Middleware\AdminAuth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -90,7 +89,7 @@ Route::get('/notifikasi/detail/{id}', [PelaporanController::class, 'showNotifika
 Route::delete('/api/pelaporan/{id}', [PelaporanController::class, 'apiDeleteReport'])->name('api.pelaporan.delete');
 Route::post('/api/pelaporan/{id}/verify', [PelaporanController::class, 'apiVerifyReport'])->name('api.pelaporan.verify');
 
-// TICKET #001: CRUD Operations - API routes for AJAX operations  
+// TICKET #001: CRUD Operations - API routes for AJAX operations
 Route::delete('/api/admin/{id}', [AdminController::class, 'apiDeleteAdmin'])->name('api.admin.delete');
 
 // TICKET #005: CRUD Operations - API routes for AJAX operations (Issue 5a fix)
@@ -108,7 +107,7 @@ Route::get('/register', [AuthAdminController::class, 'showRegisterForm'])->name(
 Route::post('/register', [AuthAdminController::class, 'register'])->name('register');
 Route::get('/logout', [AuthAdminController::class, 'logout'])->name('logout');
 
-//route halaman akun profil admin
+// route halaman akun profil admin
 Route::get('/profil-admin', [ProfileAdminController::class, 'show'])->name('profil.admin')->middleware(AdminAuth::class);
 // Tampilkan form edit profil admin
 Route::get('/profil-admin/edit', [ProfileAdminController::class, 'edit'])->name('profil.admin.edit')->middleware(AdminAuth::class);
@@ -120,7 +119,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 // Test authentication route (no CSRF for testing)
 Route::post('/test-auth', function (Illuminate\Http\Request $request) {
-    $authController = new AuthAdminController(new App\Services\GibranAuthService(new App\Services\AstacalaApiClient()));
+    $authController = new AuthAdminController(new App\Services\GibranAuthService(new App\Services\AstacalaApiClient));
+
     return $authController->processLogin($request);
 })->name('test.auth')->withoutMiddleware('web');
 
@@ -137,7 +137,7 @@ Route::get('/debug-session', function () {
         'admin_username' => session('admin_username'),
         'admin_name' => session('admin_name'),
         'admin_email' => session('admin_email'),
-        'access_token' => session('access_token') ? 'present' : 'missing'
+        'access_token' => session('access_token') ? 'present' : 'missing',
     ]);
 })->withoutMiddleware('web');
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\GibranContentService;
+use Illuminate\Http\Request;
 
 class BeritaBencanaController extends Controller
 {
@@ -21,6 +21,7 @@ class BeritaBencanaController extends Controller
 
         if ($response['success']) {
             $data = $response['data'];
+
             return view('data_publikasi', compact('data'));
         } else {
             return view('data_publikasi', ['data' => []])
@@ -71,7 +72,7 @@ class BeritaBencanaController extends Controller
             $rawData = $response['data'];
 
             // Transform API data to match template expectations
-            $data = new \stdClass();
+            $data = new \stdClass;
             $data->id = $rawData['id'];
 
             // Parse tags JSON to extract disaster-specific data
@@ -151,7 +152,7 @@ class BeritaBencanaController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => $response['message']
+                'message' => $response['message'],
             ], 400);
         }
     }
@@ -165,7 +166,7 @@ class BeritaBencanaController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => $response['message']
+                'message' => $response['message'],
             ], 400);
         }
     }
@@ -177,12 +178,12 @@ class BeritaBencanaController extends Controller
         if ($response['success']) {
             return response()->json([
                 'success' => true,
-                'data' => $response['data']
+                'data' => $response['data'],
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => $response['message']
+                'message' => $response['message'],
             ], 404);
         }
     }

@@ -2,11 +2,10 @@
 
 /**
  * Simple Dashboard Test - Manual Testing Verification
- * 
+ *
  * This script provides manual testing instructions and verifies
  * the fixed issues through direct page access simulation.
  */
-
 echo "=== DASHBOARD FIXES VERIFICATION ===\n\n";
 
 echo "🔧 FIXES IMPLEMENTED:\n\n";

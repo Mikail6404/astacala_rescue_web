@@ -21,7 +21,7 @@ class Pelaporan extends Model
         'deskripsi_terkait_data_lainya',
         'pelapor_pengguna_id',
         'status_notifikasi',
-        'status_verifikasi'
+        'status_verifikasi',
     ];
 
     public $timestamps = true;

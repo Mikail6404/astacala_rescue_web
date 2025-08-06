@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AuthService;
 use Closure;
 use Illuminate\Http\Request;
-use App\Services\AuthService;
 
 class ApiAuth
 {
@@ -18,15 +18,13 @@ class ApiAuth
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @param  string|null  $role
      * @return mixed
      */
     public function handle(Request $request, Closure $next, $role = null)
     {
         // Check if user is authenticated
-        if (!$this->authService->check()) {
+        if (! $this->authService->check()) {
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Unauthenticated'], 401);
             }
@@ -35,7 +33,7 @@ class ApiAuth
         }
 
         // Check role if specified
-        if ($role && !$this->authService->hasRole($role)) {
+        if ($role && ! $this->authService->hasRole($role)) {
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }

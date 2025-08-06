@@ -2,7 +2,7 @@
 
 /**
  * Comprehensive Dashboard Issues Test & Verification
- * 
+ *
  * This script tests all the issues reported by the user after implementing fixes:
  * 1. Role segregation (DataPengguna vs DataAdmin)
  * 2. Hardcoded user ID issues in update operations
@@ -17,70 +17,70 @@ $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
 use App\Services\AstacalaApiClient;
-use App\Services\GibranUserService;
 use App\Services\GibranReportService;
-use App\Http\Controllers\PenggunaController;
-use App\Http\Controllers\AdminController;
+use App\Services\GibranUserService;
 
 echo "=== COMPREHENSIVE DASHBOARD ISSUES VERIFICATION ===\n\n";
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $userService = new GibranUserService($apiClient);
     $reportService = new GibranReportService($apiClient);
 
     // Test 1: Verify Role Segregation Fix
     echo "🔍 TEST 1: Role Segregation Verification\n";
-    echo "=" . str_repeat("=", 45) . "\n";
+    echo '='.str_repeat('=', 45)."\n";
 
     echo "1a. Testing PenggunaController (should show VOLUNTEERS only):\n";
     $volunteerResponse = $userService->getAllUsers(['role' => 'VOLUNTEER']);
     if ($volunteerResponse['success']) {
         $volunteers = $volunteerResponse['data'];
-        echo "   ✅ Retrieved " . count($volunteers) . " volunteer users\n";
+        echo '   ✅ Retrieved '.count($volunteers)." volunteer users\n";
 
         // Check role filtering
         $nonVolunteers = array_filter($volunteers, function ($user) {
             $role = is_array($user) ? ($user['role'] ?? '') : ($user->role ?? '');
-            return !in_array(strtoupper($role), ['VOLUNTEER', 'volunteer']);
+
+            return ! in_array(strtoupper($role), ['VOLUNTEER', 'volunteer']);
         });
 
         if (empty($nonVolunteers)) {
             echo "   ✅ Role filtering working: All users are volunteers\n";
         } else {
-            echo "   ❌ Role filtering failed: Found " . count($nonVolunteers) . " non-volunteer users\n";
+            echo '   ❌ Role filtering failed: Found '.count($nonVolunteers)." non-volunteer users\n";
         }
     } else {
-        echo "   ❌ Failed to retrieve volunteer users: " . $volunteerResponse['message'] . "\n";
+        echo '   ❌ Failed to retrieve volunteer users: '.$volunteerResponse['message']."\n";
     }
 
     echo "\n1b. Testing AdminController (should show ADMINS only):\n";
     $adminResponse = $userService->getAllUsers(['role' => 'ADMIN']);
     if ($adminResponse['success']) {
         $admins = $adminResponse['data'];
-        echo "   ✅ Retrieved " . count($admins) . " admin users\n";
+        echo '   ✅ Retrieved '.count($admins)." admin users\n";
 
         // Check role filtering
         $nonAdmins = array_filter($admins, function ($user) {
             $role = is_array($user) ? ($user['role'] ?? '') : ($user->role ?? '');
-            return !in_array(strtoupper($role), ['ADMIN', 'admin']);
+
+            return ! in_array(strtoupper($role), ['ADMIN', 'admin']);
         });
 
         if (empty($nonAdmins)) {
             echo "   ✅ Role filtering working: All users are admins\n";
         } else {
-            echo "   ❌ Role filtering failed: Found " . count($nonAdmins) . " non-admin users\n";
+            echo '   ❌ Role filtering failed: Found '.count($nonAdmins)." non-admin users\n";
         }
     } else {
-        echo "   ❌ Failed to retrieve admin users: " . $adminResponse['message'] . "\n";
+        echo '   ❌ Failed to retrieve admin users: '.$adminResponse['message']."\n";
     }
 
     // Test 2: Verify User ID Fetching Fix
     echo "\n🔍 TEST 2: User ID Fetching Verification\n";
-    echo "=" . str_repeat("=", 40) . "\n";
+    echo '='.str_repeat('=', 40)."\n";
 
     // Get first user ID from volunteers list for testing
-    if (!empty($volunteers) && count($volunteers) > 0) {
+    if (! empty($volunteers) && count($volunteers) > 0) {
         $testUserId = is_array($volunteers[0]) ? $volunteers[0]['id'] : $volunteers[0]->id;
         echo "2a. Testing getUser() with specific ID ($testUserId):\n";
 
@@ -95,7 +95,7 @@ try {
                 echo "   ❌ Wrong user fetched: Expected ID $testUserId, got $fetchedId\n";
             }
         } else {
-            echo "   ❌ Failed to fetch user by ID: " . $userResult['message'] . "\n";
+            echo '   ❌ Failed to fetch user by ID: '.$userResult['message']."\n";
         }
     } else {
         echo "2a. ⚠️  No volunteer users available for testing\n";
@@ -103,9 +103,9 @@ try {
 
     // Test 3: Check API Data Completeness
     echo "\n🔍 TEST 3: Profile Data Completeness\n";
-    echo "=" . str_repeat("=", 35) . "\n";
+    echo '='.str_repeat('=', 35)."\n";
 
-    if (!empty($volunteers) && count($volunteers) > 0) {
+    if (! empty($volunteers) && count($volunteers) > 0) {
         $testUser = $volunteers[0];
         $fields = ['name', 'email', 'phone', 'role', 'organization'];
         $missingFields = [];
@@ -121,33 +121,33 @@ try {
         if (empty($missingFields)) {
             echo "   ✅ All required fields present\n";
         } else {
-            echo "   ⚠️  Missing fields: " . implode(', ', $missingFields) . "\n";
+            echo '   ⚠️  Missing fields: '.implode(', ', $missingFields)."\n";
         }
     }
 
     // Test 4: Reports Data Mapping
     echo "\n🔍 TEST 4: Reports Data Mapping\n";
-    echo "=" . str_repeat("=", 30) . "\n";
+    echo '='.str_repeat('=', 30)."\n";
 
     $reportsResult = $reportService->getAllReports();
     if ($reportsResult['success']) {
         $reports = $reportsResult['data'];
-        echo "4a. Retrieved " . count($reports) . " disaster reports\n";
+        echo '4a. Retrieved '.count($reports)." disaster reports\n";
 
-        if (!empty($reports)) {
+        if (! empty($reports)) {
             $testReport = $reports[0];
             $reportFields = ['title', 'location_name', 'team_name', 'severity_level'];
             $mappedCorrectly = 0;
 
             foreach ($reportFields as $field) {
                 $value = is_array($testReport) ? ($testReport[$field] ?? null) : ($testReport->$field ?? null);
-                if (!empty($value) && $value !== 'N/A') {
+                if (! empty($value) && $value !== 'N/A') {
                     $mappedCorrectly++;
                 }
             }
 
             $percentage = round(($mappedCorrectly / count($reportFields)) * 100);
-            echo "   📊 Data mapping completeness: $percentage% ($mappedCorrectly/" . count($reportFields) . " fields)\n";
+            echo "   📊 Data mapping completeness: $percentage% ($mappedCorrectly/".count($reportFields)." fields)\n";
 
             if ($percentage >= 75) {
                 echo "   ✅ Report data mapping working well\n";
@@ -156,19 +156,19 @@ try {
             }
         }
     } else {
-        echo "   ❌ Failed to retrieve reports: " . $reportsResult['message'] . "\n";
+        echo '   ❌ Failed to retrieve reports: '.$reportsResult['message']."\n";
     }
 
     // Test 5: API Endpoint Configuration
     echo "\n🔍 TEST 5: API Endpoint Configuration\n";
-    echo "=" . str_repeat("=", 35) . "\n";
+    echo '='.str_repeat('=', 35)."\n";
 
     echo "5a. Testing user-by-ID endpoint configuration:\n";
     try {
         $endpoint = $apiClient->getEndpoint('users', 'get_by_id', ['id' => 1]);
         echo "   ✅ User-by-ID endpoint configured: $endpoint\n";
     } catch (Exception $e) {
-        echo "   ❌ User-by-ID endpoint missing: " . $e->getMessage() . "\n";
+        echo '   ❌ User-by-ID endpoint missing: '.$e->getMessage()."\n";
     }
 
     echo "\n5b. Testing admin-list endpoint configuration:\n";
@@ -176,13 +176,13 @@ try {
         $endpoint = $apiClient->getEndpoint('users', 'admin_list');
         echo "   ✅ Admin-list endpoint configured: $endpoint\n";
     } catch (Exception $e) {
-        echo "   ❌ Admin-list endpoint missing: " . $e->getMessage() . "\n";
+        echo '   ❌ Admin-list endpoint missing: '.$e->getMessage()."\n";
     }
 
     // Summary
-    echo "\n" . str_repeat("=", 60) . "\n";
+    echo "\n".str_repeat('=', 60)."\n";
     echo "📋 SUMMARY OF FIXES IMPLEMENTED:\n";
-    echo str_repeat("=", 60) . "\n";
+    echo str_repeat('=', 60)."\n";
     echo "✅ Added get_by_id endpoint to API configuration\n";
     echo "✅ Fixed PenggunaController to filter VOLUNTEER users only\n";
     echo "✅ Fixed AdminController to filter ADMIN users only\n";
@@ -201,8 +201,8 @@ try {
     echo "3. Verify backend API returns complete user profile data\n";
     echo "4. Test report data includes proper reporter and coordinate information\n";
 } catch (Exception $e) {
-    echo "❌ Test error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ Test error: '.$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
 }
 
 echo "\n=== COMPREHENSIVE VERIFICATION COMPLETE ===\n";

@@ -11,7 +11,7 @@ $adminFormData = [
     'tempat_lahir_admin' => 'Jakarta',
     'no_handphone_admin' => '+628123456789',
     'no_anggota' => 'ADMIN-001',
-    'password_akun_admin' => '' // Empty password (should not update)
+    'password_akun_admin' => '', // Empty password (should not update)
 ];
 
 echo "1. Original Form Data:\n";
@@ -30,7 +30,7 @@ $mapping = [
 // Apply mapping logic
 $mappedData = [];
 foreach ($adminFormData as $key => $value) {
-    if (isset($mapping[$key]) && !empty($value)) {
+    if (isset($mapping[$key]) && ! empty($value)) {
         $mappedData[$mapping[$key]] = $value;
     }
 }
@@ -39,8 +39,8 @@ echo "\n2. Mapped Data for API:\n";
 print_r($mappedData);
 
 echo "\n3. CRITICAL ISSUE ANALYSIS:\n";
-echo "Form field 'username_akun_admin': " . $adminFormData['username_akun_admin'] . "\n";
-echo "Maps to API field 'email': " . ($mappedData['email'] ?? 'NOT MAPPED') . "\n";
+echo "Form field 'username_akun_admin': ".$adminFormData['username_akun_admin']."\n";
+echo "Maps to API field 'email': ".($mappedData['email'] ?? 'NOT MAPPED')."\n";
 echo "But backend might expect 'username' field instead!\n";
 
 echo "\n4. POSSIBLE SOLUTIONS:\n";

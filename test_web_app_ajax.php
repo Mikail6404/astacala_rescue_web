@@ -17,11 +17,11 @@ echo "=====================================\n";
 $routes = [
     'GET admin list' => '/api/admin',
     'PUT admin update' => '/api/admin/58',
-    'DELETE admin' => '/api/admin/59'
+    'DELETE admin' => '/api/admin/59',
 ];
 
 foreach ($routes as $name => $route) {
-    $fullUrl = $baseUrl . $route;
+    $fullUrl = $baseUrl.$route;
     echo "Route: $name -> $fullUrl\n";
 }
 

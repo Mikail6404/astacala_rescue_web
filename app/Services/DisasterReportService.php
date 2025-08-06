@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
 use Exception;
 
 class DisasterReportService
@@ -26,13 +25,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? [],
-                'pagination' => $response['pagination'] ?? null
+                'pagination' => $response['pagination'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => []
+                'data' => [],
             ];
         }
     }
@@ -48,13 +47,13 @@ class DisasterReportService
 
             return [
                 'success' => true,
-                'data' => $response['data'] ?? null
+                'data' => $response['data'] ?? null,
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -72,13 +71,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Report created successfully'
+                'message' => $response['message'] ?? 'Report created successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -95,13 +94,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Report updated successfully'
+                'message' => $response['message'] ?? 'Report updated successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -117,12 +116,12 @@ class DisasterReportService
 
             return [
                 'success' => true,
-                'message' => $response['message'] ?? 'Report deleted successfully'
+                'message' => $response['message'] ?? 'Report deleted successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
@@ -138,13 +137,13 @@ class DisasterReportService
 
             return [
                 'success' => true,
-                'data' => $response['data'] ?? []
+                'data' => $response['data'] ?? [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => []
+                'data' => [],
             ];
         }
     }
@@ -160,13 +159,13 @@ class DisasterReportService
 
             return [
                 'success' => true,
-                'data' => $response['data'] ?? []
+                'data' => $response['data'] ?? [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => []
+                'data' => [],
             ];
         }
     }
@@ -183,13 +182,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Report verified successfully'
+                'message' => $response['message'] ?? 'Report verified successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -206,13 +205,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Report published successfully'
+                'message' => $response['message'] ?? 'Report published successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -228,13 +227,13 @@ class DisasterReportService
 
             return [
                 'success' => true,
-                'data' => $response['data'] ?? []
+                'data' => $response['data'] ?? [],
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => []
+                'data' => [],
             ];
         }
     }
@@ -251,13 +250,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Images uploaded successfully'
+                'message' => $response['message'] ?? 'Images uploaded successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }
@@ -274,13 +273,13 @@ class DisasterReportService
             return [
                 'success' => true,
                 'data' => $response['data'] ?? null,
-                'message' => $response['message'] ?? 'Document uploaded successfully'
+                'message' => $response['message'] ?? 'Document uploaded successfully',
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'data' => null
+                'data' => null,
             ];
         }
     }

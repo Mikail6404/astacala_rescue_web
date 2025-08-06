@@ -10,13 +10,13 @@ use App\Services\AstacalaApiClient;
 echo "=== TESTING GIBRAN DASHBOARD ENDPOINT ===\n\n";
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
 
     // Login first
     $loginUrl = $apiClient->getEndpoint('auth', 'login');
     $loginData = [
         'email' => 'mikailadmin@admin.astacala.local',
-        'password' => 'mikailadmin'
+        'password' => 'mikailadmin',
     ];
 
     $loginResponse = $apiClient->publicRequest('POST', $loginUrl, $loginData);
@@ -30,19 +30,19 @@ try {
     echo "Endpoint: $gibranEndpoint\n";
 
     $response = $apiClient->authenticatedRequest('GET', $gibranEndpoint);
-    echo "Raw response: " . json_encode($response, JSON_PRETTY_PRINT) . "\n";
+    echo 'Raw response: '.json_encode($response, JSON_PRETTY_PRINT)."\n";
 
     // Check response format
     if (isset($response['status']) && $response['status'] === 'success') {
         echo "✅ API response has correct status\n";
-        echo "Message: " . ($response['message'] ?? 'No message') . "\n";
-        echo "Data keys: " . (isset($response['data']) ? implode(', ', array_keys($response['data'])) : 'No data') . "\n";
+        echo 'Message: '.($response['message'] ?? 'No message')."\n";
+        echo 'Data keys: '.(isset($response['data']) ? implode(', ', array_keys($response['data'])) : 'No data')."\n";
     } else {
         echo "❌ API response format issue\n";
-        echo "Available keys: " . implode(', ', array_keys($response)) . "\n";
+        echo 'Available keys: '.implode(', ', array_keys($response))."\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n=== GIBRAN ENDPOINT TEST COMPLETE ===\n";

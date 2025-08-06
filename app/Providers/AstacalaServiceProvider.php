@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Services\AstacalaApiClient;
 use App\Services\AuthService;
 use App\Services\DisasterReportService;
+use Illuminate\Support\ServiceProvider;
 
 class AstacalaServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class AstacalaServiceProvider extends ServiceProvider
     {
         // Register API Client as singleton
         $this->app->singleton(AstacalaApiClient::class, function ($app) {
-            return new AstacalaApiClient();
+            return new AstacalaApiClient;
         });
 
         // Register Auth Service

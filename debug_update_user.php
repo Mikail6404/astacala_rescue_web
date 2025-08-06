@@ -1,16 +1,15 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 // Bootstrap Laravel
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
 // Set up the application
 $app->boot();
 
 use App\Services\GibranUserService;
-use Illuminate\Support\Facades\Log;
 
 try {
     echo "=== Debug Update User Issue ===\n";
@@ -31,9 +30,9 @@ try {
         echo "\nUser data found:\n";
         print_r($response['data']);
     } else {
-        echo "\nError: " . $response['message'] . "\n";
+        echo "\nError: ".$response['message']."\n";
     }
 } catch (Exception $e) {
-    echo "Exception: " . $e->getMessage() . "\n";
-    echo "Trace: " . $e->getTraceAsString() . "\n";
+    echo 'Exception: '.$e->getMessage()."\n";
+    echo 'Trace: '.$e->getTraceAsString()."\n";
 }

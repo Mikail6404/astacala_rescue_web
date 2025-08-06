@@ -7,7 +7,7 @@ echo "1. Testing Backend API Authentication:\n";
 
 $loginData = [
     'email' => 'test-admin@astacala.test',
-    'password' => 'testpassword123'
+    'password' => 'testpassword123',
 ];
 
 $curl = curl_init();
@@ -18,7 +18,7 @@ curl_setopt_array($curl, [
     CURLOPT_POSTFIELDS => json_encode($loginData),
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
-        'Accept: application/json'
+        'Accept: application/json',
     ],
 ]);
 
@@ -33,7 +33,7 @@ if ($httpCode === 200) {
     $loginResponse = json_decode($response, true);
     if (isset($loginResponse['data']['tokens']['accessToken'])) {
         $token = $loginResponse['data']['tokens']['accessToken'];
-        echo "✅ Authentication successful! Token: " . substr($token, 0, 20) . "...\n\n";
+        echo '✅ Authentication successful! Token: '.substr($token, 0, 20)."...\n\n";
 
         // Test 2: Test admin-list endpoint with authentication
         echo "2. Testing Admin List API:\n";
@@ -45,7 +45,7 @@ if ($httpCode === 200) {
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Accept: application/json',
-                'Authorization: Bearer ' . $token
+                'Authorization: Bearer '.$token,
             ],
         ]);
 
@@ -59,7 +59,7 @@ if ($httpCode === 200) {
         // Test 3: Test getting single user
         if ($adminHttpCode === 200) {
             $adminData = json_decode($adminResponse, true);
-            if (!empty($adminData['data'])) {
+            if (! empty($adminData['data'])) {
                 $firstAdmin = $adminData['data'][0];
                 $userId = $firstAdmin['id'];
 
@@ -72,7 +72,7 @@ if ($httpCode === 200) {
                     CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
                         'Accept: application/json',
-                        'Authorization: Bearer ' . $token
+                        'Authorization: Bearer '.$token,
                     ],
                 ]);
 
@@ -92,7 +92,7 @@ if ($httpCode === 200) {
                     'birth_date' => $firstAdmin['birth_date'] ?? '1990-01-01',
                     'place_of_birth' => $firstAdmin['place_of_birth'] ?? 'Jakarta',
                     'phone' => $firstAdmin['phone'] ?? '081234567890',
-                    'member_number' => $firstAdmin['member_number'] ?? 'AG001'
+                    'member_number' => $firstAdmin['member_number'] ?? 'AG001',
                 ];
 
                 $curl = curl_init();
@@ -104,7 +104,7 @@ if ($httpCode === 200) {
                     CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
                         'Accept: application/json',
-                        'Authorization: Bearer ' . $token
+                        'Authorization: Bearer '.$token,
                     ],
                 ]);
 
@@ -119,7 +119,7 @@ if ($httpCode === 200) {
                 echo "5. Testing Status Update API:\n";
 
                 $statusData = [
-                    'is_active' => $firstAdmin['is_active'] ?? 1
+                    'is_active' => $firstAdmin['is_active'] ?? 1,
                 ];
 
                 $curl = curl_init();
@@ -131,7 +131,7 @@ if ($httpCode === 200) {
                     CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
                         'Accept: application/json',
-                        'Authorization: Bearer ' . $token
+                        'Authorization: Bearer '.$token,
                     ],
                 ]);
 

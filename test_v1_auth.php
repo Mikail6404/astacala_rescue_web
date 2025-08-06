@@ -6,7 +6,7 @@ echo "Testing with v1 auth endpoints vs gibran endpoints\n\n";
 // Test both authentication methods
 $loginData = [
     'email' => 'admin@uat.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 echo "🔍 STEP 1: Testing V1 API Authentication\n";
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -34,9 +34,9 @@ if ($httpCode === 200) {
     $v1User = $v1AuthData['data']['user'] ?? $v1AuthData['user'] ?? [];
 
     echo "✅ V1 Auth successful\n";
-    echo "  👤 Name: " . ($v1User['name'] ?? 'N/A') . "\n";
-    echo "  🔑 Role: " . ($v1User['role'] ?? 'N/A') . "\n";
-    echo "  🎫 Token: " . ($v1Token ? substr($v1Token, 0, 20) . "..." : 'Not found') . "\n";
+    echo '  👤 Name: '.($v1User['name'] ?? 'N/A')."\n";
+    echo '  🔑 Role: '.($v1User['role'] ?? 'N/A')."\n";
+    echo '  🎫 Token: '.($v1Token ? substr($v1Token, 0, 20).'...' : 'Not found')."\n";
 
     if ($v1Token) {
         echo "\n🔍 Testing admin endpoints with V1 token:\n";
@@ -50,12 +50,12 @@ if ($httpCode === 200) {
             echo "\n🔍 Testing $name ($endpoint):\n";
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000' . $endpoint);
+            curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000'.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Accept: application/json',
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $v1Token
+                'Authorization: Bearer '.$v1Token,
             ]);
 
             $response = curl_exec($ch);
@@ -68,15 +68,15 @@ if ($httpCode === 200) {
                 echo "  ✅ SUCCESS with V1 token\n";
                 $data = json_decode($response, true);
                 if (isset($data['data']) && is_array($data['data'])) {
-                    echo "  📊 Data count: " . count($data['data']) . "\n";
+                    echo '  📊 Data count: '.count($data['data'])."\n";
                 }
             } elseif ($httpCode === 403) {
                 echo "  ❌ FORBIDDEN\n";
                 $errorData = json_decode($response, true);
-                echo "  📝 Message: " . ($errorData['message'] ?? 'No message') . "\n";
+                echo '  📝 Message: '.($errorData['message'] ?? 'No message')."\n";
             } else {
                 echo "  ❌ ERROR - HTTP $httpCode\n";
-                echo "  📝 Response: " . substr($response, 0, 200) . "\n";
+                echo '  📝 Response: '.substr($response, 0, 200)."\n";
             }
         }
     }
@@ -95,7 +95,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -109,19 +109,19 @@ if ($httpCode === 200) {
     $gibranToken = $gibranAuthData['data']['access_token'] ?? null;
 
     echo "✅ Gibran Auth successful\n";
-    echo "  🎫 Token: " . ($gibranToken ? substr($gibranToken, 0, 20) . "..." : 'Not found') . "\n";
+    echo '  🎫 Token: '.($gibranToken ? substr($gibranToken, 0, 20).'...' : 'Not found')."\n";
 
     // Compare token formats
     if (isset($v1Token) && isset($gibranToken)) {
         echo "\n📊 Token Comparison:\n";
-        echo "  V1 Token:     " . substr($v1Token, 0, 30) . "...\n";
-        echo "  Gibran Token: " . substr($gibranToken, 0, 30) . "...\n";
-        echo "  Tokens match: " . ($v1Token === $gibranToken ? 'YES' : 'NO') . "\n";
+        echo '  V1 Token:     '.substr($v1Token, 0, 30)."...\n";
+        echo '  Gibran Token: '.substr($gibranToken, 0, 30)."...\n";
+        echo '  Tokens match: '.($v1Token === $gibranToken ? 'YES' : 'NO')."\n";
     }
 } else {
     echo "❌ Gibran Auth failed\n";
 }
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "AUTHENTICATION COMPARISON COMPLETED\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";

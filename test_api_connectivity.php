@@ -7,14 +7,13 @@ $kernel->bootstrap();
 
 use App\Services\AstacalaApiClient;
 use App\Services\GibranDashboardService;
-use Illuminate\Support\Facades\Auth;
 
 echo "=== WEB APP API CONNECTIVITY TEST ===\n\n";
 
 try {
     // Test 1: API Client Instantiation
     echo "1. Testing API client instantiation...\n";
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     echo "   ✅ API client created successfully\n\n";
 
     // Test 2: Check endpoint generation
@@ -32,9 +31,9 @@ try {
     echo "3. Testing direct API calls (no auth)...\n";
     try {
         $response = $apiClient->publicRequest('GET', $userStatsEndpoint);
-        echo "   User stats response: " . json_encode($response) . "\n";
+        echo '   User stats response: '.json_encode($response)."\n";
     } catch (Exception $e) {
-        echo "   ❌ User stats error: " . $e->getMessage() . "\n";
+        echo '   ❌ User stats error: '.$e->getMessage()."\n";
     }
 
     // Test 4: Test with admin token
@@ -46,33 +45,33 @@ try {
 
     $loginData = [
         'email' => 'mikailadmin@admin.astacala.local',
-        'password' => 'mikailadmin'
+        'password' => 'mikailadmin',
     ];
 
     try {
         $loginResponse = $apiClient->publicRequest('POST', $loginUrl, $loginData);
-        echo "   Login response: " . json_encode($loginResponse) . "\n";
+        echo '   Login response: '.json_encode($loginResponse)."\n";
 
         if (isset($loginResponse['data']['tokens']['accessToken'])) {
             $token = $loginResponse['data']['tokens']['accessToken'];
             $user = $loginResponse['data']['user'];
-            echo "   ✅ Got admin token: " . substr($token, 0, 20) . "...\n";
+            echo '   ✅ Got admin token: '.substr($token, 0, 20)."...\n";
 
             // Store token using the proper API client method
             $apiClient->storeToken($token, $user);
 
             // Test authenticated user stats
             $authUserStats = $apiClient->authenticatedRequest('GET', $userStatsEndpoint);
-            echo "   Authenticated user stats: " . json_encode($authUserStats) . "\n";
+            echo '   Authenticated user stats: '.json_encode($authUserStats)."\n";
 
             // Test authenticated admin list
             $authAdminList = $apiClient->authenticatedRequest('GET', $adminListEndpoint);
-            echo "   Authenticated admin list: " . json_encode($authAdminList) . "\n";
+            echo '   Authenticated admin list: '.json_encode($authAdminList)."\n";
         } else {
             echo "   ❌ No access token in login response\n";
         }
     } catch (Exception $e) {
-        echo "   ❌ Login error: " . $e->getMessage() . "\n";
+        echo '   ❌ Login error: '.$e->getMessage()."\n";
     }
 
     // Test 5: Dashboard Service
@@ -81,13 +80,13 @@ try {
 
     try {
         $stats = $dashboardService->getStatistics();
-        echo "   Dashboard statistics: " . json_encode($stats) . "\n";
+        echo '   Dashboard statistics: '.json_encode($stats)."\n";
     } catch (Exception $e) {
-        echo "   ❌ Dashboard stats error: " . $e->getMessage() . "\n";
+        echo '   ❌ Dashboard stats error: '.$e->getMessage()."\n";
     }
 } catch (Exception $e) {
-    echo "❌ Fatal error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo '❌ Fatal error: '.$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
 }
 
 echo "\n=== API CONNECTIVITY TEST COMPLETE ===\n";

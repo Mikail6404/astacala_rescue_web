@@ -10,21 +10,21 @@ $kernel->bootstrap();
 // Load environment
 $app->loadEnvironmentFrom('.env');
 
-use App\Services\GibranUserService;
-use App\Services\AstacalaApiClient;
 use App\Services\ApiAuthService;
+use App\Services\AstacalaApiClient;
+use App\Services\GibranUserService;
 
 echo "=== DEBUGGING API RESPONSE FIELDS ===\n\n";
 
 try {
     // Create service instances
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $authService = new ApiAuthService($apiClient);
     $userService = new GibranUserService($apiClient, $authService);
 
     // Get admin list to see what fields are available
     $result = $userService->getAdminUsers();
-    if ($result['success'] && !empty($result['data'])) {
+    if ($result['success'] && ! empty($result['data'])) {
         echo "Admin List Response (first user):\n";
         print_r($result['data'][0]);
 
@@ -48,14 +48,14 @@ try {
 
         echo "Fields available in admin list:\n";
         foreach ($adminData as $key => $value) {
-            echo "- $key: " . (is_string($value) ? $value : json_encode($value)) . "\n";
+            echo "- $key: ".(is_string($value) ? $value : json_encode($value))."\n";
         }
 
         echo "\nFields available in single user call:\n";
         foreach ($singleUserData as $key => $value) {
-            echo "- $key: " . (is_string($value) ? $value : json_encode($value)) . "\n";
+            echo "- $key: ".(is_string($value) ? $value : json_encode($value))."\n";
         }
     }
 } catch (Exception $e) {
-    echo "❌ ERROR: " . $e->getMessage() . "\n";
+    echo '❌ ERROR: '.$e->getMessage()."\n";
 }

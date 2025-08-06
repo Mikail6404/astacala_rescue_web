@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\GibranDashboardService;
 
 class DashboardController extends Controller
@@ -17,7 +16,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Check if admin is logged in
-        if (!session()->has('admin_id')) {
+        if (! session()->has('admin_id')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -37,7 +36,7 @@ class DashboardController extends Controller
         $adminData = [
             'admin_id' => session('admin_id'),
             'admin_name' => session('admin_name'),
-            'admin_username' => session('admin_username')
+            'admin_username' => session('admin_username'),
         ];
 
         return view('dashboard', compact('statistics', 'news', 'overview', 'adminData'));
@@ -53,13 +52,13 @@ class DashboardController extends Controller
         if ($result['success']) {
             return response()->json([
                 'success' => true,
-                'data' => $result['data']
+                'data' => $result['data'],
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => $result['message']
+            'message' => $result['message'],
         ], 500);
     }
 
@@ -73,13 +72,13 @@ class DashboardController extends Controller
         if ($result['success']) {
             return response()->json([
                 'success' => true,
-                'data' => $result['data']
+                'data' => $result['data'],
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => $result['message']
+            'message' => $result['message'],
         ], 500);
     }
 }

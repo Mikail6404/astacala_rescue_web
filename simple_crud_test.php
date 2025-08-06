@@ -1,11 +1,12 @@
 <?php
+
 // Simple CRUD Operations Test - TICKET #001
 // Check if our new methods are implemented without instantiating Laravel
 
 echo "=== TICKET #001: CRUD OPERATIONS VERIFICATION ===\n\n";
 
 // Check PelaporanController file
-$pelaporanFile = __DIR__ . '/app/Http/Controllers/PelaporanController.php';
+$pelaporanFile = __DIR__.'/app/Http/Controllers/PelaporanController.php';
 $pelaporanContent = file_get_contents($pelaporanFile);
 
 echo "1. Checking PelaporanController implementation...\n";
@@ -23,7 +24,7 @@ if (strpos($pelaporanContent, 'apiVerifyReport') !== false) {
 }
 
 // Check AdminController file
-$adminFile = __DIR__ . '/app/Http/Controllers/AdminController.php';
+$adminFile = __DIR__.'/app/Http/Controllers/AdminController.php';
 $adminContent = file_get_contents($adminFile);
 
 echo "\n2. Checking AdminController implementation...\n";
@@ -35,7 +36,7 @@ if (strpos($adminContent, 'apiDeleteAdmin') !== false) {
 }
 
 // Check routes file
-$routesFile = __DIR__ . '/routes/web.php';
+$routesFile = __DIR__.'/routes/web.php';
 $routesContent = file_get_contents($routesFile);
 
 echo "\n3. Checking routes registration...\n";
@@ -59,7 +60,7 @@ if (strpos($routesContent, '/api/admin/{id}') !== false) {
 }
 
 // Check frontend implementation
-$dataLaporanFile = __DIR__ . '/resources/views/data_pelaporan.blade.php';
+$dataLaporanFile = __DIR__.'/resources/views/data_pelaporan.blade.php';
 $dataLaporanContent = file_get_contents($dataLaporanFile);
 
 echo "\n4. Checking frontend AJAX implementation...\n";
@@ -83,7 +84,7 @@ if (strpos($dataLaporanContent, 'csrf-token') !== false) {
 }
 
 // Check data_admin file
-$dataAdminFile = __DIR__ . '/resources/views/data_admin.blade.php';
+$dataAdminFile = __DIR__.'/resources/views/data_admin.blade.php';
 $dataAdminContent = file_get_contents($dataAdminFile);
 
 echo "\n5. Checking admin frontend implementation...\n";

@@ -9,7 +9,7 @@ echo "==============================================\n";
 
 $loginData = [
     'email' => 'volunteer@mobile.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -19,7 +19,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -34,8 +34,8 @@ if ($httpCode !== 200) {
 
 $authData = json_decode($response, true);
 echo "📝 Login response structure:\n";
-echo "  Status: " . ($authData['status'] ?? 'N/A') . "\n";
-echo "  Message: " . ($authData['message'] ?? 'N/A') . "\n";
+echo '  Status: '.($authData['status'] ?? 'N/A')."\n";
+echo '  Message: '.($authData['message'] ?? 'N/A')."\n";
 
 // Try different token paths
 $token = $authData['data']['access_token'] ??
@@ -43,28 +43,28 @@ $token = $authData['data']['access_token'] ??
     $authData['access_token'] ??
     null;
 
-if (!$token) {
+if (! $token) {
     echo "❌ No token found in response\n";
-    echo "Available keys in data: " . implode(', ', array_keys($authData['data'] ?? [])) . "\n";
+    echo 'Available keys in data: '.implode(', ', array_keys($authData['data'] ?? []))."\n";
     echo "Full response: $response\n";
     exit(1);
 }
 
-echo "✅ Login successful, token obtained: " . substr($token, 0, 20) . "...\n";
+echo '✅ Login successful, token obtained: '.substr($token, 0, 20)."...\n";
 
 // Get user info from login response
 $userInfo = $authData['data']['user'] ?? [];
 echo "👤 User from login response:\n";
-echo "  📧 Email: " . ($userInfo['email'] ?? 'N/A') . "\n";
-echo "  👤 Name: " . ($userInfo['name'] ?? 'N/A') . "\n";
-echo "  🔑 Role: " . ($userInfo['role'] ?? 'N/A') . "\n";
-echo "  🆔 ID: " . ($userInfo['id'] ?? 'N/A') . "\n";
+echo '  📧 Email: '.($userInfo['email'] ?? 'N/A')."\n";
+echo '  👤 Name: '.($userInfo['name'] ?? 'N/A')."\n";
+echo '  🔑 Role: '.($userInfo['role'] ?? 'N/A')."\n";
+echo '  🆔 ID: '.($userInfo['id'] ?? 'N/A')."\n";
 
 $userRole = $userInfo['role'] ?? 'UNKNOWN';
 echo "\n📋 User Role Analysis:\n";
 echo "Current role: $userRole\n";
 echo "Admin endpoints require: admin or super_admin role\n";
-echo "User has admin access: " . (in_array($userRole, ['admin', 'super_admin', 'ADMIN']) ? 'YES' : 'NO') . "\n";
+echo 'User has admin access: '.(in_array($userRole, ['admin', 'super_admin', 'ADMIN']) ? 'YES' : 'NO')."\n";
 
 echo "\n🔍 STEP 2: Testing problematic endpoints\n";
 echo "========================================\n";
@@ -76,19 +76,19 @@ $endpoints = [
     'User Profile' => '/api/v1/users/profile',
     'Gibran Dashboard Stats' => '/api/gibran/dashboard/statistics',
     'Gibran Pelaporans' => '/api/gibran/pelaporans',
-    'Gibran Berita' => '/api/gibran/berita-bencana'
+    'Gibran Berita' => '/api/gibran/berita-bencana',
 ];
 
 foreach ($endpoints as $name => $endpoint) {
     echo "\n🔍 Testing $name ($endpoint):\n";
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000' . $endpoint);
+    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000'.$endpoint);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
         'Content-Type: application/json',
-        'Authorization: Bearer ' . $token
+        'Authorization: Bearer '.$token,
     ]);
 
     $response = curl_exec($ch);
@@ -102,9 +102,9 @@ foreach ($endpoints as $name => $endpoint) {
         $data = json_decode($response, true);
         if (isset($data['data'])) {
             if (is_array($data['data'])) {
-                echo "  📊 Data count: " . count($data['data']) . "\n";
+                echo '  📊 Data count: '.count($data['data'])."\n";
             } else {
-                echo "  📊 Data type: " . gettype($data['data']) . "\n";
+                echo '  📊 Data type: '.gettype($data['data'])."\n";
             }
         }
     } elseif ($httpCode === 401) {
@@ -118,9 +118,9 @@ foreach ($endpoints as $name => $endpoint) {
         echo "  ❌ ERROR - HTTP $httpCode\n";
         $errorData = json_decode($response, true);
         if (isset($errorData['message'])) {
-            echo "  📝 Message: " . $errorData['message'] . "\n";
+            echo '  📝 Message: '.$errorData['message']."\n";
         }
-        echo "  📝 Response: " . substr($response, 0, 200) . "\n";
+        echo '  📝 Response: '.substr($response, 0, 200)."\n";
     }
 }
 
@@ -138,12 +138,12 @@ foreach ($workingEndpoints as $name => $endpoint) {
     echo "\n🔍 Testing $name ($endpoint):\n";
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000' . $endpoint);
+    curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000'.$endpoint);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: application/json',
         'Content-Type: application/json',
-        'Authorization: Bearer ' . $token
+        'Authorization: Bearer '.$token,
     ]);
 
     $response = curl_exec($ch);
@@ -156,11 +156,11 @@ foreach ($workingEndpoints as $name => $endpoint) {
         echo "  ✅ SUCCESS\n";
     } else {
         echo "  ❌ FAILED\n";
-        echo "  📝 Response: " . substr($response, 0, 100) . "\n";
+        echo '  📝 Response: '.substr($response, 0, 100)."\n";
     }
 }
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "ENDPOINT TESTING COMPLETED\n";
 echo "SUMMARY: User role is '$userRole' - admin features require admin/super_admin role\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";

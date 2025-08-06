@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Services\GibranUserService;
 use App\Services\AstacalaApiClient;
+use App\Services\GibranUserService;
+use Illuminate\Console\Command;
 
 class TestDataStructure extends Command
 {
@@ -30,38 +30,38 @@ class TestDataStructure extends Command
         $apiClient = app(AstacalaApiClient::class);
         $userService = new GibranUserService($apiClient);
 
-        $this->info("=== TESTING USER DATA STRUCTURE ===");
+        $this->info('=== TESTING USER DATA STRUCTURE ===');
 
         // Test user data
         $response = $userService->getAllUsers();
 
-        $this->info("Success: " . ($response['success'] ? 'YES' : 'NO'));
-        $this->info("Message: " . $response['message']);
+        $this->info('Success: '.($response['success'] ? 'YES' : 'NO'));
+        $this->info('Message: '.$response['message']);
 
-        if ($response['success'] && !empty($response['data'])) {
+        if ($response['success'] && ! empty($response['data'])) {
             $this->info("\nData structure for first user:");
             $firstUser = $response['data'][0];
 
-            $this->info("Data type: " . gettype($firstUser));
+            $this->info('Data type: '.gettype($firstUser));
 
             if (is_array($firstUser)) {
-                $this->info("Array keys: " . implode(', ', array_keys($firstUser)));
-                $this->info("Sample data: " . json_encode($firstUser, JSON_PRETTY_PRINT));
-            } else if (is_object($firstUser)) {
-                $this->info("Object properties:");
+                $this->info('Array keys: '.implode(', ', array_keys($firstUser)));
+                $this->info('Sample data: '.json_encode($firstUser, JSON_PRETTY_PRINT));
+            } elseif (is_object($firstUser)) {
+                $this->info('Object properties:');
                 $this->line(print_r(get_object_vars($firstUser), true));
             }
         } else {
-            $this->error("No data returned or error occurred");
-            $this->line("Full response: " . json_encode($response, JSON_PRETTY_PRINT));
+            $this->error('No data returned or error occurred');
+            $this->line('Full response: '.json_encode($response, JSON_PRETTY_PRINT));
         }
 
         $this->info("\n=== TESTING ADMIN AUTHENTICATION ===");
 
         // Test admin session data
-        $this->info("Admin ID from session: " . (session('admin_id') ?? 'NULL'));
-        $this->info("Admin user from session: " . (session('admin_user') ?? 'NULL'));
-        $this->info("All session data:");
+        $this->info('Admin ID from session: '.(session('admin_id') ?? 'NULL'));
+        $this->info('Admin user from session: '.(session('admin_user') ?? 'NULL'));
+        $this->info('All session data:');
         $this->line(print_r(session()->all(), true));
     }
 }

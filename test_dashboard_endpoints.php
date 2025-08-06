@@ -11,12 +11,12 @@ use App\Services\AstacalaApiClient;
 echo "=== Dashboard Endpoint Direct Test ===\n";
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
 
     // First login to get token
     $credentials = [
         'email' => 'volunteer@mobile.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ];
 
     $loginEndpoint = $apiClient->getEndpoint('gibran', 'auth_login');
@@ -34,7 +34,7 @@ try {
         echo "   Endpoint URL: $dashboardEndpoint\n";
 
         $dashboardResponse = $apiClient->authenticatedRequest('GET', $dashboardEndpoint);
-        echo "   Raw Response: " . json_encode($dashboardResponse, JSON_PRETTY_PRINT) . "\n\n";
+        echo '   Raw Response: '.json_encode($dashboardResponse, JSON_PRETTY_PRINT)."\n\n";
 
         // Test berita bencana endpoint
         echo "🔍 Testing /api/gibran/berita-bencana:\n";
@@ -42,28 +42,28 @@ try {
         echo "   Endpoint URL: $beritaEndpoint\n";
 
         $beritaResponse = $apiClient->authenticatedRequest('GET', $beritaEndpoint);
-        echo "   Raw Response: " . json_encode($beritaResponse, JSON_PRETTY_PRINT) . "\n\n";
+        echo '   Raw Response: '.json_encode($beritaResponse, JSON_PRETTY_PRINT)."\n\n";
 
         // Test other gibran endpoints
         $gibranEndpoints = [
             'pelaporans_list' => '/api/gibran/pelaporans',
-            'notifikasi_send' => '/api/gibran/notifikasi/send'
+            'notifikasi_send' => '/api/gibran/notifikasi/send',
         ];
 
         foreach ($gibranEndpoints as $name => $endpoint) {
             echo "🔍 Testing $endpoint:\n";
             try {
                 $response = $apiClient->authenticatedRequest('GET', $endpoint);
-                echo "   Raw Response: " . json_encode($response, JSON_PRETTY_PRINT) . "\n\n";
+                echo '   Raw Response: '.json_encode($response, JSON_PRETTY_PRINT)."\n\n";
             } catch (Exception $e) {
-                echo "   Error: " . $e->getMessage() . "\n\n";
+                echo '   Error: '.$e->getMessage()."\n\n";
             }
         }
     } else {
-        echo "❌ Login failed: " . json_encode($loginResponse) . "\n";
+        echo '❌ Login failed: '.json_encode($loginResponse)."\n";
     }
 } catch (Exception $e) {
-    echo "❌ Test failed: " . $e->getMessage() . "\n";
+    echo '❌ Test failed: '.$e->getMessage()."\n";
 }
 
 echo "=== Test Complete ===\n";

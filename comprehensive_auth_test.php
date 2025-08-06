@@ -18,11 +18,11 @@ $webResult = testWebAppAuth();
 echo $webResult ? "✅ Web App: WORKING\n" : "❌ Web App: FAILED\n";
 
 // Summary
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 echo "🎯 CROSS-PLATFORM AUTHENTICATION SUMMARY:\n";
-echo "Backend API: " . ($apiResult ? "✅ WORKING" : "❌ FAILED") . "\n";
-echo "Mobile App:  " . ($mobileResult ? "✅ WORKING" : "❌ FAILED") . "\n";
-echo "Web App:     " . ($webResult ? "✅ WORKING" : "❌ FAILED") . "\n";
+echo 'Backend API: '.($apiResult ? '✅ WORKING' : '❌ FAILED')."\n";
+echo 'Mobile App:  '.($mobileResult ? '✅ WORKING' : '❌ FAILED')."\n";
+echo 'Web App:     '.($webResult ? '✅ WORKING' : '❌ FAILED')."\n";
 
 $totalWorking = ($apiResult ? 1 : 0) + ($mobileResult ? 1 : 0) + ($webResult ? 1 : 0);
 $percentage = round(($totalWorking / 3) * 100);
@@ -36,7 +36,7 @@ if ($totalWorking === 3) {
     echo "⚠️  Cross-platform integration: INCOMPLETE\n";
 }
 
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";
 
 function testBackendAPI()
 {
@@ -45,11 +45,11 @@ function testBackendAPI()
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
         'email' => 'volunteer@mobile.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ]));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'Accept: application/json'
+        'Accept: application/json',
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -60,10 +60,12 @@ function testBackendAPI()
 
     if ($httpCode === 200) {
         $data = json_decode($response, true);
+
         return isset($data['success']) && $data['success'] === true &&
             isset($data['data']['tokens']['accessToken']) &&
-            !empty($data['data']['tokens']['accessToken']);
+            ! empty($data['data']['tokens']['accessToken']);
     }
+
     return false;
 }
 
@@ -75,12 +77,12 @@ function testMobileAppAuth()
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
         'email' => 'volunteer@mobile.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ]));
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
         'Accept: application/json',
-        'User-Agent: AstacalaRescueMobile/1.0'
+        'User-Agent: AstacalaRescueMobile/1.0',
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
@@ -91,10 +93,12 @@ function testMobileAppAuth()
 
     if ($httpCode === 200) {
         $data = json_decode($response, true);
+
         return isset($data['success']) && $data['success'] === true &&
             isset($data['data']['tokens']['accessToken']) &&
             isset($data['data']['user']);
     }
+
     return false;
 }
 
@@ -110,18 +114,22 @@ function testWebAppAuth()
     $loginPage = curl_exec($ch);
     curl_close($ch);
 
-    if (!$loginPage) return false;
+    if (! $loginPage) {
+        return false;
+    }
 
     preg_match('/<input type="hidden" name="_token" value="([^"]+)"/', $loginPage, $matches);
     $csrfToken = $matches[1] ?? '';
 
-    if (!$csrfToken) return false;
+    if (! $csrfToken) {
+        return false;
+    }
 
     // Test login
     $loginData = [
         '_token' => $csrfToken,
         'username' => 'admin',
-        'password' => 'password123'
+        'password' => 'password123',
     ];
 
     $ch = curl_init();

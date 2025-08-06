@@ -2,7 +2,7 @@
 
 /**
  * Comprehensive Dashboard Functionality Test
- * 
+ *
  * This script tests all the issues mentioned:
  * 1. Login with username only
  * 2. Profil admin page (should not show null errors)
@@ -15,8 +15,8 @@ require_once 'vendor/autoload.php';
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 
-$client = new Client();
-$cookieJar = new CookieJar();
+$client = new Client;
+$cookieJar = new CookieJar;
 
 echo "=== COMPREHENSIVE DASHBOARD FUNCTIONALITY TEST ===\n\n";
 
@@ -28,10 +28,10 @@ try {
         'form_params' => [
             'username' => 'mikailadmin',
             'password' => 'mikailadmin',
-            '_token' => ''  // Will be handled by Laravel
+            '_token' => '',  // Will be handled by Laravel
         ],
         'cookies' => $cookieJar,
-        'allow_redirects' => false
+        'allow_redirects' => false,
     ]);
 
     $statusCode = $loginResponse->getStatusCode();
@@ -59,7 +59,7 @@ try {
     try {
         $dashboardResponse = $client->get('http://127.0.0.1:8001/dashboard', [
             'cookies' => $cookieJar,
-            'allow_redirects' => false
+            'allow_redirects' => false,
         ]);
 
         $dashboardStatus = $dashboardResponse->getStatusCode();
@@ -78,7 +78,7 @@ try {
             echo "❌ Dashboard not accessible\n";
         }
     } catch (Exception $e) {
-        echo "❌ Dashboard error: " . $e->getMessage() . "\n";
+        echo '❌ Dashboard error: '.$e->getMessage()."\n";
     }
 
     echo "\n";
@@ -89,7 +89,7 @@ try {
     try {
         $profilResponse = $client->get('http://127.0.0.1:8001/profil-admin', [
             'cookies' => $cookieJar,
-            'allow_redirects' => false
+            'allow_redirects' => false,
         ]);
 
         $profilStatus = $profilResponse->getStatusCode();
@@ -108,7 +108,7 @@ try {
             echo "❌ Profil admin page not accessible\n";
         }
     } catch (Exception $e) {
-        echo "❌ Profil admin error: " . $e->getMessage() . "\n";
+        echo '❌ Profil admin error: '.$e->getMessage()."\n";
     }
 
     echo "\n";
@@ -119,7 +119,7 @@ try {
     try {
         $penggunaResponse = $client->get('http://127.0.0.1:8001/Datapengguna', [
             'cookies' => $cookieJar,
-            'allow_redirects' => false
+            'allow_redirects' => false,
         ]);
 
         $penggunaStatus = $penggunaResponse->getStatusCode();
@@ -144,7 +144,7 @@ try {
             echo "❌ Data pengguna page not accessible\n";
         }
     } catch (Exception $e) {
-        echo "❌ Data pengguna error: " . $e->getMessage() . "\n";
+        echo '❌ Data pengguna error: '.$e->getMessage()."\n";
     }
 
     echo "\n";
@@ -155,14 +155,14 @@ try {
     $testPages = [
         '/pelaporan' => 'Data Pelaporan',
         '/Admin' => 'Data Admin',
-        '/publikasi-bencana' => 'Data Publikasi'
+        '/publikasi-bencana' => 'Data Publikasi',
     ];
 
     foreach ($testPages as $url => $title) {
         try {
-            $response = $client->get('http://127.0.0.1:8001' . $url, [
+            $response = $client->get('http://127.0.0.1:8001'.$url, [
                 'cookies' => $cookieJar,
-                'allow_redirects' => false
+                'allow_redirects' => false,
             ]);
 
             $status = $response->getStatusCode();
@@ -172,7 +172,7 @@ try {
                 echo "⚠️  $title page status: $status\n";
             }
         } catch (Exception $e) {
-            echo "❌ $title page error: " . $e->getMessage() . "\n";
+            echo "❌ $title page error: ".$e->getMessage()."\n";
         }
     }
 
@@ -183,5 +183,5 @@ try {
     echo "- Data pengguna page handling array data correctly\n";
     echo "- Dashboard pages accessible after authentication\n";
 } catch (Exception $e) {
-    echo "❌ Critical test error: " . $e->getMessage() . "\n";
+    echo '❌ Critical test error: '.$e->getMessage()."\n";
 }

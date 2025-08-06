@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('pelaporans', function (Blueprint $table) {
             $table->enum('status_verifikasi', ['PENDING', 'DITERIMA', 'DITOLAK'])
-                  ->default('PENDING')
-                  ->after('deskripsi_terkait_data_lainya');
+                ->default('PENDING')
+                ->after('deskripsi_terkait_data_lainya');
         });
     }
 

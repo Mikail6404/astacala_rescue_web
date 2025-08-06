@@ -10,21 +10,21 @@ $kernel->bootstrap();
 // Load environment
 $app->loadEnvironmentFrom('.env');
 
-use App\Services\GibranUserService;
-use App\Services\AstacalaApiClient;
 use App\Services\ApiAuthService;
+use App\Services\AstacalaApiClient;
+use App\Services\GibranUserService;
 
 echo "=== TESTING DELETE (DEACTIVATE) FUNCTIONALITY ===\n\n";
 
 try {
     // Create service instances
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $authService = new ApiAuthService($apiClient);
     $userService = new GibranUserService($apiClient, $authService);
 
     // Find a test user (not the main admin)
     $result = $userService->getAdminUsers();
-    if ($result['success'] && !empty($result['data'])) {
+    if ($result['success'] && ! empty($result['data'])) {
         // Look for a test user that's not the main one
         $testUser = null;
         foreach ($result['data'] as $user) {
@@ -36,13 +36,13 @@ try {
 
         if ($testUser) {
             echo "Found test user: {$testUser['name']} ({$testUser['email']})\n";
-            echo "Current status: " . ($testUser['is_active'] ? 'active' : 'inactive') . "\n\n";
+            echo 'Current status: '.($testUser['is_active'] ? 'active' : 'inactive')."\n\n";
 
             // Test delete/deactivate
             echo "Testing deactivate user (ID: {$testUser['id']}):\n";
             $deleteResult = $userService->deleteUser($testUser['id']);
 
-            echo "Result: " . ($deleteResult['success'] ? "✅ SUCCESS" : "❌ FAILED") . "\n";
+            echo 'Result: '.($deleteResult['success'] ? '✅ SUCCESS' : '❌ FAILED')."\n";
             echo "Message: {$deleteResult['message']}\n\n";
 
             if ($deleteResult['success']) {
@@ -52,7 +52,7 @@ try {
 
                 if ($verifyResult['success']) {
                     $updatedUser = $verifyResult['data'];
-                    echo "User status after deactivation: " . ($updatedUser['status'] ?? 'unknown') . "\n";
+                    echo 'User status after deactivation: '.($updatedUser['status'] ?? 'unknown')."\n";
 
                     if (isset($updatedUser['status']) && $updatedUser['status'] === 'inactive') {
                         echo "✅ DELETE/DEACTIVATE FUNCTIONALITY WORKING CORRECTLY!\n";
@@ -76,6 +76,6 @@ try {
 
     echo "\n=== DELETE TESTING COMPLETED ===\n";
 } catch (Exception $e) {
-    echo "❌ ERROR: " . $e->getMessage() . "\n";
-    echo "Trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ ERROR: '.$e->getMessage()."\n";
+    echo 'Trace: '.$e->getTraceAsString()."\n";
 }

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Services\GibranAuthService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AuthAdminController extends Controller
 {
@@ -19,7 +17,7 @@ class AuthAdminController extends Controller
 
     /**
      * Map username from web form to email for unified backend authentication
-     * 
+     *
      * Supports both legacy username format and direct email input
      */
     private function mapUsernameToEmail($username)
@@ -48,12 +46,12 @@ class AuthAdminController extends Controller
 
         // For any other username, append the admin domain (since this is admin login)
         // This allows users to login with just their username instead of full email
-        return $username . '@admin.astacala.local';
+        return $username.'@admin.astacala.local';
     }
 
     /**
      * Process credentials for backend authentication
-     * 
+     *
      * Handles both direct credentials and legacy test credential mapping
      */
     private function processCredentialsForAuth($username, $password)
@@ -72,12 +70,12 @@ class AuthAdminController extends Controller
                 if (str_contains($email, 'admin') || str_contains($email, 'uat.test')) {
                     return [
                         'email' => $email,
-                        'password' => env('UAT_ADMIN_PASSWORD', 'admin123')
+                        'password' => env('UAT_ADMIN_PASSWORD', 'admin123'),
                     ];
                 } else {
                     return [
                         'email' => $email,
-                        'password' => env('UAT_VOLUNTEER_PASSWORD', 'password123')
+                        'password' => env('UAT_VOLUNTEER_PASSWORD', 'password123'),
                     ];
                 }
             }
@@ -113,13 +111,13 @@ class AuthAdminController extends Controller
                     'admin_username' => $credentials['username'], // Keep original username for display
                     'admin_name' => $authResult['user']['name'],
                     'admin_email' => $authResult['user']['email'],
-                    'authenticated' => true
+                    'authenticated' => true,
                 ]);
 
                 Log::info('Unified backend authentication successful', [
                     'username' => $credentials['username'],
                     'email' => $mappedCredentials['email'],
-                    'user_id' => $authResult['user']['id']
+                    'user_id' => $authResult['user']['id'],
                 ]);
 
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');
@@ -129,14 +127,15 @@ class AuthAdminController extends Controller
             Log::warning('Unified backend authentication failed', [
                 'username' => $credentials['username'],
                 'email' => $mappedCredentials['email'],
-                'error' => $authResult['error'] ?? 'Unknown error'
+                'error' => $authResult['error'] ?? 'Unknown error',
             ]);
 
             return redirect()->back()
                 ->withErrors(['credentials' => 'Username atau password salah. Pastikan Anda menggunakan akun yang terdaftar di sistem.'])
                 ->withInput($request->only('username'));
         } catch (\Exception $e) {
-            Log::error('Login error: ' . $e->getMessage());
+            Log::error('Login error: '.$e->getMessage());
+
             return redirect()->back()
                 ->withErrors(['error' => 'Terjadi kesalahan sistem'])
                 ->withInput($request->only('username'));
@@ -164,7 +163,7 @@ class AuthAdminController extends Controller
             // Register user in unified backend system
             $registrationData = [
                 'name' => $request->nama_lengkap_admin,
-                'email' => $request->username_akun_admin . '@admin.astacala.local', // Convert username to email format
+                'email' => $request->username_akun_admin.'@admin.astacala.local', // Convert username to email format
                 'password' => $request->password_akun_admin,
                 'password_confirmation' => $request->password_akun_admin_confirmation,
                 'phone' => $request->no_handphone_admin,
@@ -180,24 +179,24 @@ class AuthAdminController extends Controller
                 Log::info('Admin registration successful via unified backend', [
                     'username' => $request->username_akun_admin,
                     'name' => $request->nama_lengkap_admin,
-                    'user_id' => $result['user']['id'] ?? null
+                    'user_id' => $result['user']['id'] ?? null,
                 ]);
 
                 return redirect('/login')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
             } else {
                 Log::warning('Admin registration failed via unified backend', [
                     'username' => $request->username_akun_admin,
-                    'error' => $result['error'] ?? 'Unknown error'
+                    'error' => $result['error'] ?? 'Unknown error',
                 ]);
 
                 return back()
-                    ->withErrors(['error' => 'Registrasi gagal: ' . ($result['error'] ?? 'Terjadi kesalahan sistem')])
+                    ->withErrors(['error' => 'Registrasi gagal: '.($result['error'] ?? 'Terjadi kesalahan sistem')])
                     ->withInput();
             }
         } catch (\Exception $e) {
             Log::error('Admin registration error', [
                 'username' => $request->username_akun_admin,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return back()

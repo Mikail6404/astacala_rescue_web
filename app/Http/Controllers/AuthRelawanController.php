@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthRelawanController extends Controller
 {
@@ -18,9 +18,9 @@ class AuthRelawanController extends Controller
     public function register(Request $request): JsonResponse
     {
         $request->validate([
-            'nama_lengkap_pengguna'     => 'required|string|max:255',
-            'username_akun_pengguna'    => 'required|string|unique:penggunas',
-            'password_akun_pengguna'    => 'required|string|min:6',
+            'nama_lengkap_pengguna' => 'required|string|max:255',
+            'username_akun_pengguna' => 'required|string|unique:penggunas',
+            'password_akun_pengguna' => 'required|string|min:6',
         ]);
 
         // Map web app field names to API format
@@ -29,7 +29,7 @@ class AuthRelawanController extends Controller
             'email' => $request->username_akun_pengguna, // Use username as email
             'password' => $request->password_akun_pengguna,
             'password_confirmation' => $request->password_akun_pengguna,
-            'role' => 'volunteer' // Default role for web registrations
+            'role' => 'volunteer', // Default role for web registrations
         ];
 
         $result = $this->authService->register($userData);
@@ -44,8 +44,8 @@ class AuthRelawanController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'username_akun_pengguna'    => 'required',
-            'password_akun_pengguna'    => 'required',
+            'username_akun_pengguna' => 'required',
+            'password_akun_pengguna' => 'required',
         ]);
 
         // Map web app field names to API format
@@ -59,8 +59,8 @@ class AuthRelawanController extends Controller
         if ($result['success']) {
             return response()->json([
                 'message' => 'Login successful',
-                'token'   => $result['data']['token'],
-                'user'    => $result['data']['user']
+                'token' => $result['data']['token'],
+                'user' => $result['data']['user'],
             ]);
         } else {
             return response()->json(['message' => $result['message']], 401);

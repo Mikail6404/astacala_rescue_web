@@ -1,12 +1,12 @@
 <?php
 
 // Debug endpoint configuration
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 echo "=== ENDPOINT CONFIGURATION DEBUG ===\n\n";
 
 // Initialize Laravel app to get config
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 echo "Available endpoints:\n";
@@ -32,15 +32,15 @@ if (isset($endpoints['users'])) {
 }
 
 echo "\nLooking for our new endpoints:\n";
-echo "- update_user_by_id: " . (isset($endpoints['users']['update_user_by_id']) ? "✅ FOUND" : "❌ NOT FOUND") . "\n";
-echo "- delete_user_by_id: " . (isset($endpoints['users']['delete_user_by_id']) ? "✅ FOUND" : "❌ NOT FOUND") . "\n";
+echo '- update_user_by_id: '.(isset($endpoints['users']['update_user_by_id']) ? '✅ FOUND' : '❌ NOT FOUND')."\n";
+echo '- delete_user_by_id: '.(isset($endpoints['users']['delete_user_by_id']) ? '✅ FOUND' : '❌ NOT FOUND')."\n";
 
 if (isset($endpoints['users']['update_user_by_id'])) {
-    echo "  update_user_by_id value: " . $endpoints['users']['update_user_by_id'] . "\n";
+    echo '  update_user_by_id value: '.$endpoints['users']['update_user_by_id']."\n";
 }
 
 if (isset($endpoints['users']['delete_user_by_id'])) {
-    echo "  delete_user_by_id value: " . $endpoints['users']['delete_user_by_id'] . "\n";
+    echo '  delete_user_by_id value: '.$endpoints['users']['delete_user_by_id']."\n";
 }
 
 // Test AstacalaApiClient directly
@@ -49,7 +49,7 @@ echo "\n=== Testing AstacalaApiClient ===\n";
 use App\Services\AstacalaApiClient;
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
 
     echo "Testing existing endpoint (should work):\n";
     $existingEndpoint = $apiClient->getEndpoint('users', 'admin_list');
@@ -61,17 +61,17 @@ try {
         $updateEndpoint = $apiClient->getEndpoint('users', 'update_user_by_id', ['id' => 123]);
         echo "✅ update_user_by_id: $updateEndpoint\n";
     } catch (Exception $e) {
-        echo "❌ update_user_by_id: " . $e->getMessage() . "\n";
+        echo '❌ update_user_by_id: '.$e->getMessage()."\n";
     }
 
     try {
         $deleteEndpoint = $apiClient->getEndpoint('users', 'delete_user_by_id', ['id' => 123]);
         echo "✅ delete_user_by_id: $deleteEndpoint\n";
     } catch (Exception $e) {
-        echo "❌ delete_user_by_id: " . $e->getMessage() . "\n";
+        echo '❌ delete_user_by_id: '.$e->getMessage()."\n";
     }
 } catch (Exception $e) {
-    echo "❌ ApiClient error: " . $e->getMessage() . "\n";
+    echo '❌ ApiClient error: '.$e->getMessage()."\n";
 }
 
 echo "\n=== DEBUG COMPLETED ===\n";

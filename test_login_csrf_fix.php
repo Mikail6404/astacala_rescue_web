@@ -22,7 +22,7 @@ if ($httpCode === 200) {
     // Extract CSRF token from response
     if (preg_match('/<input[^>]*name=["\']_token["\'][^>]*value=["\']([^"\']*)["\']/', $response, $matches)) {
         $csrfToken = $matches[1];
-        echo "✅ CSRF token found: " . substr($csrfToken, 0, 20) . "...\n";
+        echo '✅ CSRF token found: '.substr($csrfToken, 0, 20)."...\n";
 
         // Test 2: Try to submit login form with credentials
         echo "\n🔍 STEP 2: Testing Login Form Submission\n";
@@ -31,7 +31,7 @@ if ($httpCode === 200) {
         $postData = [
             '_token' => $csrfToken,
             'username' => 'admin',
-            'password' => 'password'
+            'password' => 'password',
         ];
 
         $ch = curl_init();
@@ -44,7 +44,7 @@ if ($httpCode === 200) {
         curl_setopt($ch, CURLOPT_COOKIEFILE, 'test_cookies.txt');
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/x-www-form-urlencoded',
-            'Referer: http://127.0.0.1:8001/login'
+            'Referer: http://127.0.0.1:8001/login',
         ]);
 
         $loginResponse = curl_exec($ch);
@@ -67,7 +67,7 @@ if ($httpCode === 200) {
             echo "🔧 Check login credentials or form validation\n";
         } else {
             echo "⚠️  Unexpected response (HTTP $loginHttpCode)\n";
-            echo "Response preview: " . substr($loginResponse, 0, 200) . "...\n";
+            echo 'Response preview: '.substr($loginResponse, 0, 200)."...\n";
         }
     } else {
         echo "❌ CSRF token not found in login page\n";
@@ -83,17 +83,17 @@ echo "==================================\n";
 
 $sessionPath = 'storage/framework/sessions';
 if (is_dir($sessionPath)) {
-    $sessionFiles = glob($sessionPath . '/*');
+    $sessionFiles = glob($sessionPath.'/*');
     echo "✅ Session directory exists\n";
-    echo "📁 Session files count: " . count($sessionFiles) . "\n";
+    echo '📁 Session files count: '.count($sessionFiles)."\n";
 } else {
     echo "❌ Session directory not found: $sessionPath\n";
     echo "🔧 Check SESSION_DRIVER configuration\n";
 }
 
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 echo "LOGIN TEST COMPLETED\n";
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";
 
 // Clean up
 if (file_exists('test_cookies.txt')) {

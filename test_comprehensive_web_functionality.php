@@ -29,7 +29,7 @@ function makeAuthenticatedRequest($url, $method = 'GET', $data = null, $cookieFi
     return [
         'response' => $response,
         'http_code' => $httpCode,
-        'final_url' => $finalUrl
+        'final_url' => $finalUrl,
     ];
 }
 
@@ -37,12 +37,12 @@ function makeAuthenticatedRequest($url, $method = 'GET', $data = null, $cookieFi
 echo "🔐 Step 1: Logging into web application...\n";
 
 // Get login page and CSRF token
-$loginPageResult = makeAuthenticatedRequest($baseUrl . '/Login', 'GET', null, $cookieFile);
+$loginPageResult = makeAuthenticatedRequest($baseUrl.'/Login', 'GET', null, $cookieFile);
 preg_match('/<meta name="csrf-token" content="([^"]+)"/', $loginPageResult['response'], $csrfMatches);
 preg_match('/<input[^>]*name="_token"[^>]*value="([^"]+)"/', $loginPageResult['response'], $tokenMatches);
 $csrfToken = $csrfMatches[1] ?? ($tokenMatches[1] ?? null);
 
-if (!$csrfToken) {
+if (! $csrfToken) {
     echo "❌ Could not extract CSRF token\n";
     exit(1);
 }
@@ -51,10 +51,10 @@ if (!$csrfToken) {
 $loginData = http_build_query([
     'username' => 'admin',
     'password' => 'password123',
-    '_token' => $csrfToken
+    '_token' => $csrfToken,
 ]);
 
-$loginResult = makeAuthenticatedRequest($baseUrl . '/login', 'POST', $loginData, $cookieFile);
+$loginResult = makeAuthenticatedRequest($baseUrl.'/login', 'POST', $loginData, $cookieFile);
 
 if (strpos($loginResult['final_url'], 'dashboard') !== false) {
     echo "✅ Login successful - redirected to dashboard\n";
@@ -66,7 +66,7 @@ if (strpos($loginResult['final_url'], 'dashboard') !== false) {
 // Step 2: Test Dashboard Functionality
 echo "\n📊 Step 2: Testing Dashboard Functionality...\n";
 
-$dashboardResult = makeAuthenticatedRequest($baseUrl . '/dashboard', 'GET', null, $cookieFile);
+$dashboardResult = makeAuthenticatedRequest($baseUrl.'/dashboard', 'GET', null, $cookieFile);
 if ($dashboardResult['http_code'] === 200) {
     echo "✅ Dashboard accessible (HTTP {$dashboardResult['http_code']})\n";
 
@@ -76,12 +76,12 @@ if ($dashboardResult['http_code'] === 200) {
         'statistik' => 'Dashboard statistics section',
         'pelaporan' => 'Reports section',
         'admin' => 'Admin section',
-        'logout' => 'Logout functionality'
+        'logout' => 'Logout functionality',
     ];
 
     foreach ($checks as $search => $description) {
         $found = stripos($dashboardContent, $search) !== false;
-        echo ($found ? "✅" : "❌") . " $description: " . ($found ? "Present" : "Missing") . "\n";
+        echo ($found ? '✅' : '❌')." $description: ".($found ? 'Present' : 'Missing')."\n";
     }
 } else {
     echo "❌ Dashboard not accessible (HTTP {$dashboardResult['http_code']})\n";
@@ -90,7 +90,7 @@ if ($dashboardResult['http_code'] === 200) {
 // Step 3: Test Reports/Pelaporan Page
 echo "\n📋 Step 3: Testing Reports/Pelaporan Page...\n";
 
-$reportsResult = makeAuthenticatedRequest($baseUrl . '/pelaporan', 'GET', null, $cookieFile);
+$reportsResult = makeAuthenticatedRequest($baseUrl.'/pelaporan', 'GET', null, $cookieFile);
 if ($reportsResult['http_code'] === 200) {
     echo "✅ Reports page accessible (HTTP {$reportsResult['http_code']})\n";
 
@@ -99,12 +99,12 @@ if ($reportsResult['http_code'] === 200) {
     $reportChecks = [
         'table' => 'Data table',
         'pelaporan' => 'Reports content',
-        'data' => 'Data display'
+        'data' => 'Data display',
     ];
 
     foreach ($reportChecks as $search => $description) {
         $found = stripos($reportsContent, $search) !== false;
-        echo ($found ? "✅" : "❌") . " $description: " . ($found ? "Present" : "Missing") . "\n";
+        echo ($found ? '✅' : '❌')." $description: ".($found ? 'Present' : 'Missing')."\n";
     }
 } else {
     echo "❌ Reports page not accessible (HTTP {$reportsResult['http_code']})\n";
@@ -113,7 +113,7 @@ if ($reportsResult['http_code'] === 200) {
 // Step 4: Test News/Publications Page
 echo "\n📰 Step 4: Testing News/Publications Page...\n";
 
-$newsResult = makeAuthenticatedRequest($baseUrl . '/publikasi', 'GET', null, $cookieFile);
+$newsResult = makeAuthenticatedRequest($baseUrl.'/publikasi', 'GET', null, $cookieFile);
 if ($newsResult['http_code'] === 200) {
     echo "✅ News/Publications page accessible (HTTP {$newsResult['http_code']})\n";
 
@@ -122,12 +122,12 @@ if ($newsResult['http_code'] === 200) {
     $newsChecks = [
         'publikasi' => 'Publications content',
         'berita' => 'News content',
-        'table' => 'Data table'
+        'table' => 'Data table',
     ];
 
     foreach ($newsChecks as $search => $description) {
         $found = stripos($newsContent, $search) !== false;
-        echo ($found ? "✅" : "❌") . " $description: " . ($found ? "Present" : "Missing") . "\n";
+        echo ($found ? '✅' : '❌')." $description: ".($found ? 'Present' : 'Missing')."\n";
     }
 } else {
     echo "❌ News/Publications page not accessible (HTTP {$newsResult['http_code']})\n";
@@ -136,7 +136,7 @@ if ($newsResult['http_code'] === 200) {
 // Step 5: Test User Management Page
 echo "\n👥 Step 5: Testing User Management Page...\n";
 
-$usersResult = makeAuthenticatedRequest($baseUrl . '/Datapengguna', 'GET', null, $cookieFile);
+$usersResult = makeAuthenticatedRequest($baseUrl.'/Datapengguna', 'GET', null, $cookieFile);
 if ($usersResult['http_code'] === 200) {
     echo "✅ User management page accessible (HTTP {$usersResult['http_code']})\n";
 
@@ -145,12 +145,12 @@ if ($usersResult['http_code'] === 200) {
     $userChecks = [
         'pengguna' => 'User content',
         'data' => 'Data display',
-        'table' => 'Data table'
+        'table' => 'Data table',
     ];
 
     foreach ($userChecks as $search => $description) {
         $found = stripos($usersContent, $search) !== false;
-        echo ($found ? "✅" : "❌") . " $description: " . ($found ? "Present" : "Missing") . "\n";
+        echo ($found ? '✅' : '❌')." $description: ".($found ? 'Present' : 'Missing')."\n";
     }
 } else {
     echo "❌ User management page not accessible (HTTP {$usersResult['http_code']})\n";
@@ -159,7 +159,7 @@ if ($usersResult['http_code'] === 200) {
 // Step 6: Test Admin Management Page
 echo "\n🔧 Step 6: Testing Admin Management Page...\n";
 
-$adminResult = makeAuthenticatedRequest($baseUrl . '/Dataadmin', 'GET', null, $cookieFile);
+$adminResult = makeAuthenticatedRequest($baseUrl.'/Dataadmin', 'GET', null, $cookieFile);
 if ($adminResult['http_code'] === 200) {
     echo "✅ Admin management page accessible (HTTP {$adminResult['http_code']})\n";
 
@@ -168,12 +168,12 @@ if ($adminResult['http_code'] === 200) {
     $adminChecks = [
         'admin' => 'Admin content',
         'data' => 'Data display',
-        'table' => 'Data table'
+        'table' => 'Data table',
     ];
 
     foreach ($adminChecks as $search => $description) {
         $found = stripos($adminContent, $search) !== false;
-        echo ($found ? "✅" : "❌") . " $description: " . ($found ? "Present" : "Missing") . "\n";
+        echo ($found ? '✅' : '❌')." $description: ".($found ? 'Present' : 'Missing')."\n";
     }
 } else {
     echo "❌ Admin management page not accessible (HTTP {$adminResult['http_code']})\n";
@@ -182,17 +182,17 @@ if ($adminResult['http_code'] === 200) {
 // Step 7: Test API Integration (Session Check)
 echo "\n🔗 Step 7: Testing API Integration Session...\n";
 
-$sessionResult = makeAuthenticatedRequest($baseUrl . '/debug-session', 'GET', null, $cookieFile);
+$sessionResult = makeAuthenticatedRequest($baseUrl.'/debug-session', 'GET', null, $cookieFile);
 if ($sessionResult['http_code'] === 200) {
     echo "✅ Session debug accessible (HTTP {$sessionResult['http_code']})\n";
 
     $sessionData = json_decode($sessionResult['response'], true);
     if ($sessionData) {
-        echo "   Admin ID: " . ($sessionData['admin_id'] ?? 'Not set') . "\n";
-        echo "   Admin Username: " . ($sessionData['admin_username'] ?? 'Not set') . "\n";
-        echo "   Admin Name: " . ($sessionData['admin_name'] ?? 'Not set') . "\n";
-        echo "   Admin Email: " . ($sessionData['admin_email'] ?? 'Not set') . "\n";
-        echo "   Access Token: " . ($sessionData['access_token'] ?? 'Not set') . "\n";
+        echo '   Admin ID: '.($sessionData['admin_id'] ?? 'Not set')."\n";
+        echo '   Admin Username: '.($sessionData['admin_username'] ?? 'Not set')."\n";
+        echo '   Admin Name: '.($sessionData['admin_name'] ?? 'Not set')."\n";
+        echo '   Admin Email: '.($sessionData['admin_email'] ?? 'Not set')."\n";
+        echo '   Access Token: '.($sessionData['access_token'] ?? 'Not set')."\n";
 
         if ($sessionData['admin_id'] && $sessionData['access_token'] === 'present') {
             echo "✅ Session properly configured with API integration\n";
@@ -214,12 +214,12 @@ $navigationRoutes = [
     '/Pelaporan' => 'Reports View',
     '/publikasi' => 'Publications',
     '/Datapengguna' => 'User Data',
-    '/Dataadmin' => 'Admin Data'
+    '/Dataadmin' => 'Admin Data',
 ];
 
 foreach ($navigationRoutes as $route => $description) {
-    $navResult = makeAuthenticatedRequest($baseUrl . $route, 'GET', null, $cookieFile);
-    $status = $navResult['http_code'] === 200 ? "✅" : "❌";
+    $navResult = makeAuthenticatedRequest($baseUrl.$route, 'GET', null, $cookieFile);
+    $status = $navResult['http_code'] === 200 ? '✅' : '❌';
     echo "$status $description ($route): HTTP {$navResult['http_code']}\n";
 }
 

@@ -6,21 +6,21 @@ require_once 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use App\Services\GibranDashboardService;
 use App\Services\AstacalaApiClient;
 use App\Services\GibranAuthService;
+use App\Services\GibranDashboardService;
 
 echo "=== Dashboard Service Test (After Fix) ===\n";
 
 try {
-    $apiClient = new AstacalaApiClient();
+    $apiClient = new AstacalaApiClient;
     $authService = new GibranAuthService($apiClient);
     $dashboardService = new GibranDashboardService($apiClient);
 
     // Login first
     $credentials = [
         'email' => 'volunteer@mobile.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ];
 
     $authResult = $authService->login($credentials);
@@ -34,11 +34,11 @@ try {
 
         if ($statisticsResult['success']) {
             echo "✅ Dashboard statistics retrieved successfully!\n";
-            echo "   Total Reports: " . $statisticsResult['data']['total_pelaporan'] . "\n";
-            echo "   Pending Reports: " . $statisticsResult['data']['pelaporan_pending'] . "\n";
-            echo "   Verified Reports: " . $statisticsResult['data']['pelaporan_verified'] . "\n";
-            echo "   Today's Reports: " . $statisticsResult['data']['pelaporan_hari_ini'] . "\n";
-            echo "   Total Victims: " . $statisticsResult['data']['total_korban'] . "\n";
+            echo '   Total Reports: '.$statisticsResult['data']['total_pelaporan']."\n";
+            echo '   Pending Reports: '.$statisticsResult['data']['pelaporan_pending']."\n";
+            echo '   Verified Reports: '.$statisticsResult['data']['pelaporan_verified']."\n";
+            echo "   Today's Reports: ".$statisticsResult['data']['pelaporan_hari_ini']."\n";
+            echo '   Total Victims: '.$statisticsResult['data']['total_korban']."\n";
 
             echo "   Severity Breakdown:\n";
             foreach ($statisticsResult['data']['breakdown_skala'] as $level => $count) {
@@ -50,7 +50,7 @@ try {
                 echo "     - ID {$report['id']}: {$report['judul']} in {$report['lokasi']} by {$report['pelapor']} ({$report['waktu']})\n";
             }
         } else {
-            echo "❌ Dashboard statistics failed: " . $statisticsResult['message'] . "\n";
+            echo '❌ Dashboard statistics failed: '.$statisticsResult['message']."\n";
         }
 
         echo "\n📰 Testing News/Berita Bencana Service:\n";
@@ -58,9 +58,9 @@ try {
 
         if ($newsResult['success']) {
             echo "✅ News data retrieved successfully!\n";
-            echo "   Data: " . json_encode($newsResult['data']) . "\n";
+            echo '   Data: '.json_encode($newsResult['data'])."\n";
         } else {
-            echo "❌ News data failed: " . $newsResult['message'] . "\n";
+            echo '❌ News data failed: '.$newsResult['message']."\n";
         }
 
         echo "\n🔍 Testing System Overview Service:\n";
@@ -68,15 +68,15 @@ try {
 
         if ($overviewResult['success']) {
             echo "✅ System overview retrieved successfully!\n";
-            echo "   Data: " . json_encode($overviewResult['data']) . "\n";
+            echo '   Data: '.json_encode($overviewResult['data'])."\n";
         } else {
-            echo "❌ System overview failed: " . $overviewResult['message'] . "\n";
+            echo '❌ System overview failed: '.$overviewResult['message']."\n";
         }
     } else {
-        echo "❌ Authentication failed: " . $authResult['message'] . "\n";
+        echo '❌ Authentication failed: '.$authResult['message']."\n";
     }
 } catch (Exception $e) {
-    echo "❌ Test failed: " . $e->getMessage() . "\n";
+    echo '❌ Test failed: '.$e->getMessage()."\n";
 }
 
 echo "\n=== Test Complete ===\n";

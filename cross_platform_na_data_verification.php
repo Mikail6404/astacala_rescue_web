@@ -3,15 +3,15 @@
 
 /**
  * Cross-Platform Dashboard N/A Data Fields Verification Test
- * 
+ *
  * This test verifies that the place_of_birth and member_number fields
  * are now displaying correctly across all three codebases:
  * 1. Backend API - provides the data
- * 2. Web Dashboard - displays the data 
+ * 2. Web Dashboard - displays the data
  * 3. Mobile App integration - via backend API
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 echo "🔍 CROSS-PLATFORM DASHBOARD N/A DATA FIELDS VERIFICATION\n";
 echo "========================================================\n\n";
@@ -34,8 +34,8 @@ function testHttpEndpoint($url, $description, $auth_token = null)
         'http' => [
             'method' => 'GET',
             'header' => implode("\r\n", $headers),
-            'timeout' => 10
-        ]
+            'timeout' => 10,
+        ],
     ]);
 
     $response = @file_get_contents($url, false, $context);
@@ -44,6 +44,7 @@ function testHttpEndpoint($url, $description, $auth_token = null)
     }
 
     $data = json_decode($response, true);
+
     return ['success' => true, 'data' => $data, 'raw' => $response];
 }
 
@@ -52,15 +53,15 @@ function authenticateWithBackend($api_url)
 {
     $login_data = json_encode([
         'email' => 'admin@uat.test',
-        'password' => 'password123'
+        'password' => 'password123',
     ]);
 
     $context = stream_context_create([
         'http' => [
             'method' => 'POST',
-            'header' => "Content-Type: application/json\r\nContent-Length: " . strlen($login_data),
-            'content' => $login_data
-        ]
+            'header' => "Content-Type: application/json\r\nContent-Length: ".strlen($login_data),
+            'content' => $login_data,
+        ],
     ]);
 
     $response = @file_get_contents("$api_url/api/gibran/auth/login", false, $context);
@@ -69,6 +70,7 @@ function authenticateWithBackend($api_url)
     }
 
     $data = json_decode($response, true);
+
     return $data['data']['token'] ?? null;
 }
 
@@ -77,33 +79,33 @@ echo "-----------------------------------\n";
 
 // Authenticate with backend
 $auth_token = authenticateWithBackend($backend_api_url);
-if (!$auth_token) {
+if (! $auth_token) {
     echo "❌ Backend authentication failed\n";
     exit(1);
 }
 echo "✅ Backend authentication successful\n";
 
 // Test admin users endpoint
-$admin_result = testHttpEndpoint("$backend_api_url/api/v1/users/admin-list", "Admin Users API", $auth_token);
+$admin_result = testHttpEndpoint("$backend_api_url/api/v1/users/admin-list", 'Admin Users API', $auth_token);
 if ($admin_result['success']) {
     $admin_users = $admin_result['data']['data'] ?? [];
-    echo "✅ Backend Admin API: " . count($admin_users) . " users found\n";
+    echo '✅ Backend Admin API: '.count($admin_users)." users found\n";
 
     // Check for place_of_birth and member_number fields
     $place_birth_count = 0;
     $member_number_count = 0;
 
     foreach ($admin_users as $user) {
-        if (!empty($user['place_of_birth']) && $user['place_of_birth'] !== 'N/A') {
+        if (! empty($user['place_of_birth']) && $user['place_of_birth'] !== 'N/A') {
             $place_birth_count++;
         }
-        if (!empty($user['member_number']) && $user['member_number'] !== 'N/A') {
+        if (! empty($user['member_number']) && $user['member_number'] !== 'N/A') {
             $member_number_count++;
         }
     }
 
-    echo "   📊 Place of Birth filled: $place_birth_count/" . count($admin_users) . " admins\n";
-    echo "   📊 Member Number filled: $member_number_count/" . count($admin_users) . " admins\n";
+    echo "   📊 Place of Birth filled: $place_birth_count/".count($admin_users)." admins\n";
+    echo "   📊 Member Number filled: $member_number_count/".count($admin_users)." admins\n";
 
     if ($place_birth_count > 0) {
         echo "   ✅ Backend has place_of_birth data\n";
@@ -121,7 +123,7 @@ if ($admin_result['success']) {
         'success' => true,
         'total_users' => count($admin_users),
         'place_birth_filled' => $place_birth_count,
-        'member_number_filled' => $member_number_count
+        'member_number_filled' => $member_number_count,
     ];
 } else {
     echo "❌ Backend Admin API failed\n";
@@ -129,21 +131,21 @@ if ($admin_result['success']) {
 }
 
 // Test volunteer users endpoint
-$volunteer_result = testHttpEndpoint("$backend_api_url/api/v1/users/volunteer-list", "Volunteer Users API", $auth_token);
+$volunteer_result = testHttpEndpoint("$backend_api_url/api/v1/users/volunteer-list", 'Volunteer Users API', $auth_token);
 if ($volunteer_result['success']) {
     $volunteer_users = $volunteer_result['data']['data'] ?? [];
-    echo "✅ Backend Volunteer API: " . count($volunteer_users) . " users found\n";
+    echo '✅ Backend Volunteer API: '.count($volunteer_users)." users found\n";
 
     // Check for place_of_birth fields
     $place_birth_count = 0;
 
     foreach ($volunteer_users as $user) {
-        if (!empty($user['place_of_birth']) && $user['place_of_birth'] !== 'N/A') {
+        if (! empty($user['place_of_birth']) && $user['place_of_birth'] !== 'N/A') {
             $place_birth_count++;
         }
     }
 
-    echo "   📊 Place of Birth filled: $place_birth_count/" . count($volunteer_users) . " volunteers\n";
+    echo "   📊 Place of Birth filled: $place_birth_count/".count($volunteer_users)." volunteers\n";
 
     if ($place_birth_count > 0) {
         echo "   ✅ Backend has volunteer place_of_birth data\n";
@@ -154,7 +156,7 @@ if ($volunteer_result['success']) {
     $test_results['backend_volunteer'] = [
         'success' => true,
         'total_users' => count($volunteer_users),
-        'place_birth_filled' => $place_birth_count
+        'place_birth_filled' => $place_birth_count,
     ];
 } else {
     echo "❌ Backend Volunteer API failed\n";
@@ -165,7 +167,7 @@ echo "\n📱 PHASE 2: WEB DASHBOARD VERIFICATION\n";
 echo "-------------------------------------\n";
 
 // Test web dashboard pages (basic connectivity)
-$web_admin_result = testHttpEndpoint("$web_dashboard_url/Dataadmin", "Web Admin Dashboard");
+$web_admin_result = testHttpEndpoint("$web_dashboard_url/Dataadmin", 'Web Admin Dashboard');
 if ($web_admin_result['success']) {
     $content = $web_admin_result['raw'];
 
@@ -192,11 +194,11 @@ if ($web_admin_result['success']) {
     $test_results['web_admin'] = ['success' => false];
 }
 
-$web_volunteer_result = testHttpEndpoint("$web_dashboard_url/Datapengguna", "Web Volunteer Dashboard");
+$web_volunteer_result = testHttpEndpoint("$web_dashboard_url/Datapengguna", 'Web Volunteer Dashboard');
 if ($web_volunteer_result['success']) {
     $content = $web_volunteer_result['raw'];
 
-    // Check if N/A appears in place_of_birth column  
+    // Check if N/A appears in place_of_birth column
     $na_count = substr_count($content, '<td class="px-4 py-2 border">N/A</td>');
     $malang_count = substr_count($content, 'Malang');
     $bogor_count = substr_count($content, 'Bogor');

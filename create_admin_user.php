@@ -14,7 +14,7 @@ $adminData = [
     'password_confirmation' => 'password123',
     'phone' => '+62812345678',
     'role' => 'ADMIN',
-    'organization' => 'Astacala Rescue Team'
+    'organization' => 'Astacala Rescue Team',
 ];
 
 $ch = curl_init();
@@ -24,7 +24,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($adminData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -39,11 +39,11 @@ echo "  HTTP Code: $httpCode\n";
 if ($httpCode === 201 || $httpCode === 200) {
     echo "✅ Admin user created successfully\n";
     $regData = json_decode($response, true);
-    echo "  User ID: " . ($regData['data']['user']['id'] ?? 'N/A') . "\n";
+    echo '  User ID: '.($regData['data']['user']['id'] ?? 'N/A')."\n";
 } elseif ($httpCode === 422) {
     echo "⚠️  User may already exist\n";
     $errorData = json_decode($response, true);
-    echo "  Message: " . ($errorData['message'] ?? 'Validation error') . "\n";
+    echo '  Message: '.($errorData['message'] ?? 'Validation error')."\n";
 } else {
     echo "❌ Failed to create admin user\n";
     echo "  Response: $response\n";
@@ -55,7 +55,7 @@ echo "==============================\n";
 
 $adminLoginData = [
     'email' => 'admin@uat.test',
-    'password' => 'password123'
+    'password' => 'password123',
 ];
 
 $ch = curl_init();
@@ -65,7 +65,7 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($adminLoginData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Accept: application/json'
+    'Accept: application/json',
 ]);
 
 $response = curl_exec($ch);
@@ -78,12 +78,12 @@ if ($httpCode === 200) {
     $adminUser = $authData['data']['user'] ?? [];
 
     echo "✅ Admin login successful\n";
-    echo "  👤 Name: " . ($adminUser['name'] ?? 'N/A') . "\n";
-    echo "  🔑 Role: " . ($adminUser['role'] ?? 'N/A') . "\n";
-    echo "  🆔 ID: " . ($adminUser['id'] ?? 'N/A') . "\n";
+    echo '  👤 Name: '.($adminUser['name'] ?? 'N/A')."\n";
+    echo '  🔑 Role: '.($adminUser['role'] ?? 'N/A')."\n";
+    echo '  🆔 ID: '.($adminUser['id'] ?? 'N/A')."\n";
 
     if ($adminToken) {
-        echo "  🎫 Token: " . substr($adminToken, 0, 20) . "...\n";
+        echo '  🎫 Token: '.substr($adminToken, 0, 20)."...\n";
 
         // Step 3: Test admin endpoints
         echo "\n🔍 STEP 3: Testing admin endpoints with admin token\n";
@@ -99,12 +99,12 @@ if ($httpCode === 200) {
             echo "\n🔍 Testing $name ($endpoint):\n";
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000' . $endpoint);
+            curl_setopt($ch, CURLOPT_URL, 'http://127.0.0.1:8000'.$endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Accept: application/json',
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $adminToken
+                'Authorization: Bearer '.$adminToken,
             ]);
 
             $response = curl_exec($ch);
@@ -123,7 +123,7 @@ if ($httpCode === 200) {
                 echo "  ❌ ERROR - HTTP $httpCode\n";
                 $errorData = json_decode($response, true);
                 if (isset($errorData['message'])) {
-                    echo "  📝 Message: " . $errorData['message'] . "\n";
+                    echo '  📝 Message: '.$errorData['message']."\n";
                 }
             }
         }
@@ -143,6 +143,6 @@ echo "2. Update existing volunteer@mobile.test to admin role\n";
 echo "3. Use gibran endpoints that work with VOLUNTEER role\n";
 echo "4. Fix missing backend endpoints\n";
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "ADMIN USER CREATION TESTING COMPLETED\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";

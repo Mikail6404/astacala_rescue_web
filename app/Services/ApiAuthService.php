@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
-use App\Services\AstacalaApiClient;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Authentication Service for Backend API Integration
- * 
+ *
  * Handles authentication with the unified backend API system.
  * Manages JWT tokens and user sessions for web application.
  */
@@ -24,9 +23,9 @@ class ApiAuthService
 
     /**
      * Login to backend API and store authentication token
-     * 
-     * @param string $email
-     * @param string $password  
+     *
+     * @param  string  $email
+     * @param  string  $password
      * @return array Response with success status and data
      */
     public function login($email, $password)
@@ -36,7 +35,7 @@ class ApiAuthService
 
             $loginData = [
                 'email' => $email,
-                'password' => $password
+                'password' => $password,
             ];
 
             $response = $this->apiClient->publicRequest('POST', $endpoint, $loginData);
@@ -54,27 +53,29 @@ class ApiAuthService
                     'success' => true,
                     'message' => 'Login successful',
                     'user' => $user,
-                    'token' => $token
+                    'token' => $token,
                 ];
             }
 
             Log::warning('ApiAuthService: Login failed', ['email' => $email, 'response' => $response]);
+
             return [
                 'success' => false,
-                'message' => $response['message'] ?? 'Invalid credentials'
+                'message' => $response['message'] ?? 'Invalid credentials',
             ];
         } catch (Exception $e) {
             Log::error('ApiAuthService: Login exception', ['email' => $email, 'error' => $e->getMessage()]);
+
             return [
                 'success' => false,
-                'message' => 'Authentication failed: ' . $e->getMessage()
+                'message' => 'Authentication failed: '.$e->getMessage(),
             ];
         }
     }
 
     /**
      * Logout from backend API and clear stored data
-     * 
+     *
      * @return array Response with success status
      */
     public function logout()
@@ -90,33 +91,34 @@ class ApiAuthService
 
             return [
                 'success' => true,
-                'message' => 'Logout successful'
+                'message' => 'Logout successful',
             ];
         } catch (Exception $e) {
             // Clear local session even if API logout fails
             $this->apiClient->clearStoredToken();
 
             Log::error('ApiAuthService: Logout exception', ['error' => $e->getMessage()]);
+
             return [
                 'success' => true,
-                'message' => 'Logout completed'
+                'message' => 'Logout completed',
             ];
         }
     }
 
     /**
      * Check if user is authenticated
-     * 
+     *
      * @return bool
      */
     public function isAuthenticated()
     {
-        return !empty($this->apiClient->getStoredToken());
+        return ! empty($this->apiClient->getStoredToken());
     }
 
     /**
      * Get current authenticated user data
-     * 
+     *
      * @return array|null
      */
     public function getUser()
@@ -127,7 +129,7 @@ class ApiAuthService
     /**
      * Initialize backend API authentication if needed
      * Uses test credentials for now - should be replaced with proper auth flow
-     * 
+     *
      * @return bool Success status
      */
     public function ensureAuthenticated()
@@ -144,16 +146,18 @@ class ApiAuthService
 
         if ($result['success']) {
             Log::info('ApiAuthService: Auto-authentication successful');
+
             return true;
         }
 
         Log::error('ApiAuthService: Auto-authentication failed', ['result' => $result]);
+
         return false;
     }
 
     /**
      * Force refresh authentication token
-     * 
+     *
      * @return bool Success status
      */
     public function refreshToken()
@@ -169,13 +173,16 @@ class ApiAuthService
                 $this->apiClient->storeToken($token, $user);
 
                 Log::info('ApiAuthService: Token refresh successful');
+
                 return true;
             }
 
             Log::warning('ApiAuthService: Token refresh failed', ['response' => $response]);
+
             return false;
         } catch (Exception $e) {
             Log::error('ApiAuthService: Token refresh exception', ['error' => $e->getMessage()]);
+
             return false;
         }
     }

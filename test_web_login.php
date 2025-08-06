@@ -24,10 +24,10 @@ preg_match('/name="_token" value="([^"]+)"/', $response, $matches);
 $csrfToken = $matches[1] ?? null;
 
 if ($csrfToken) {
-    echo "✅ CSRF token extracted: " . substr($csrfToken, 0, 20) . "...\n";
+    echo '✅ CSRF token extracted: '.substr($csrfToken, 0, 20)."...\n";
 } else {
     echo "❌ Failed to extract CSRF token\n";
-    echo "Response snippet: " . substr($response, -500) . "\n";
+    echo 'Response snippet: '.substr($response, -500)."\n";
     exit(1);
 }
 
@@ -38,7 +38,7 @@ echo "===================================\n";
 $loginData = [
     '_token' => $csrfToken,
     'username' => 'admin',  // This should map to volunteer@mobile.test
-    'password' => 'password'  // This should map to password123 via our new mapping
+    'password' => 'password',  // This should map to password123 via our new mapping
 ];
 
 $ch = curl_init();
@@ -94,7 +94,7 @@ if ($httpCode === 302) {
             echo "⚠️  Dashboard access issue (HTTP $dashboardCode)\n";
             if (strpos($dashboardResponse, 'Location: ') !== false) {
                 preg_match('/Location: (.+)/i', $dashboardResponse, $dashMatches);
-                echo "  Redirected to: " . trim($dashMatches[1] ?? 'Not found') . "\n";
+                echo '  Redirected to: '.trim($dashMatches[1] ?? 'Not found')."\n";
             }
         }
     } elseif (strpos($redirectLocation, '/login') !== false) {
@@ -107,12 +107,12 @@ if ($httpCode === 302) {
     echo "❌ CSRF Token Error (HTTP 419)\n";
 } else {
     echo "❌ Unexpected response (HTTP $httpCode)\n";
-    echo "Response snippet: " . substr($response, -500) . "\n";
+    echo 'Response snippet: '.substr($response, -500)."\n";
 }
 
-echo "\n" . str_repeat("=", 60) . "\n";
+echo "\n".str_repeat('=', 60)."\n";
 echo "WEB APP LOGIN TEST COMPLETED\n";
-echo str_repeat("=", 60) . "\n";
+echo str_repeat('=', 60)."\n";
 
 // Cleanup
 if (file_exists('cookies.txt')) {

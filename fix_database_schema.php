@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
+require_once __DIR__.'/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -25,7 +25,7 @@ $capsule->bootEloquent();
 
 try {
     // Get users table structure
-    $columns = Capsule::select("DESCRIBE users");
+    $columns = Capsule::select('DESCRIBE users');
 
     echo "📋 USERS TABLE COLUMNS:\n";
     echo "-----------------------\n";
@@ -42,15 +42,15 @@ try {
         }
     }
 
-    echo "\n🔍 BIRTH_PLACE COLUMN: " . ($birthPlaceExists ? "EXISTS ✅" : "MISSING ❌") . "\n";
+    echo "\n🔍 BIRTH_PLACE COLUMN: ".($birthPlaceExists ? 'EXISTS ✅' : 'MISSING ❌')."\n";
 
-    if (!$birthPlaceExists) {
+    if (! $birthPlaceExists) {
         echo "\n🛠️ ADDING BIRTH_PLACE COLUMN...\n";
         try {
-            Capsule::statement("ALTER TABLE users ADD COLUMN birth_place VARCHAR(255) NULL AFTER birth_date");
+            Capsule::statement('ALTER TABLE users ADD COLUMN birth_place VARCHAR(255) NULL AFTER birth_date');
             echo "✅ birth_place column added successfully\n";
         } catch (Exception $e) {
-            echo "❌ Failed to add birth_place column: " . $e->getMessage() . "\n";
+            echo '❌ Failed to add birth_place column: '.$e->getMessage()."\n";
         }
     }
 
@@ -72,7 +72,7 @@ try {
         'Malang',
         'Bogor',
         'Batam',
-        'Pekanbaru'
+        'Pekanbaru',
     ];
 
     $usersWithoutBirthPlace = Capsule::table('users')
@@ -113,5 +113,5 @@ try {
     echo "   Users with Phone: {$stats->users_with_phone}\n";
     echo "   Users with Organization: {$stats->users_with_organization}\n";
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
 }

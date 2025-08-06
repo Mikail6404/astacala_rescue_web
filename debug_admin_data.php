@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
+require_once __DIR__.'/../../astacala_backend/astacala-rescue-api/vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -38,10 +38,10 @@ try {
         echo "👤 User ID: {$user->id}\n";
         echo "   Email: {$user->email}\n";
         echo "   Name: {$user->name}\n";
-        echo "   Birth Date: " . ($user->birth_date ?: 'NULL') . "\n";
-        echo "   Birth Place: " . ($user->birth_place ?: 'NULL') . "\n";
-        echo "   Phone: " . ($user->phone ?: 'NULL') . "\n";
-        echo "   Organization: " . ($user->organization ?: 'NULL') . "\n";
+        echo '   Birth Date: '.($user->birth_date ?: 'NULL')."\n";
+        echo '   Birth Place: '.($user->birth_place ?: 'NULL')."\n";
+        echo '   Phone: '.($user->phone ?: 'NULL')."\n";
+        echo '   Organization: '.($user->organization ?: 'NULL')."\n";
         echo "   Role: {$user->role}\n";
         echo "   Created: {$user->created_at}\n";
         echo "   Updated: {$user->updated_at}\n\n";
@@ -60,7 +60,7 @@ try {
     $loginUrl = 'http://127.0.0.1:8000/api/auth/login';
     $loginData = [
         'email' => 'mikailadmin@admin.astacala.local',
-        'password' => 'mikailadmin'
+        'password' => 'mikailadmin',
     ];
 
     $ch = curl_init();
@@ -70,7 +70,7 @@ try {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        'Accept: application/json'
+        'Accept: application/json',
     ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
@@ -89,9 +89,9 @@ try {
             curl_setopt($ch, CURLOPT_URL, $backendUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: Bearer ' . $token,
+                'Authorization: Bearer '.$token,
                 'Accept: application/json',
-                'Content-Type: application/json'
+                'Content-Type: application/json',
             ]);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
@@ -102,14 +102,14 @@ try {
             if ($httpCode === 200) {
                 $data = json_decode($response, true);
                 echo "✅ Admin API endpoint working\n";
-                echo "📊 Response contains " . count($data['data']) . " admin users\n";
+                echo '📊 Response contains '.count($data['data'])." admin users\n";
 
                 // Show first admin user from API
-                if (!empty($data['data'])) {
+                if (! empty($data['data'])) {
                     $firstAdmin = $data['data'][0];
                     echo "\n📋 FIRST ADMIN FROM API:\n";
                     foreach ($firstAdmin as $key => $value) {
-                        echo "   {$key}: " . ($value ?: 'NULL') . "\n";
+                        echo "   {$key}: ".($value ?: 'NULL')."\n";
                     }
                 }
             } else {
@@ -125,5 +125,5 @@ try {
         echo "Response: {$loginResponse}\n";
     }
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
 }
